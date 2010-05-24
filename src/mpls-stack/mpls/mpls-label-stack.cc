@@ -21,93 +21,96 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
-#include "mpls-label-stack.h"
-
-NS_LOG_COMPONENT_DEFINE ("MplsLabelStack");
-
 namespace ns3 {
 namespace mpls {
 
-MplsLabelStackEntry::MplsLabelStackEntry ()
-  : m_label (MPLS_LABEL_IMPLNULL),
+MplsLabelEntry::MplsLabelEntry ()
+  : m_label (-1),
     m_exp (0),
     m_bos (false),
     m_ttl (0)
 {
 }
 
-MplsLabelStackEntry::~MplsLabelStackEntry ()
+MplsLabelEntry::MplsLabelEntry (const MplsLabel &label)
+  : m_label (label),
+    m_exp (0),
+    m_bos (false),
+    m_ttl (0)
+{
+}
+
+MplsLabelEntry::~MplsLabelEntry ()
 {
 }
 
 void
-MplsLabelStackEntry::SetLabel (uint32_t label)
+MplsLabelEntry::SetLabel (const MplsLabel &label)
 {
-  NS_ASSERT_MSG (label <= MPLS_LABEL_MAX, "MplsLabelStackEntry::SetLabel (): invalid label value");
   m_label = label;
 }
 
-uint32_t
-MplsLabelStackEntry::GetLabel (void) const
+const MplsLabel&
+MplsLabelEntry::GetLabel (void) const
 {
   return m_label;
 }
 
 void
-MplsLabelStackEntry::SetExp (uint8_t exp)
+MplsLabelEntry::SetExp (uint8_t exp)
 {
-  NS_ASSERT_MSG (exp <= 0x7, "MplsLabelStackEntry::SetExp (): invalid exp value");
+  NS_ASSERT_MSG (exp <= 0x7, "MplsLabelEntry::SetExp (): invalid exp value");
   m_exp = exp;
 }
 
 uint8_t
-MplsLabelStackEntry::GetExp (void) const
+MplsLabelEntry::GetExp (void) const
 {
   return m_exp;
 }
 
 bool
-MplsLabelStackEntry::IsBos (void) const
+MplsLabelEntry::IsBos (void) const
 {
   return m_bos;
 }
 
 void
-MplsLabelStackEntry::SetTtl (uint8_t ttl)
+MplsLabelEntry::SetTtl (uint8_t ttl)
 {
   m_ttl = ttl;
 }
 
 uint8_t
-MplsLabelStackEntry::GetTtl (void) const
+MplsLabelEntry::GetTtl (void) const
 {
   return m_ttl;
 }
 
 uint32_t
-MplsLabelStackEntry::GetSerializedSize (void) const
+MplsLabelEntry::GetSerializedSize (void) const
 {
   return 4;
 }
 
 void
-MplsLabelStackEntry::Serialize (Buffer::Iterator start) const
+MplsLabelEntry::Serialize (Buffer::Iterator start) const
 {
-  if (m_label == MPLS_LABEL_ROUTERALERT)
+  if (m_label.IsRouteAlert ())
     {
-      NS_ASSERT_MSG (!m_bos, "MplsLabelStackEntry::Serialize (): Misplaced Router Alert Label");
+      NS_ASSERT_MSG (!m_bos, "MplsLabelEntry::Serialize (): Misplaced Router Alert label");
     }
 
   uint32_t shim = m_ttl;
   shim |= (m_bos << 8) & 0x00000100;
   shim |= (m_exp << 9) & 0x00000e00;
-  shim |= (m_label << 12) & 0xfffff000;
+  shim |= (m_label.GetValue () << 12) & 0xfffff000;
 
   start.WriteHtonU32 (shim);
 }
 
 uint32_t
-MplsLabelStackEntry::Deserialize (Buffer::Iterator start)
+MplsLabelEntry::Deserialize (Buffer::Iterator start)
 {
   uint32_t shim = start.ReadNtohU32 ();
 
@@ -120,35 +123,24 @@ MplsLabelStackEntry::Deserialize (Buffer::Iterator start)
 }
 
 void
-MplsLabelStackEntry::Print (std::ostream &os) const
+MplsLabelEntry::Print (std::ostream &os) const
 {
-  os << "label=" << m_label << " "
-     << "exp=" << (uint32_t)m_exp << " "
+  os << m_label << " "
+     << "(exp=" << (uint32_t)m_exp << " "
      << "bos=" << (uint32_t)m_bos << " "
-     << "ttl=" << (uint32_t)m_ttl
+     << "ttl=" << (uint32_t)m_ttl << ")"
   ;
 }
 
-std::ostream& operator<< (std::ostream& os, const MplsLabelStackEntry &entry)
+std::ostream& operator<< (std::ostream& os, const MplsLabelEntry &entry)
 {
   entry.Print (os);
   return os;
 }
 
+/// MplsLabelStack
+
 NS_OBJECT_ENSURE_REGISTERED (MplsLabelStack);
-
-MplsLabelStack::MplsLabelStack ()
-{
-}
-
-MplsLabelStack::~MplsLabelStack ()
-{
-  for (MplsLabelStackEntryVector::iterator i = m_entries.begin (); i != m_entries.end (); i++)
-    {
-      *i = 0;
-    }
-  m_entries.clear ();
-}
 
 TypeId
 MplsLabelStack::GetTypeId (void)
@@ -166,88 +158,44 @@ MplsLabelStack::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-Ptr<MplsLabelStackEntry>
-MplsLabelStack::Push (uint32_t label)
+MplsLabelStack::MplsLabelStack ()
 {
-  Ptr<MplsLabelStackEntry> entry = Create<MplsLabelStackEntry> ();
-  if (m_entries.size () == 0)
-    {
-      entry->m_bos = true;
-    }
-
-  entry->SetLabel (label);
-
-  NS_LOG_DEBUG ("MplsLabelStack::Push (): " << *entry);
-
-  m_entries.push_back (entry);
-  return entry;
 }
 
-Ptr<MplsLabelStackEntry>
+MplsLabelStack::~MplsLabelStack ()
+{
+  m_entries.clear ();
+}
+
+void
+MplsLabelStack::Push (const MplsLabelEntry& entry)
+{
+  entry.m_bos = m_entries.size () == 0;
+  m_entries.push_back (entry);
+}
+
+void
 MplsLabelStack::Pop (void)
 {
-  if (m_entries.size () == 0)
-    {
-      return 0;
-    }
-
-  Ptr<MplsLabelStackEntry> entry = m_entries.back ();
-
-  NS_LOG_DEBUG ("MplsLabelStack::Pop (): " << *entry);
-
   m_entries.pop_back ();
-  return entry;
 }
 
-Ptr<MplsLabelStackEntry>
-MplsLabelStack::Swap (uint32_t label)
+bool
+MplsLabelStack::IsEmpty (void) const
 {
-  if (m_entries.size () == 0)
-    {
-      return 0;
-    }
-
-  Ptr<MplsLabelStackEntry> entry = m_entries.back ();
-  entry->SetLabel (label);
-
-  NS_LOG_DEBUG ("MplsLabelStack::Swap (): " << *entry);
-
-  return entry;
+  return m_enties.empty ();
 }
 
-MplsLabelStack::Iterator
-MplsLabelStack::Begin (void) const
+MplsLabelEntry&
+MplsLabelStack::GetTop (void)
 {
-  return m_entries.begin (); // stack top
-}
-
-MplsLabelStack::Iterator
-MplsLabelStack::End (void) const
-{
-  return m_entries.end (); // stack bottom
-}
-
-Ptr<MplsLabelStackEntry>
-MplsLabelStack::GetEntry (uint32_t i) const
-{
-  NS_ASSERT_MSG (i < m_entries.size (), "MplsLabelStack::GetEntry (): entry index out of range");
-  return m_entries[i];
-}
-
-Ptr<MplsLabelStackEntry>
-MplsLabelStack::GetTopEntry (void) const
-{
-  if (m_entries.size () == 0)
-    {
-      return 0;
-    }
   return m_entries.back ();
 }
 
-uint32_t
-MplsLabelStack::GetNEntries (void) const
+const MplsLabelEntry&
+MplsLabelStack::GetTop (void) const
 {
-  return m_entries.size ();
+  return m_entries.back ();
 }
 
 uint32_t
@@ -261,9 +209,9 @@ MplsLabelStack::Serialize (Buffer::Iterator start) const
 {
   // The top of the label stack appears earliest in the packet,
   // and the bottom appears latest.
-  for (MplsLabelStackEntryVector::const_reverse_iterator i = m_entries.rbegin (); i != m_entries.rend (); ++i)
+  for (MplsLabelEntryVector::const_reverse_iterator i = m_entries.rbegin (); i != m_entries.rend (); ++i)
     {
-      (*i)->Serialize (start);
+      (*i).Serialize (start);
       start.Next (4);
     }
 }
@@ -273,16 +221,19 @@ MplsLabelStack::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint32_t size = start.GetSize ();
+  MplsLabelEntry entry;
+
   while (size > 0)
     {
-      Ptr<MplsLabelStackEntry> entry = Create<MplsLabelStackEntry> ();
-      uint32_t deserialized = entry->Deserialize (i);
+      uint32_t deserialized = entry.Deserialize (i);
       m_entries.insert (m_entries.begin (), entry);
       i.Next (deserialized);
-      if (entry->m_bos)
+
+      if (entry.m_bos)
         {
           break;
         }
+
       size -= deserialized;
     }
 
@@ -292,9 +243,10 @@ MplsLabelStack::Deserialize (Buffer::Iterator start)
 void
 MplsLabelStack::Print (std::ostream &os) const
 {
-  for (MplsLabelStackEntryVector::const_iterator i = m_entries.end (); i != m_entries.begin (); --i)
+  for (MplsLabelEntryVector::const_iterator i = m_entries.end (); i != m_entries.begin (); --i)
     {
-      (*i)->Print (os);
+      (*i).Print (os);
+      os >> " ";
     }
 }
 

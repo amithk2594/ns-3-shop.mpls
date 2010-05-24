@@ -23,86 +23,139 @@
 
 #include <ostream>
 #include <vector>
+#include <stdint.h>
 
-#include "ns3/ptr.h"
-#include "ns3/simple-ref-count.h"
 #include "ns3/header.h"
+#include "mpls-label.h"
 
 namespace ns3 {
 namespace mpls {
 
 class MplsLabelStack;
 
-//   0                   1                   2                   3
-//   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Label
-//  |                Label                  | Exp |S|       TTL     | Stack
-//  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Entry
-class MplsLabelStackEntry : public SimpleRefCount<MplsLabelStackEntry>
+/**
+ * \ingroup mpls
+ * \brief
+ * Label stack entry
+ *  0                   1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Label
+ *  |                Label                  | Exp |S|       TTL     | Stack
+ *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Entry
+ *
+ * For more infomation see RFC 3032 (http://www.ietf.org/rfc/rfc3032.txt)
+ */
+class MplsLabelEntry
 {
 public:
-  static const uint32_t MPLS_LABEL_IPV4NULL = 0;
-  static const uint32_t MPLS_LABEL_ROUTERALERT = 1;
-  static const uint32_t MPLS_LABEL_IPV6NULL = 2;
-  static const uint32_t MPLS_LABEL_IMPLNULL = 3;
-  static const uint32_t MPLS_LABEL_RESERVED_MAX = 15;
-  static const uint32_t MPLS_LABEL_MAX = (1 << 20) - 1;
+  /**
+   * \brief Create an empty entry
+   */
+  MplsLabelEntry ();
+  /**
+   * \brief Create an entry with label
+   */
+  MplsLabelEntry (const MplsLabel &label);
 
-  MplsLabelStackEntry ();
-  virtual ~MplsLabelStackEntry ();
-
-  void SetLabel (uint32_t label);
-  uint32_t GetLabel (void) const;
+  virtual ~MplsLabelEntry ();
+  /**
+   * \brief set the actual value of the Label
+   * \param label label to set
+   */
+  void SetLabel (const MplsLabel &label);
+  /**
+   * \returns label
+   */
+  const MplsLabel& GetLabel (void) const;
+  /**
+   * \brief set three-bit exp field value
+   */
   void SetExp (uint8_t exp);
+  /**
+   * \returns value of exp field
+   */
   uint8_t GetExp (void) const;
-  bool IsBos (void) const;
+  /**
+   * \brief set time-to-live value
+   * \param ttl eight-bit time-to-live value
+   */
   void SetTtl (uint8_t ttl);
+  /**
+   * \returns time-to-live field value
+   */
   uint8_t GetTtl (void) const;
-
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  /**
+   * \returns true if this entry is last entry in the label stack
+   */
+  bool IsBos (void) const;
+  /**
+   * \param os the stream to print to
+   */
   void Print (std::ostream &os) const;
 
 private:
-  friend class MplsLabelStack;
+  // this functions is used by MplsLabelStack
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
-  uint32_t m_label;
-  uint8_t m_exp;
-  bool m_bos;
-  uint8_t m_ttl;
+  MplsLabel m_label;
+  uint8_t   m_exp;
+  uint8_t   m_ttl;
+  bool      m_bos;
+
+  friend class MplsLabelStack;
 };
 
-std::ostream& operator<< (std::ostream& os, const MplsLabelStackEntry &entry);
+std::ostream& operator<< (std::ostream& os, const MplsLabelEntry &entry);
 
+/**
+ * \ingroup mpls
+ * \brief
+ * The label stack is represented as a sequence of "label stack entries".
+ * Each label stack entry is represented by 4 octets.
+ * For more infomation see RFC 3032 (http://www.ietf.org/rfc/rfc3032.txt)
+ */
 class MplsLabelStack : public Header
 {
 public:
+  /**
+   * \brief Create an empty stack.
+   */
   MplsLabelStack ();
   virtual ~MplsLabelStack ();
-
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-
-  Ptr<MplsLabelStackEntry> Pop (void);
-  Ptr<MplsLabelStackEntry> Push (uint32_t label);
-  Ptr<MplsLabelStackEntry> Swap (uint32_t label);
-
-  typedef std::vector<Ptr<MplsLabelStackEntry> >::const_iterator Iterator;
-  Iterator Begin (void) const;
-  Iterator End (void) const;
-  Ptr<MplsLabelStackEntry> GetEntry (uint32_t i) const;
-  Ptr<MplsLabelStackEntry> GetTopEntry (void) const;
-  uint32_t GetNEntries (void) const;
-
+  /**
+   * \brief pop last entry
+   */
+  void Pop (void);
+  /**
+   * \brief push entry to the stack
+   * \param entry
+   */
+  void Push (const MplsLabelEntry &entry);
+  /**
+   * \returns top entry of the stack
+   */
+  MplsLabelEntry& GetTop (void);
+  /**
+   * \returns top entry of the stack
+   */
+  const MplsLabelEntry& GetTop (void) const;
+  /**
+   * \returns true if stack is empty
+   */
+  bool IsEmpty (void) const;
+  // Functions defined in base class Header
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual void Print (std::ostream &os) const;
 
 private:
-  typedef std::vector<Ptr<MplsLabelStackEntry> > MplsLabelStackEntryVector;
-  MplsLabelStackEntryVector m_entries;
+  typedef std::vector<MplsLabelEntry> MplsLabelEntryVector;
+  MplsLabelEntryVector m_entries;
 };
 
 } // namespace mpls
