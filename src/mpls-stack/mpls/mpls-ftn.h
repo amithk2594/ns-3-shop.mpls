@@ -60,7 +60,7 @@ public:
    * \brief get incoming label
    * \returns label
    */
-  Ptr<MplsFec> GetFec (void) const;
+  const Ptr<MplsFec>& GetFec (void) const;
   /**
    * \brief print ILM
    * \param os the stream to print to

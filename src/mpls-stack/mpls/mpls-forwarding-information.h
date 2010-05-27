@@ -22,6 +22,7 @@
 #define MPLS_FORWARDING_INFORMATION_H
 
 #include <list>
+#include <ostream>
 
 #include "ns3/simple-ref-count.h"
 #include "mpls-nhlfe.h"
@@ -57,7 +58,7 @@ public:
    * \brief Get NHLFE with specified lsp id
    * \param lspid
    */
-  Ptr<MplsNhlfe> GetNhlfe (uint16_t lspid);
+  const Ptr<MplsNhlfe>& GetNhlfe (uint16_t lspid);
   /**
    * \returns true if information is invalid
    */
@@ -79,7 +80,7 @@ private:
   NhlfeList m_nhlfeList;
 };
 
-std::ostream& operator<< (std::ostream& os, const MplsForwardingInformation &nhlfe);
+std::ostream& operator<< (std::ostream& os, const MplsForwardingInformation &info);
 
 } // namespace mpls
 } // namespace ns3

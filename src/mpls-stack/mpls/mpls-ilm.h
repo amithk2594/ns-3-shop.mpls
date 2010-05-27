@@ -69,7 +69,7 @@ public:
   void SetInterface (const Ptr<MplsInterface> &interface);
   /**
    * \brief get incoming interface
-   * \returns interface number
+   * \returns interface
    */
   Ptr<MplsInterface> GetInterface (void) const;
   /**

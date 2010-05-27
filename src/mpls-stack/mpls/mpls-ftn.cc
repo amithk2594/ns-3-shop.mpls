@@ -45,7 +45,7 @@ MplsFtn::SetFec (const Ptr<MplsFec> &fec)
   m_fec = fec;
 }
 
-Ptr<MplsFec>
+const Ptr<MplsFec>&
 MplsFtn::GetFec (void) const
 {
   return m_fec;
