@@ -67,11 +67,11 @@ public:
   /**
    * Add ilm entry
    */
-  void AddIlm (const Ptr<MplsInterface> &interface, const Ptr<MplsIlm> &ilm);
+  void AddIlm (const Ptr<MplsInterface> &interface, const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe);
   /**
    * Add ftn entry
    */
-  void AddFtn (const Ptr<MplsFtn> &ftn);
+  void AddFec (const Ptr<MplsInterface> &interface, const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
 
 private:
   typedef std::list<Ptr<MplsIlm> > m_ilmTable;
