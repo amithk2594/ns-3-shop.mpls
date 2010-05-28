@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_INTERFACE_H
-#define MPLS_INTERFACE_H
+#ifndef MPLS_FORWARDING_TABLE_H
+#define MPLS_FORWARDING_TABLE_H
 
 #include <ostream>
 #include <list>
@@ -29,41 +29,54 @@ namespace ns3 {
 namespace mpls {
 
 /**
- * \brief Mpls interface
+ * \ingroup mpls
+ * \brief MplsForwardingTableEntry represent per interface FIB
  */
-class MplsInterface : public SimpleRefCount<MplsInterface>
+class MplsForwardingTableEntry
 {
 public:
   /**
-   * \brief Create mpls interface
+   * Create empty forwarding table
    */
-  MplsInterface (const Ptr<NetDevice> &device);
-  virtual ~MplsInterface ();
-  /**
-   * \brief Add label
-   */
-  void AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe);
-  /**
-   * \brief Add FEC
-   */
-  void AddFec (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
-  /**
-   * \brief print interface information
-   * \param os the stream to print to
-   */
-  void Print (std::ostream &os) const;
+  MplsForwardingTableEntry (const Ptr<MplsInterface> &interface);
+  virtual ~MplsForwardingTableEntry ();
+
+  void AddIlm (const MplsLabel &label);
+  void AddFec (const Ptr<MplsFec> &fec);
 
 private:
-  typedef std::list<Ptr<MplsIlm> > IlmTable;
   typedef std::list<Ptr<MplsFtn> > FtnTable;
+  typedef std::list<Ptr<MplsIlm> > IlmTable;
 
-  Ptr<NetDevice> m_device;
-  IlmTable m_ilmTable;
+  Ptr<MplsInterface> m_interface;
   FtnTable m_ftnTable;
+  IlmTable m_ilmTable;
+}
 
+/**
+ * \brief Mpls interface
+ */
+class MplsForwardingTable : public SimpleRefCount<MplsForwardingTable>
+{
+public:
+  /**
+   * Create empty FIB
+   */
+  MplsForwardingTable ();
+  virtual ~MplsForwardingTable ();
+  /**
+   * Add ilm entry
+   */
+  void AddIlm (const Ptr<MplsInterface> &interface, const Ptr<MplsIlm> &ilm);
+  /**
+   * Add ftn entry
+   */
+  void AddFtn (const Ptr<MplsFtn> &ftn);
+
+private:
+  typedef std::list<Ptr<MplsIlm> > m_ilmTable;
+  typedef std::list<Ptr<MplsFtn> > m_ftnTable;
 };
-
-std::ostream& operator<< (std::ostream& os, const MplsInterface &interface);
 
 } // namespace mpls
 } // namespace ns3
