@@ -20,10 +20,14 @@
 
 #include <iomanip>
 
-#include "mpls-label.h"
+#include "mpls-generic.h"
 
 namespace ns3 {
 namespace mpls {
+
+////////////////////////////////////////////////////////////////
+// MplsLabel class
+////////////////////////////////////////////////////////////////
 
 const int32_t MplsLabel::IPV4_EXPLICIT_NULL = 0;
 const int32_t MplsLabel::ROUTE_ALERT = 1;
@@ -148,6 +152,18 @@ std::ostream& operator<< (std::ostream& os, const MplsLabel &label)
 {
   label.Print (os);
   return os;
+}
+
+////////////////////////////////////////////////////////////////
+// MplsOperation class
+////////////////////////////////////////////////////////////////
+
+MplsOperation::MplsOperation ()
+{
+}
+
+MplsOperation::~MplsOperation ()
+{
 }
 
 } // namespace mpls

@@ -18,62 +18,67 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_FORWARDING_TABLE_H
-#define MPLS_FORWARDING_TABLE_H
-
-#include <ostream>
-#include <list>
-#include <stdint.h>
-
 namespace ns3 {
 namespace mpls {
 
-/**
- * \ingroup mpls
- * \brief MplsInterfaceForwardingTable represent per interface FIB
- */
-class MplsInterfaceForwardingTable
+MplsInterfaceForwardingTable::MplsInterfaceForwardingTable (const Ptr<MplsInterface> &interface)
 {
-public:
-  /**
-   * Create empty forwarding table
-   */
-  MplsInterfaceForwardingTable (const Ptr<MplsInterface> &interface);
-  virtual ~MplsInterfaceForwardingTable ();
-  /**
-   * \brief Add ilm
-   * \param label
-   * \param nhlfe
-   */
-  void AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe);
-  /**
-   * \brief Get ilm
-   * \param label
-   * \returns ilm
-   */
-  Ptr<MplsIlm> GetIlm (const MplsLabel &label) const;
-  /**
-   * \brief Add fec
-   * \param fec
-   * \param nhlfe
-   */
-  void AddFec (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
-  /**
-   * \brief Remove NHLFE
-   */
-  void RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
-  /**
-   * \brief Remove NHLFE
-   */
-  void RemoveNhlfe (uint16_t lspid);
+  m_interface = interface;
+}
 
-private:
-  typedef std::list<Ptr<MplsFtn> > FtnTable;
-  typedef std::list<Ptr<MplsIlm> > IlmTable;
+MplsInterfaceForwardingTable::~MplsInterfaceForwardingTable ()
+{
+  m_interface = 0;
+}
 
-  Ptr<MplsInterface> m_interface;
-  FtnTable m_ftnTable;
-  IlmTable m_ilmTable;
+void
+MplsInterfaceForwardingTable::AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe)
+{
+  Ptr<MplsIlm> ilm = GetIlm (label);
+  if (ilm == 0)
+    {
+      ilm = Create<MplsIlm> (m_interface, label);
+      m_ilmTable.push_back (ilm);
+    }
+  ilm->AddNhlfe (nhlfe);
+}
+
+Ptr<MplsIlm>
+MplsInterfaceForwardingTable::GetIlm (const MplsLabel &label) const
+{
+  for (IlmTable::const_iterator i = m_ilmTable.begin (); i != m_ilmTable.end ())
+    {
+      if ((*i)->m_label == label)
+        {
+          return *i;
+        }
+    }
+  return 0;
+}
+
+void
+MplsInterfaceForwardingTable::AddFec (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe)
+{
+  Ptr<MplsFtn> ftn = GetFec (fec);
+  if (ftn == 0)
+    {
+      ftn = Create<MplsFtn> (fec);
+      m_ftnTable.push_back (ftn);
+    }
+  ftn->AddNhlfe (nhlfe);
+}
+
+Ptr<MplsFtn>
+MplsInterfaceForwardingTable::GetFec (const Ptr<MplsFec> &fec) const
+{
+  for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
+    {
+      if ((*i)->m_fec == fec)
+        {
+          return *i;
+        }
+    }
+  return 0;
 }
 
 /**

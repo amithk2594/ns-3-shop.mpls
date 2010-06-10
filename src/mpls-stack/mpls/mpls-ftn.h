@@ -41,15 +41,10 @@ class MplsFtn : public MplsForwardingInformation
 {
 public:
   /**
-   * \brief construct empty FTN
-   */
-  MplsFtn ();
-  /**
    * \brief construct Ftn with specified FEC
    * \param fec Fec
    */
   MplsFtn (const Ptr<MplsFec> &fec);
-
   virtual ~MplsFtn ();
   /**
    * \brief set incoming label
@@ -68,6 +63,8 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
+  MplsFtn ();
+
   Ptr<MplsFec> m_fec;
 };
 

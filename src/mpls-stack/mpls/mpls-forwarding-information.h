@@ -32,47 +32,34 @@ namespace mpls {
 
 /**
  * \ingroup mpls
- * \brief
- * This ForwardingInformation class is the base class for the MplsFtn and MplsIlm classes.
+ * \brief A MPLS forwarding information base class.
+ *
+ * This is a base class for a MplsIlm and MplsFtn.
  */
 class MplsForwardingInformation : public SimpleRefCount<MplsForwardingInformation>
 {
 public:
+  /**
+   * \brief Destructor
+   */
   virtual ~MplsForwardingInformation ();
   /**
-   * \brief add new NHLFE to the list
-   * \param nhlfe
+   * \brief Add new NHLFE to the list
+   * \param nhlfe MplsNhlfe
    */
   void AddNhlfe (const Ptr<MplsNhlfe> &nhlfe);
   /**
    * \brief Remove the specific NHLFE from the list
-   * \param nhlfe to remove
+   * \param nhlfe MplsNhlfe
    */
   void RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
   /**
-   * \brief Remove NHLFE from the list with specified lsp id
-   * \param lspid
-   */
-  void RemoveNhlfe (uint16_t lspid);
-  /**
-   * \brief Get NHLFE with specified lsp id
-   * \param lspid
-   */
-  const Ptr<MplsNhlfe>& GetNhlfe (uint16_t lspid);
-  /**
-   * \returns true if information is invalid
-   */
-  virtual bool IsInvalid (void) const;
-  /**
-   * \brief print NHLFE
+   * \brief Print NHLFE
    * \param os the stream to print to
    */
   virtual void Print (std::ostream &os) const = 0;
 
 protected:
-  /**
-   * \brief construct empty object
-   */
   MplsForwardingInformation ();
 
 private:
@@ -80,6 +67,9 @@ private:
   NhlfeList m_nhlfeList;
 };
 
+/**
+ * \brief output operation for MplsForwardingInformation
+ */
 std::ostream& operator<< (std::ostream& os, const MplsForwardingInformation &info);
 
 } // namespace mpls

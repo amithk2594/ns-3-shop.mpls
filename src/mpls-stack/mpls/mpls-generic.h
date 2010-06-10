@@ -18,27 +18,54 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_LABEL_H
-#define MPLS_LABEL_H
+/**
+ * \defgroup mpls
+ */
+#ifndef MPLS_GENERIC_H
+#define MPLS_GENERIC_H
 
 #include <stdint.h>
 #include <ostream>
 
+#include "mpls-label-stack.h"
+
 namespace ns3 {
 namespace mpls {
 
+class MplsLabelStack;
+
 /**
  * \ingroup mpls
- * \brief Mpls label. For mor information see RFC 3032 (http://www.ietf.org/rfc/rfc3032.txt)
+ * \brief The Label Switching Router (LSR) identifier.
+ */
+typedef uint32_t MplsLsrIdentifier;
+
+/**
+ * \ingroup mpls
+ * \brief A representation of a MPLS label.
+ *
+ * This class provides a MPLS label defined in Multiprotocol Label Switching Architecture [RFC3031],
+ * MPLS Label Stack Encoding [RFC3032], Generalized Multiprotocol Label Switching (GMPLS) Architecture [RFC3471].
  */
 class MplsLabel
 {
 public:
+  /**
+   * \brief IPV4 explicit null label value
+   */
   static const int32_t IPV4_EXPLICIT_NULL;
+  /**
+   * \brief Route alert label value
+   */
   static const int32_t ROUTE_ALERT;
+  /**
+   * \brief IPV6 explicit null label value
+   */
   static const int32_t IPV6_EXPLICIT_NULL;
+  /**
+   * \brief implicit null label value
+   */
   static const int32_t IMPLICIT_NULL;
-
   /**
    * \brief construct invalid label
    */
@@ -49,59 +76,114 @@ public:
    */
   MplsLabel (int32_t label);
   /**
+   * \brief Check if label is invalid
    * \returns true if label is invalid
    */
   bool IsInvalid (void) const;
   /**
+   * \brief Check if label is ipv4 explicit null label
    * \returns true if is ipv4 explicit null label
    */
   bool IsIpv4ExplicitNull (void) const;
   /**
+   * \brief Check if label is ipv6 explicit null label
    * \returns true if is ipv6 explicit null label
    */
   bool IsIpv6ExplicitNull (void) const;
   /**
+   * \brief Check if label is route alert label
    * \returns true if is route alert label
    */
   bool IsRouteAlert (void) const;
   /**
+   * \brief Check if label is implicit null label
    * \return true if is implicit null label
    */
   bool IsImplicitNull (void) const;
   /**
+   * \brief Get label value
    * \returns label value
    */
   int32 GetValue (void) const;
   /**
+   * \brief Get IPv4 explicit null label
    * \returns Ipv4 explicit null label
    */
   static MplsLabel GetIpv4ExplicitNull (void);
   /**
+   * \brief Get IPv6 explicit null label
    * \returns Ipv6 explicit null label
    */
   static MplsLabel GetIpv6ExplicitNull (void);
   /**
+   * \brief Get route alert label
    * \returns Route alert label
    */
   static MplsLabel GetRouteAlert (void);
   /**
+   * \brief Get null label
    * \returns Implicit null label
    */
   static MplsLabel GetImplicitNull (void);
   /**
+   * \brief Print label value
    * \param os the stream to print to
    */
   void Print (std::ostream &os) const;
 
 public:
+  /**
+   * \brief 'equal-to' operator
+   */
   bool operator== (const MplsLabel &label);
+  /**
+   * \brief 'not-equal-to' operator
+   */
   bool operator!= (const MplsLabel &label);
 
 private:
   int32_t m_label;
 };
 
+/**
+ * \brief output operation for MplsLabel
+ */
 std::ostream& operator<< (std::ostream& os, const MplsLabel &label);
+
+/**
+ * \ingroup mpls
+ * \brief A MPLS label forwarding operation abstract base class.
+ *
+ * This is an abstract base class for a MPLS label forwarding operation defined in
+ * Multiprotocol Label Switching Architecture [RFC3031].
+ */
+class MplsOperation
+{
+public:
+  /**
+   * \brief Destructor
+   */
+  virtual ~MplsOperation ();
+  /**
+   * \brief Execute operation on the label stack
+   * \param stack Mpls label stack to perform operation
+   * \returns false if operation executing failed
+   */
+  virtual bool Execute (MplsLabelStack &stack) const = 0;
+  /**
+   * \brief Print operation
+   * \param os the stream to print to
+   */
+  virtual void Print (std::ostream &os) const = 0;
+
+protected:
+  MplsOperation ();
+};
+
+/**
+ * \brief output operation for MplsOperation
+ */
+std::ostream& operator<< (std::ostream& os, const MplsOperation &op);
 
 } // namespace mpls
 } // namespace ns3

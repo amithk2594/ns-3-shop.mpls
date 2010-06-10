@@ -30,19 +30,13 @@ MplsFtn::MplsFtn ()
 }
 
 MplsFtn::MplsFtn (const Ptr<MplsFec> &fec);
-  : m_fec (fec),
+  : m_fec (fec)
 {
 }
 
 MplsFtn::~MplsFtn ()
 {
   m_fec = 0;
-}
-
-void
-MplsFtn::SetFec (const Ptr<MplsFec> &fec)
-{
-  m_fec = fec;
 }
 
 const Ptr<MplsFec>&

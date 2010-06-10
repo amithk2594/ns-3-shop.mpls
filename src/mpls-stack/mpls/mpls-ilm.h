@@ -41,42 +41,30 @@ class MplsIlm : public MplsForwardingInformation
 {
 public:
   /**
-   * \brief construct empty ilm
-   */
-  MplsIlm ();
-  /**
-   * \brief construct ilm with specified label and interface
-   * \param label incoming label
+   * \brief Construct ilm with specified label and interface
    * \param interface incoming interface
+   * \param label incoming label
    */
-  MplsIlm (const MplsLabel &label, const Ptr<MplsInterface> &interface);
-
+  MplsIlm (const Ptr<MplsInterface> &interface, const MplsLabel &label);
   virtual ~MplsIlm ();
   /**
-   * \brief set incoming label
-   * \param label
-   */
-  void SetLabel (const MplsLabel &label);
-  /**
-   * \brief get incoming label
+   * \brief Get incoming label
    * \returns label
    */
   const MplsLabel& GetLabel (void) const;
   /**
-   * \brief set incoming interface
+   * \brief Set incoming interface
    * \param interface
    */
-  void SetInterface (const Ptr<MplsInterface> &interface);
+  const Ptr<MplsInterface>& GetInterface (void) const;
   /**
-   * \brief get incoming interface
-   * \returns interface
-   */
-  Ptr<MplsInterface> GetInterface (void) const;
-  /**
-   * \brief print ILM
+   * \brief Print ILM
    * \param os the stream to print to
    */
   virtual void Print (std::ostream &os) const;
+
+private:
+  MplsIlm ();
 
 private:
   Ptr<MplsInterface>  m_interface;

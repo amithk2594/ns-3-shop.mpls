@@ -48,19 +48,24 @@ public:
    */
   void AddFec (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
   /**
+   * \brief Remove Ilm
+   * \param label
+   */
+  void RemoveIlm (const MplsLabel &label);
+  /**
+   *
+   */
+
+  /**
    * \brief print interface information
    * \param os the stream to print to
    */
   void Print (std::ostream &os) const;
 
 private:
-  typedef std::list<Ptr<MplsIlm> > IlmTable;
-  typedef std::list<Ptr<MplsFtn> > FtnTable;
-
+  typedef std::list<Ptr<MplsInterfaceForwardingTable> > ForwardingTable;
+  ForwardingTable m_fTable;
   Ptr<NetDevice> m_device;
-  IlmTable m_ilmTable;
-  FtnTable m_ftnTable;
-
 };
 
 std::ostream& operator<< (std::ostream& os, const MplsInterface &interface);

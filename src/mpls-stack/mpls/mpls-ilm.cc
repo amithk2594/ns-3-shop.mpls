@@ -29,7 +29,7 @@ MplsIlm::MplsIlm ()
 {
 }
 
-MplsIlm::MplsIlm (const MplsLabel &label, const Ptr<MplsInterface> &interface);
+MplsIlm::MplsIlm (const Ptr<MplsInterface> &interface, const MplsLabel &label)
   : m_interface (interface),
     m_label (label)
 {
@@ -40,25 +40,13 @@ MplsIlm::~MplsIlm ()
   m_interface = 0;
 }
 
-void
-MplsIlm::SetLabel (const MplsLabel &label)
-{
-  m_label = label;
-}
-
 const MplsLabel&
 MplsIlm::GetLabel (void) const
 {
   return m_label;
 }
 
-void
-MplsIlm::SetInterface (const Ptr<MplsInterface> &interface)
-{
-  m_interface = interface;
-}
-
-Ptr<MplsInterface>
+const Ptr<MplsInterface>&
 MplsIlm::GetInterface (void) const
 {
   return m_interface;

@@ -22,98 +22,143 @@
 #define MPLS_OPERATIONS_H
 
 #include <ostream>
-#include "mpls-label.h"
-#include "mpls-label-stack.h"
+#include "mpls-generic.h"
 
 namespace ns3 {
+
 namespace mpls {
 namespace op {
-
 /**
  * \ingroup mpls
- * \brief Mpls operation to perform on the packet's label stack.
+ * \brief A MPLS 'label push' operation.
  */
-class MplsOpBase
-{
-public:
-  virtual ~MplsOpBase ();
-  /**
-   * \brief Execute operation on the label stack
-   * \param stack mpls label stack to perform operation
-   * \returns false if operation executing failed
-   */
-  virtual bool Execute (MplsLabelStack &stack) const = 0;
-  /**
-   * \param os the stream to print to
-   */
-  virtual void Print (std::ostream &os) const = 0;
-
-protected:
-  MplsOpBase ();
-};
-
-std::ostream& operator<< (std::ostream& os, const MplsOpBase &op);
-
-/**
- * \ingroup mpls
- * \brief Push operation.
- */
-class Push : public MplsOpBase
+class Push : public MplsOperation
 {
 public:
   /**
-   * \brief Create a push operation.
-   * \param label operation label
+   * \brief Create a label push operation.
+   * \param label MplsLabel
    */
   Push (const MplsLabel &label);
+  /**
+   * \brief Destructor
+   */
   virtual ~Push ();
-  // Functions defined in base class MplsOpBase
+  // Functions defined in base class MplsOperation
   virtual bool Execute (MplsLabelStack &stack) const;
   virtual void Print (std::ostream &os) const;
 
 private:
   MplsLabel m_label;
-}
+};
 
 /**
  * \ingroup mpls
- * \brief Pop operation.
+ * \brief A MPLS 'label pop' operation.
  */
-class Pop : public MplsOpBase
+class Pop : public MplsOperation
 {
 public:
   /**
-   * \brief Create a pop operation.
+   * \brief Create a label pop operation.
    */
   Pop ();
+  /**
+   * \brief Destructor
+   */
   virtual ~Pop ();
-  // Functions defined in base class MplsOpBase
+  // Functions defined in base class MplsOperation
   virtual bool Execute (MplsLabelStack &stack) const;
   virtual void Print (std::ostream &os) const;
-}
+};
 
 /**
  * \ingroup mpls
- * \brief Pop operation.
+ * \brief A MPLS 'label swap' operation.
  */
-class Swap : public MplsOpBase
+class Swap : public MplsOperation
 {
 public:
-  /**
-   * \brief Create a swap operation.
-   * \param label operation label.
+ /**
+   * \brief Create a label swap operation.
+   * \param label MplsLabel
    */
   Swap (const MplsLabel &label);
   virtual ~Swap ();
-  // Functions defined in base class MplsOpBase
+  // Functions defined in base class MplsOperation
   virtual bool Execute (MplsLabelStack &stack) const;
   virtual void Print (std::ostream &os) const;
 
 private:
   MplsLabel m_label;
-}
+};
 
 } // namespace op
+} // namespace mpls
+
+namespace mpls {
+/**
+ * \ingroup mpls
+ * \brief Mpls label forwarding operation vector
+ *
+ * This class is used for creating operation sequence
+ */
+class MplsOp
+{
+public:
+  /**
+   * \brief Create empty operation vector
+   */
+  MplsOp ();
+  /**
+   * \brief Destructor
+   */
+  virtual ~MplsOp ();
+  /**
+   * \brief Add custom label operation.
+   * \param oper MplsOperation
+   * \returns this MplsOp object
+   */
+  MplsOp& AddOp (const op::MplsOperation &oper);
+  /**
+   * \brief Push label operation shortcut
+   * \param label MplsLabel
+   * \returns this MplsOp object
+   */
+  MplsOp& Push (const MplsLabel &label);
+  /**
+   * \brief Pop label operation shortcut
+   * \returns this MplsOp object
+   */
+  MplsOp& Pop ();
+  /**
+   * \brief Swap label operation shortcut
+   * \param label MplsLabel
+   * \returns this MplsOp object
+   */
+  MplsOp& Swap (const MplsLabel &label);
+  /**
+   * \brief Perform operations under the label stack
+   * \param stack mpls label stack to perform operations
+   * \returns false if executing fails
+   */
+  bool Execute (MplsLabelStack &stack) const;
+  /**
+   * \brief Print operation vector
+   * \param os the stream to print to
+   */
+  void Print (std::ostream &os) const;
+
+private:
+  typedef std::vector<op::MplsOpBase> OperationVector;
+  OperationVector m_operations;
+};
+
+/**
+ * \brief output operation for MplsOp
+ */
+std::ostream& operator<< (std::ostream& os, const MplsOp &op);
+
 } // namespace mpls
 } // namespace ns3
 

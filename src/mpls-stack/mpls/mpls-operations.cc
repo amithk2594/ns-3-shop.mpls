@@ -24,15 +24,10 @@ namespace ns3 {
 namespace mpls {
 namespace op {
 
-MplsOpBase::MplsOpBase ()
-{
-}
+////////////////////////////////////////////////////////////////
+// Push class
+////////////////////////////////////////////////////////////////
 
-MplsOpBase::~MplsOpBase ()
-{
-}
-
-/// Push
 Push::Push (const MplsLabel &label)
   : m_label (label)
 {
@@ -57,7 +52,10 @@ Push::Print (std::ostream &os) const
   os << "push " << m_label;
 }
 
-/// Pop
+////////////////////////////////////////////////////////////////
+// Pop class
+////////////////////////////////////////////////////////////////
+
 Pop::Pop ()
 {
 }
@@ -84,7 +82,10 @@ Pop::Print (std::ostream &os) const
   os << "pop";
 }
 
-/// Swap
+////////////////////////////////////////////////////////////////
+// Swap class
+////////////////////////////////////////////////////////////////
+
 Swap::Swap (const MplsLabel &label)
   : m_label (label)
 {
@@ -121,6 +122,66 @@ std::ostream& operator<< (std::ostream& os, const MplsOpBase &op)
   return os;
 }
 
+} // namespace mpls
 } // namespace op
+
+////////////////////////////////////////////////////////////////
+// MplsOp class
+////////////////////////////////////////////////////////////////
+namespace mpls {
+
+MplsOp::MplsOp ()
+{
+}
+
+MplsOp::~MplsOp ()
+{
+}
+
+MplsOp&
+MplsOp::AddOp (const op::MplsOperation &op)
+{
+  m_operations.push_back (op);
+  return this;
+}
+
+MplsOp&
+MplsOp::Push (const MplsLabel &label)
+{
+  m_operations.push_back (op::Push (label));
+  return this;
+}
+
+MplsOp&
+MplsOp::Pop (void)
+{
+  m_operations.push_back (op::Pop ());
+  return this;
+}
+
+MplsOp&
+MplsOp::Swap (const MplsLabel &label)
+{
+  m_operations.push_back (op::Swap (label));
+  return this;
+}
+
+bool
+MplsOp::Execute (MplsLabelStack &stack) const
+{
+  for (OperationVector::const_iterator i = m_operations.begin (); i != m_operations.end (); ++i)
+    {
+      if (!(*i).Execute (stack))
+        {
+          return false;
+        }
+    }
+}
+
+void
+MplsOp::Print (std::ostream &os) const
+{
+}
+
 } // namespace mpls
 } // namespace ns3

@@ -24,15 +24,13 @@ namespace ns3 {
 namespace mpls {
 
 MplsNhlfe::MplsNhlfe ()
-  : m_interface (0),
-    m_lspid (-1)
+  : m_interface (0)
 {
 }
 
-MplsNhlfe::MplsNhlfe (uint16_t lspid, const Ptr<MplsInterface> &interface, const MplsOp& oper);
+MplsNhlfe::MplsNhlfe (const Ptr<MplsInterface> &interface, const MplsOp& op);
   : m_interface (interface),
-    m_lspid (lspid),
-    m_operations (oper)
+    m_operations (op)
 {
 }
 
@@ -65,30 +63,17 @@ MplsNhlfe::SetInterface (const Ptr<MplsInterface> &interface)
   m_interface = interface;
 }
 
-Ptr<MplsInterface>
+const Ptr<MplsInterface>&
 MplsNhlfe::GetInterface (void) const
 {
   return m_interface;
 }
 
 void
-MplsNhlfe::SetLspId (uint16_t lspid)
-{
-  m_lspid = lspid;
-}
-
-uint16_t
-MplsNhlfe::GetLspId (void) const
-{
-  return m_lspid;
-}
-
-void
 MplsNhlfe::Print (std::ostream &os) const
 {
-  os << "lspid: " << (uint32_t)m_lspid << std::endl
+  os << *m_interface
      << "operations: " << m_operations << std::endl
-     << *m_interface
     ;
 }
 
