@@ -34,6 +34,8 @@
 namespace ns3 {
 namespace mpls {
 
+class MplsInterface;
+
 /**
  * \ingroup mpls
  * \brief A representation of the "Next Hop Label Forwarding Entry" (NHLFE)
@@ -96,7 +98,7 @@ private:
 /**
  * \brief output operation for MplsNhlfe
  */
-std::ostream& operator<< (std::ostream& os, const MplsNhlfe &nhlfe);
+std::ostream& operator<< (std::ostream& os, const Ptr<MplsNhlfe> &nhlfe);
 
 } // namespace mpls
 } // namespace ns3

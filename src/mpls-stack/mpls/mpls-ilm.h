@@ -24,12 +24,15 @@
 #include <ostream>
 #include <stdint.h>
 
+#include "mpls-generic.h"
+#include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
-#include "mpls-label.h"
+#include "mpls-fib.h"
 
 namespace ns3 {
 namespace mpls {
 
+class MplsFib;
 /**
  * \ingroup mpls
  * \brief
@@ -46,6 +49,9 @@ public:
    * \param label incoming label
    */
   MplsIlm (const Ptr<MplsInterface> &interface, const MplsLabel &label);
+  /**
+   * \brief Destuctor
+   */
   virtual ~MplsIlm ();
   /**
    * \brief Get incoming label
@@ -53,8 +59,8 @@ public:
    */
   const MplsLabel& GetLabel (void) const;
   /**
-   * \brief Set incoming interface
-   * \param interface
+   * \brief Get incoming interface
+   * \returns interface
    */
   const Ptr<MplsInterface>& GetInterface (void) const;
   /**
@@ -69,6 +75,8 @@ private:
 private:
   Ptr<MplsInterface>  m_interface;
   MplsLabel           m_label;
+
+  friend class MplsFib;
 };
 
 } // namespace mpls

@@ -122,13 +122,11 @@ std::ostream& operator<< (std::ostream& os, const MplsOpBase &op)
   return os;
 }
 
-} // namespace mpls
 } // namespace op
 
 ////////////////////////////////////////////////////////////////
 // MplsOp class
 ////////////////////////////////////////////////////////////////
-namespace mpls {
 
 MplsOp::MplsOp ()
 {

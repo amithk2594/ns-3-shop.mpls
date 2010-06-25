@@ -24,11 +24,15 @@
 #include <ostream>
 #include <stdint.h>
 
+#include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
+#include "mpls-fib.h"
 #include "mpls-fec.h"
 
 namespace ns3 {
 namespace mpls {
+
+class MplsFib;
 
 /**
  * \ingroup mpls
@@ -41,31 +45,27 @@ class MplsFtn : public MplsForwardingInformation
 {
 public:
   /**
-   * \brief construct Ftn with specified FEC
-   * \param fec Fec
+   * \brief Constructor
    */
   MplsFtn (const Ptr<MplsFec> &fec);
+  /**
+   * \brief Destructor
+   */
   virtual ~MplsFtn ();
   /**
-   * \brief set incoming label
-   * \param label
-   */
-  void SetFec (const Ptr<MplsFec> &fec);
-  /**
-   * \brief get incoming label
+   * \brief Get incoming label
    * \returns label
    */
   const Ptr<MplsFec>& GetFec (void) const;
   /**
-   * \brief print ILM
+   * \brief Print ILM
    * \param os the stream to print to
    */
   virtual void Print (std::ostream &os) const;
 
 private:
-  MplsFtn ();
-
   Ptr<MplsFec> m_fec;
+  friend class MplsFib;
 };
 
 } // namespace mpls

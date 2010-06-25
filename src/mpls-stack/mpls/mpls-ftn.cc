@@ -24,11 +24,6 @@
 namespace ns3 {
 namespace mpls {
 
-MplsFtn::MplsFtn ()
-  : m_fec (0)
-{
-}
-
 MplsFtn::MplsFtn (const Ptr<MplsFec> &fec);
   : m_fec (fec)
 {

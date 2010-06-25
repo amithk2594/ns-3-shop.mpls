@@ -25,7 +25,6 @@ namespace ns3 {
 namespace mpls {
 
 MplsIlm::MplsIlm ()
-  : m_interface (0)
 {
 }
 

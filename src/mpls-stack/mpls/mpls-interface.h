@@ -25,50 +25,122 @@
 #include <list>
 #include <stdint.h>
 
+#include "ns3/object.h"
+#include "ns3/net-device.h"
+
+#include "mpls-generic.h"
+#include "mpls-fib.h"
+#include "mpls-nhlfe.h"
+#include "mpls-ilm.h"
+#include "mpls-fec.h"
+
 namespace ns3 {
 namespace mpls {
 
+class MplsFib;
+
 /**
- * \brief Mpls interface
+ * \ingroup mpls
+ * \brief
+ * Mpls interface
  */
-class MplsInterface : public SimpleRefCount<MplsInterface>
+class MplsInterface : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   /**
    * \brief Create mpls interface
    */
-  MplsInterface (const Ptr<NetDevice> &device);
-  virtual ~MplsInterface ();
+  MplsInterface ();
   /**
-   * \brief Add label
+   * \brief Destructor
+   */
+  virtual ~MplsInterface ();
+
+  void SetDevice (const Ptr<NetDevice> &device);
+  void SetNode (const Ptr<Node> &node);
+
+  /**
+   * \brief Set strict mode
+   * \param strict
+   */
+  void SetStrict (bool strict);
+  /**
+   * \brief Get device associated with interface
+   */
+  Ptr<NetDevice> GetDevice (void) const;
+  /**
+   * \brief Add ILM
+   * \param label
+   * \param nhlfe
    */
   void AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe);
   /**
-   * \brief Add FEC
+   * \brief Get ILM
+   * \param label
+   * \returns ILM associated with label
    */
-  void AddFec (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
+  Ptr<MplsIlm> GetIlm (const MplsLabel &label) const;
   /**
-   * \brief Remove Ilm
+   * \brief Remove ILM
    * \param label
    */
   void RemoveIlm (const MplsLabel &label);
   /**
-   *
+   * \brief Remove ILM
+   * \param ilm
    */
-
+  void RemoveIlm (const Ptr<MplsIlm> &ilm);
   /**
-   * \brief print interface information
+   * \brief Add FTN
+   * \param fec
+   * \param nhlfe
+   */
+  void AddFtn (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
+  /**
+   * \brief Get FTN
+   * \param fec
+   * \returns FTN associated with FEC
+   */
+  Ptr<MplsFtn> GetFtn (const Ptr<MplsFec> &fec) const;
+  /**
+   * \brief Remove FTN
+   * \param fec
+   */
+  void RemoveFtn (const Ptr<MplsFec> &fec);
+  /**
+   * \brief Remove FTN
+   * \param ftn FTN to remove
+   */
+  void RemoveFtn (const Ptr<MplsFtn> &ftn);
+  /**
+   * \brief Remove NHLFE
+   * \param nhlfe NHLFE to remove
+   */
+  void RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
+  /**
+   * \brief Get device associated with interface
+   */
+  const Ptr<MplsFib>& GetForwardingTable (void) const;
+  /**
+   * \brief Print interface information
    * \param os the stream to print to
    */
   void Print (std::ostream &os) const;
 
+protected:
+  virtual void DoDispose (void);
+
 private:
-  typedef std::list<Ptr<MplsInterfaceForwardingTable> > ForwardingTable;
-  ForwardingTable m_fTable;
+  void DoSetup (void);
+
+  Ptr<Node> m_node;
   Ptr<NetDevice> m_device;
+  Ptr<MplsFib> m_fib;
+  bool m_strict;
 };
 
-std::ostream& operator<< (std::ostream& os, const MplsInterface &interface);
+std::ostream& operator<< (std::ostream& os, const Ptr<MplsInterface> &interface);
 
 } // namespace mpls
 } // namespace ns3

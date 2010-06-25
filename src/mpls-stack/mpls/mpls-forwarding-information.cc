@@ -41,37 +41,25 @@ MplsForwardingInformation::AddNhlfe (const Ptr<MplsNhlfe> &nhlfe)
   m_nhlfeList.push_back (nhlfe);
 }
 
-void
+bool
 MplsForwardingInformation::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
-{
-  m_nhlfeList.remove (nhlfe);
-}
-
-void
-MplsForwardingInformation::RemoveNhlfe (uint16_t lspid)
 {
   for (NhlfeList::iterator i = m_nhlfeList.begin (); i != m_nhlfeList.end (); ++i)
     {
-      if ((*i)->GetLspId() == lspid)
+      if ((*i) == nhlfe)
         {
           m_nhlfeList.erase (i);
-          break;
+          return true;
         }
     }
+
+  return false;
 }
 
-const Ptr<MplsNhlfe>&
-MplsForwardingInformation::GetNhlfe (uint16_t lspid)
+uint32_t
+MplsForwardingInformation::GetNNhlfe (void) const
 {
-  for (NhlfeList::const_iterator i = m_nhlfeList.begin (); i != m_nhlfeList.end (); ++i)
-    {
-      if ((*i)->GetLspId() == lspid)
-        {
-          return &(*i);
-        }
-    }
-
-  return 0;
+  return m_nhlfeList.size ();
 }
 
 std::ostream& operator<< (std::ostream& os, const MplsForwardingInformation &info)

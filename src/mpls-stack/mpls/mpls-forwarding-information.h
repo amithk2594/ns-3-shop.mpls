@@ -51,8 +51,14 @@ public:
   /**
    * \brief Remove the specific NHLFE from the list
    * \param nhlfe MplsNhlfe
+   * \returns true if NHLFE removed
    */
-  void RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
+  bool RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
+  /**
+   * \brief Get NHLFE's count
+   * \returns count of NHLFE
+   */
+  uint32_t GetNNhlfe (void) const;
   /**
    * \brief Print NHLFE
    * \param os the stream to print to
@@ -62,7 +68,7 @@ public:
 protected:
   MplsForwardingInformation ();
 
-private:
+protected:
   typedef std::list<Ptr<MplsNhlfe> > NhlfeList;
   NhlfeList m_nhlfeList;
 };

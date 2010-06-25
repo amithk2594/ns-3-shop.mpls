@@ -3,30 +3,31 @@
 def build(bld):
     module = bld.create_ns3_module('mpls', ['node'])
     module.source = [
-        'mpls-routing-protocol.cc',
-        'ipv4-to-mpls-routing.cc',
-        'ipv6-to-mpls-routing.cc',
-        'mpls-label-stack.cc',
-        'mpls-lib-entry.cc',
-        'forwarding-equivalence-class.cc',
-        'ipv4-address-prefix.cc',
-        'ipv4-host-address.cc',
-        'ip-to-mpls-routing-helper.cc',
-        'label-information-base-helper.cc',
-        'mpls-stack-helper.cc',
+        #'mpls-routing-protocol.cc',
+        #'ipv4-to-mpls-routing.cc',
+        #'ipv6-to-mpls-routing.cc',
+        #'mpls-label-stack.cc',
+        #'mpls-lib-entry.cc',
+        #'forwarding-equivalence-class.cc',
+        #'ipv4-address-prefix.cc',
+        #'ipv4-host-address.cc',
+        #'ip-to-mpls-routing-helper.cc',
+        #'label-information-base-helper.cc',
+        #'mpls-stack-helper.cc',
     ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mpls'
     headers.source = [
-        'mpls-routing-protocol.h',
-        'ipv4-to-mpls-routing.h',
-        'ipv6-to-mpls-routing.h',
-        'mpls-label-stack.h',
-        'mpls-lib-entry.h',
-        'forwarding-equivalence-class.h',
-        'ipv4-address-prefix.h',
-        'ipv4-host-address.h',
-        'ip-to-mpls-routing-helper.h',
-        'label-information-base-helper.h',
-        'mpls-stack-helper.h',
+        'mpls-fec.h'
+        #'mpls-routing-protocol.h',
+        #'ipv4-to-mpls-routing.h',
+        #'ipv6-to-mpls-routing.h',
+        #'mpls-label-stack.h',
+        #'mpls-lib-entry.h',
+        #'forwarding-equivalence-class.h',
+        #'ipv4-address-prefix.h',
+        #'ipv4-host-address.h',
+        #'ip-to-mpls-routing-helper.h',
+        #'label-information-base-helper.h',
+        #'mpls-stack-helper.h',
     ]

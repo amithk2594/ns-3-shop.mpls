@@ -23,6 +23,7 @@
 
 #include <ostream>
 #include "mpls-generic.h"
+#include "mpls-label-stack.h"
 
 namespace ns3 {
 
@@ -44,6 +45,7 @@ public:
    * \brief Destructor
    */
   virtual ~Push ();
+
   // Functions defined in base class MplsOperation
   virtual bool Execute (MplsLabelStack &stack) const;
   virtual void Print (std::ostream &os) const;
@@ -67,6 +69,7 @@ public:
    * \brief Destructor
    */
   virtual ~Pop ();
+
   // Functions defined in base class MplsOperation
   virtual bool Execute (MplsLabelStack &stack) const;
   virtual void Print (std::ostream &os) const;
@@ -84,7 +87,11 @@ public:
    * \param label MplsLabel
    */
   Swap (const MplsLabel &label);
+  /**
+   * \brief Destructor
+   */
   virtual ~Swap ();
+
   // Functions defined in base class MplsOperation
   virtual bool Execute (MplsLabelStack &stack) const;
   virtual void Print (std::ostream &os) const;
@@ -94,9 +101,7 @@ private:
 };
 
 } // namespace op
-} // namespace mpls
 
-namespace mpls {
 /**
  * \ingroup mpls
  * \brief Mpls label forwarding operation vector
@@ -150,7 +155,7 @@ public:
   void Print (std::ostream &os) const;
 
 private:
-  typedef std::vector<op::MplsOpBase> OperationVector;
+  typedef std::vector<MplsOperation> OperationVector;
   OperationVector m_operations;
 };
 

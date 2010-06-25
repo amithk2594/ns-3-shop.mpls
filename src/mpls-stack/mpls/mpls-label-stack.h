@@ -26,7 +26,7 @@
 #include <stdint.h>
 
 #include "ns3/header.h"
-#include "mpls-label.h"
+#include "mpls-generic.h"
 
 namespace ns3 {
 namespace mpls {
@@ -45,22 +45,24 @@ class MplsLabelStack;
  *
  * For more infomation see RFC 3032 (http://www.ietf.org/rfc/rfc3032.txt)
  */
-class MplsLabelEntry
+class MplsStackEntry
 {
 public:
   /**
    * \brief Create an empty entry
    */
-  MplsLabelEntry ();
+  MplsStackEntry ();
   /**
    * \brief Create an entry with label
    */
-  MplsLabelEntry (const MplsLabel &label);
-
-  virtual ~MplsLabelEntry ();
+  MplsStackEntry (const MplsLabel &label);
   /**
-   * \brief set the actual value of the Label
-   * \param label label to set
+   * \brief Destructor
+   */
+  virtual ~MplsStackEntry ();
+  /**
+   * \brief Set the actual value of the Label
+   * \param label
    */
   void SetLabel (const MplsLabel &label);
   /**
@@ -68,15 +70,16 @@ public:
    */
   const MplsLabel& GetLabel (void) const;
   /**
-   * \brief set three-bit exp field value
+   * \brief Set three-bit exp field value
+   * \param exp
    */
   void SetExp (uint8_t exp);
   /**
-   * \returns value of exp field
+   * \returns Value of the exp field
    */
   uint8_t GetExp (void) const;
   /**
-   * \brief set time-to-live value
+   * \brief Set time-to-live value
    * \param ttl eight-bit time-to-live value
    */
   void SetTtl (uint8_t ttl);
@@ -85,7 +88,7 @@ public:
    */
   uint8_t GetTtl (void) const;
   /**
-   * \returns true if this entry is last entry in the label stack
+   * \returns True if this entry is the last entry in the label stack
    */
   bool IsBos (void) const;
   /**
@@ -107,7 +110,7 @@ private:
   friend class MplsLabelStack;
 };
 
-std::ostream& operator<< (std::ostream& os, const MplsLabelEntry &entry);
+std::ostream& operator<< (std::ostream& os, const MplsStackEntry &entry);
 
 /**
  * \ingroup mpls
@@ -119,13 +122,17 @@ std::ostream& operator<< (std::ostream& os, const MplsLabelEntry &entry);
 class MplsLabelStack : public Header
 {
 public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+
   /**
    * \brief Create an empty stack.
    */
   MplsLabelStack ();
+  /**
+   * \brief Destructor
+   */
   virtual ~MplsLabelStack ();
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
   /**
    * \brief pop last entry
    */
@@ -134,19 +141,20 @@ public:
    * \brief push entry to the stack
    * \param entry
    */
-  void Push (const MplsLabelEntry &entry);
+  void Push (const MplsStackEntry &entry);
   /**
    * \returns top entry of the stack
    */
-  MplsLabelEntry& GetTop (void);
+  MplsStackEntry& GetTop (void);
   /**
    * \returns top entry of the stack
    */
-  const MplsLabelEntry& GetTop (void) const;
+  const MplsStackEntry& GetTop (void) const;
   /**
    * \returns true if stack is empty
    */
   bool IsEmpty (void) const;
+
   // Functions defined in base class Header
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
@@ -154,8 +162,8 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  typedef std::vector<MplsLabelEntry> MplsLabelEntryVector;
-  MplsLabelEntryVector m_entries;
+  typedef std::vector<MplsStackEntry> MplsStackEntryVector;
+  MplsStackEntryVector m_entries;
 };
 
 } // namespace mpls

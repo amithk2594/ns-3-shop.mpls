@@ -18,147 +18,132 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#include <iomanip>
-
-//#include "ns3/assert.h"
-
 #include "mpls-fib.h"
 
 namespace ns3 {
 namespace mpls {
 
-const int32_t MplsLabel::IPV4_EXPLICIT_NULL = 0;
-const int32_t MplsLabel::ROUTE_ALERT = 1;
-const int32_t MplsLabel::IPV6_EXPLICIT_NULL = 2;
-const int32_t MplsLabel::IMPLICIT_NULL = 3;
-const int32_t MplsLabel::RESERVED_LABEL = 4;
-const int32_t MplsLabel::MIN_LABEL = 0x10;
-const int32_t MplsLabel::MAX_LABEL = 0xfffff;
-
-MplsLabel::MplsLabel ()
-  : m_label (-1)
+MplsFib::MplsFib ()
 {
 }
 
-MplsLabel::MplsLabel (int32_t label)
+MplsFib::~MplsFib ()
 {
-  m_label = label;
-}
-
-bool
-MplsLabel::IsValid (void) const
-{
-  if (m_label < 0 || m_label > MAX_LABEL)
-    {
-      return false;
-    }
-
-  // reserved labels
-  if (m_label >= RESERVED_LABEL && m_label < MIN_LABEL)
-    {
-      return false;
-    }
-
-  return true;
-}
-
-bool
-MplsLabel::IsIpv4ExplicitNull (void) const
-{
-  return m_label == IPV4_EXPLICIT_NULL;
-}
-
-bool
-MplsLabel::IsRouteAlert (void) const
-{
-  return m_label == ROUTE_ALERT;
-}
-
-bool
-MplsLabel::IsIpv6ExplicitNull (void) const
-{
-  return m_label == IPV6_EXPLICIT_NULL;
-}
-
-bool
-MplsLabel::IsImplicitNull (void) const
-{
-  return m_label == IMPLICIT_NULL;
-}
-
-MplsLabel
-MplsLabel::GetIpv4ExplicitNull (void)
-{
-  return MplsLabel (IPV4_EXPLICIT_NULL);
-}
-
-MplsLabel
-MplsLabel::GetRouteAlert (void)
-{
-  return MplsLabel (ROUTE_ALERT);
-}
-
-MplsLabel
-MplsLabel::GetIpv6ExplicitNull (void)
-{
-  return MplsLabel (IPV6_EXPLICIT_NULL);
-}
-
-bool
-MplsLabel::operator== (const MplsLabel &label)
-{
-  return m_label == label.m_label;
-}
-
-bool
-MplsLabel::operator!= (const MplsLabel &label)
-{
-  return m_label != label.m_label;
-}
-
-MplsLabel
-MplsLabel::GetImplicitNull (void)
-{
-  return MplsLabel (IMPLICIT_NULL);
 }
 
 void
-MplsLabel::Print (std::ostream &os) const
+MplsFib::AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe)
 {
-  switch (m_label)
-  {
-  case IPV4_EXPLICIT_NULL:
-    os << "Ipv4ExplicitNull";
-    break;
-
-  case IPV6_EXPLICIT_NULL:
-    os << "Ipv6ExplicitNull";
-    break;
-
-  case ROUTE_ALERT:
-    os << "RouteAlert";
-    break;
-
-  case IMPLICIT_NULL:
-    os << "ImplicitNull";
-    break;
-
-  default:
-    if (IsValid ())
-      {
-        os << m_label;
-      }
-    else
-      {
-        os << "Invalid";
-      }
-  }
+  Ptr<MplsIlm> ilm = GetIlm (label);
+  if (ilm == 0)
+    {
+      ilm = Create<MplsIlm> (label);
+      m_ilmTable.push_back (ilm);
+    }
+  ilm->AddNhlfe (nhlfe);
 }
 
-std::ostream& operator<< (std::ostream& os, const MplsLabel &label)
+Ptr<MplsIlm>
+MplsFib::GetIlm (const MplsLabel &label) const
 {
-  label.Print (os);
-  return os;
+  for (IlmTable::const_iterator i = m_ilmTable.begin (); i != m_ilmTable.end ())
+    {
+      if ((*i)->m_label == label)
+        {
+          return *i;
+        }
+    }
+  return 0;
+}
+
+void
+MplsFib::RemoveIlm (const MplsLabel &label)
+{
+  for (IlmTable::iterator i = m_ilmTable.begin (); i != m_ilmTable.end ())
+    {
+      if ((*i)->m_label == label)
+        {
+          m_ilmTable.erase (i);
+          break;
+        }
+    }
+}
+
+void
+MplsFib::RemoveIlm (const Ptr<MplsIlm> &ilm)
+{
+  m_ilmTable.remove (ilm);
+}
+
+void
+MplsFib::AddFtn (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe)
+{
+  Ptr<MplsFtn> ftn = GetFtn (fec);
+  if (ftn == 0)
+    {
+      ftn = Create<MplsFtn> (fec);
+      m_ftnTable.push_back (ftn);
+    }
+
+  ftn->AddNhlfe (nhlfe);
+}
+
+Ptr<MplsFtn>
+MplsFib::GetFtn (const Ptr<MplsFec> &fec) const
+{
+  for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
+    {
+      if ((*i)->m_fec == fec)
+        {
+          return *i;
+        }
+    }
+  return 0;
+}
+
+void
+MplsFib::RemoveFtn (const Ptr<MplsFec> &fec)
+{
+  for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
+    {
+      if ((*i)->m_fec == fec)
+        {
+           m_ftnTable.erase (i);
+           break;
+        }
+    }
+}
+
+void
+MplsFib::RemoveFtn (const Ptr<MplsFtn> &ftn)
+{
+  m_ftnTable.remove (ftn);
+}
+
+void
+MplsFib::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
+{
+  for (IlmTable::iterator i = m_ilmTable.begin (); i != m_ilmTable.end ())
+    {
+      if ((*i)->RemoveNhlfe (nhlfe))
+        {
+          if ((*i)->GetNNhlfe () == 0)
+            {
+              m_ilmTable.erase (i);
+            }
+          break;
+        }
+    }
+}
+
+void
+MplsFib::Print (std::ostream &os) const
+{
+}
+
+std::ostream& operator<< (std::ostream& os, const Ptr<MplsFib> &fib)
+{
+  fib->Print (os);
 }
 
 } // namespace mpls

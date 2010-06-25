@@ -25,25 +25,95 @@
 #include <list>
 #include <stdint.h>
 
+#include "ns3/simple-ref-count.h"
+
+#include "mpls-generic.h"
+#include "mpls-interface.h"
+
 namespace ns3 {
 namespace mpls {
 
+class MplsInterface;
 /**
- * \brief Mpls Forwarding Information Base (Label Information base)
+ * \ingroup mpls
+ * \brief
+ * MplsFib represent per interface FIB
  */
-class MplsFib : public SimpleRefCount<MplsFib>
+class MplsFib: public SimpleRefCount<MplsFib>
 {
 public:
+  /**
+   * \brief Create empty forwarding base
+   */
   MplsFib ();
+  /**
+   * \brief Destructor
+   */
   virtual ~MplsFib ();
-  void AddIlm ();
-  void GetIlm ();
-  void AddFec ();
-  void GetFec ();
+  /**
+   * \brief Add ILM
+   * \param label
+   * \param nhlfe
+   */
+  void AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe);
+  /**
+   * \brief Get ILM
+   * \param label
+   * \returns ILM associated with label
+   */
+  Ptr<MplsIlm> GetIlm (const MplsLabel &label) const;
+  /**
+   * \brief Remove ILM
+   * \param label
+   */
+  void RemoveIlm (const MplsLabel &label);
+  /**
+   * \brief Remove ILM
+   * \param ilm
+   */
+  void RemoveIlm (const Ptr<MplsIlm> &ilm);
+  /**
+   * \brief Add FTN
+   * \param fec
+   * \param nhlfe
+   */
+  void AddFtn (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
+  /**
+   * \brief Get FTN
+   * \param fec
+   * \returns FTN associated with FEC
+   */
+  Ptr<MplsFtn> GetFtn (const Ptr<MplsFec> &fec) const;
+  /**
+   * \brief Remove FTN
+   * \param fec
+   */
+  void RemoveFtn (const Ptr<MplsFec> &fec);
+  /**
+   * \brief Remove FTN
+   * \param ftn FTN to remove
+   */
+  void RemoveFtn (const Ptr<MplsFtn> &ftn);
+  /**
+   * \brief Remove NHLFE
+   * \param nhlfe NHLFE to remove
+   */
+  void RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
+  /**
+   * \brief Print forwarding information
+   * \param os the stream to print to
+   */
+  void Print (std::ostream &os) const;
 
 private:
-  typedef std::list<>
-};
+  typedef std::list<Ptr<MplsFtn> > FtnTable;
+  typedef std::list<Ptr<MplsIlm> > IlmTable;
+
+  FtnTable m_ftnTable;
+  IlmTable m_ilmTable;
+}
+
+std::ostream& operator<< (std::ostream& os, const Ptr<MplsFib> &fib);
 
 } // namespace mpls
 } // namespace ns3

@@ -57,7 +57,7 @@ Ipv4ToMplsRouting::DoDispose (void)
 {
   m_ipv4 = 0;
   m_mpls = 0;
-  m_routingProtocol = 0;
+  m_routing = 0;
   Ipv4RoutingProtocol::DoDispose ();
 }
 
@@ -66,10 +66,10 @@ Ipv4ToMplsRouting::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<Net
 {
   NS_LOG_FUNCTION (this << &oif << p << header);
 
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Ipv4ToMplsRouting::RouteOutput ():"
+  NS_ASSERT_MSG (m_routing != 0, "Ipv4ToMplsRouting::RouteOutput ():"
                  "Need a Ipv4 routing protocol to process packets");
 
-  return m_routingProtocol->RouteOutput (p, header, oif, sockerr);
+  return m_routing->RouteOutput (p, header, oif, sockerr);
 }
 
 bool
@@ -86,9 +86,9 @@ Ipv4ToMplsRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Pt
   switch (result)
     {
     case MplsRoutingProtocol::ERROR_IPROUTING:
-      NS_ASSERT_MSG (m_routingProtocol != 0, "Ipv4ToMplsRouting::RouteInput ():"
+      NS_ASSERT_MSG (m_routing != 0, "Ipv4ToMplsRouting::RouteInput ():"
                      "Need a Ipv4 routing protocol to process packets");
-      return m_routingProtocol->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
+      return m_routing->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
 
     case MplsRoutingProtocol::ERROR_NOROUTE:
     case MplsRoutingProtocol::ERROR_NOTERROR:
@@ -121,47 +121,47 @@ Ipv4ToMplsRouting::SetMpls (Ptr<MplsRoutingProtocol> mpls)
 void
 Ipv4ToMplsRouting::NotifyInterfaceUp (uint32_t interface)
 {
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
+  NS_ASSERT_MSG (m_routing != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
                  "Need a Ipv4 routing protocol to process InterfaceUp notification");
-  m_routingProtocol->NotifyInterfaceUp (interface);
+  m_routing->NotifyInterfaceUp (interface);
 }
 
 void
 Ipv4ToMplsRouting::NotifyInterfaceDown (uint32_t interface)
 {
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
+  NS_ASSERT_MSG (m_routing != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
                  "Need a Ipv4 routing protocol to process InterfaceDown notification");
-  m_routingProtocol->NotifyInterfaceDown (interface);
+  m_routing->NotifyInterfaceDown (interface);
 }
 
 void
 Ipv4ToMplsRouting::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
+  NS_ASSERT_MSG (m_routing != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
                  "Need a Ipv4 routing protocol to process AddAddress notification");
-  m_routingProtocol->NotifyAddAddress (interface, address);
+  m_routing->NotifyAddAddress (interface, address);
 }
 
 void
 Ipv4ToMplsRouting::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
+  NS_ASSERT_MSG (m_routing != 0, "Ipv4ToMplsRouting::NotifyInterfaceUp (): "
                  "Need a Ipv4 routing protocol to process RemoveAddress notification");
-  m_routingProtocol->NotifyRemoveAddress (interface, address);
+  m_routing->NotifyRemoveAddress (interface, address);
 }
 
 void
 Ipv4ToMplsRouting::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
   NS_LOG_FUNCTION (this << routingProtocol);
-  m_routingProtocol = routingProtocol;
-  m_routingProtocol->SetIpv4 (m_ipv4);
+  m_routing = routingProtocol;
+  m_routing->SetIpv4 (m_ipv4);
 }
 
 Ptr<Ipv4RoutingProtocol>
 Ipv4ToMplsRouting::GetRoutingProtocol (void) const
 {
-  return m_routingProtocol;
+  return m_routing;
 }
 
 } // namespace mpls

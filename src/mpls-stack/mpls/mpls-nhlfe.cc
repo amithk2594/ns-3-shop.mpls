@@ -72,14 +72,14 @@ MplsNhlfe::GetInterface (void) const
 void
 MplsNhlfe::Print (std::ostream &os) const
 {
-  os << *m_interface
+  os << m_interface
      << "operations: " << m_operations << std::endl
     ;
 }
 
-std::ostream& operator<< (std::ostream& os, const MplsNhlfe &nhlfe)
+std::ostream& operator<< (std::ostream& os, const Ptr<MplsNhlfe> &nhlfe)
 {
-  nhlfe.Print (os);
+  nhlfe->Print (os);
   return os;
 }
 
