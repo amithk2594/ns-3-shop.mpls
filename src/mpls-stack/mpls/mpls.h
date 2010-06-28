@@ -49,14 +49,24 @@ class Mpls : public Object
 {
 public:
   /**
-   * \enum ForwardingStatus
-   * \brief forwarding status
+   * \enum ForwardingType
+   * \brief forwarding type
    */
   enum ForwardingType
   {
     MPLS_FORWARDING,
     IP_FORWARDING,
     NO_ROUTE
+  };
+
+  /**
+   * \enum LabelSpace
+   * \brief label space
+   */
+  enum LabelSpace
+  {
+    PER_INTERFACE_LABEL_SPACE = 0,
+    PER_PLATFORM_LABEL_SPACE
   };
 
   static TypeId GetTypeId (void);
@@ -117,6 +127,9 @@ public:
    */
   uint32_t GetNInterfaces (void) const;
 
+  void SetPerInterfaceLabelSpace (bool );
+  void IsPerInterfaceLabelSpace
+
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
@@ -134,6 +147,7 @@ private:
 private:
   typedef std::vector<Ptr<MplsInterface> > MplsInterfaceVector;
 
+  LabelSpace m_labelSpace
   Ptr<Node> m_node;
   MplsInterfaceVector m_interfaces;
 

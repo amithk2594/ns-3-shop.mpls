@@ -203,7 +203,7 @@ Mpls::RouteInput (const Ptr<const Packet> &p, const Ipv4Header &header, const Pt
     }
 
   Ptr<MplsFib> fib;
-  if (m_preInterfaceLabelSpace)
+  if (m_labelSpace == PER_INTERFACE_LABEL_SPACE)
     {
       fib = interface->GetForwardingTable ();
     }
