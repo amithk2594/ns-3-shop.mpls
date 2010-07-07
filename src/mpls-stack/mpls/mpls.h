@@ -54,19 +54,9 @@ public:
    */
   enum ForwardingType
   {
-    MPLS_FORWARDING,
-    IP_FORWARDING,
-    NO_ROUTE
-  };
-
-  /**
-   * \enum LabelSpace
-   * \brief label space
-   */
-  enum LabelSpace
-  {
-    PER_INTERFACE_LABEL_SPACE = 0,
-    PER_PLATFORM_LABEL_SPACE
+    MPLS_FORWARD,
+    IP_FORWARD,
+    DROP_PACKET
   };
 
   static TypeId GetTypeId (void);
@@ -126,9 +116,10 @@ public:
    * \brief Get count of mpls interfaces
    */
   uint32_t GetNInterfaces (void) const;
-
-  void SetPerInterfaceLabelSpace (bool );
-  void IsPerInterfaceLabelSpace
+  /**
+   * \brief Get global forwarding information base instance
+   */
+  const Ptr<MplsFib>& GetFib (void) const;
 
 protected:
   virtual void DoDispose (void);
@@ -147,7 +138,6 @@ private:
 private:
   typedef std::vector<Ptr<MplsInterface> > MplsInterfaceVector;
 
-  LabelSpace m_labelSpace
   Ptr<Node> m_node;
   MplsInterfaceVector m_interfaces;
 

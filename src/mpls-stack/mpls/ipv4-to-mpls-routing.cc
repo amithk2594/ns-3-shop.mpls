@@ -81,21 +81,22 @@ Ipv4ToMplsRouting::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Pt
   NS_ASSERT_MSG (m_mpls, "Ipv4ToMplsRouting::RouteInput ():"
                  "Need a MplsRoutingProtocol object to process packets");
 
-  MplsRoutingProtocol::MplsRoutingErrno result = m_mpls->RouteInput (p, header, idev);
+  Mpls::ForwardingStatus status = m_mpls->RouteInput (p, header, idev);
 
-  switch (result)
-    {
-    case MplsRoutingProtocol::ERROR_IPROUTING:
+  switch (status)
+  {
+    case Mpls::IP_FORWARD:
       NS_ASSERT_MSG (m_routing != 0, "Ipv4ToMplsRouting::RouteInput ():"
                      "Need a Ipv4 routing protocol to process packets");
       return m_routing->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
 
-    case MplsRoutingProtocol::ERROR_NOROUTE:
-    case MplsRoutingProtocol::ERROR_NOTERROR:
-      // silently drop package if not sended
+    case Mpls::DROP_PACKET:
       // ecb (p, header, Socket::ERROR_NOROUTETOHOST);
       break;
-    }
+
+    case Mpls::MPLS_FORWARDED:
+      break;
+  }
 
   return true;
 }

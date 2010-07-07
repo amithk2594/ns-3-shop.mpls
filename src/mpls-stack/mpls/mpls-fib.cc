@@ -120,6 +120,34 @@ MplsFib::RemoveFtn (const Ptr<MplsFtn> &ftn)
   m_ftnTable.remove (ftn);
 }
 
+Ptr<MplsNhlfe>
+MplsFib::GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const
+{
+  for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
+    {
+      if ((*i)->m_fec->IsMatch (packet, header))
+        {
+          return (*i)->GetNhlfe (0);
+        }
+    }
+
+  return 0;
+}
+
+Ptr<MplsNhlfe>
+MplsFib::GetNhfle (const Ptr<const Packet> &packet, const Ipv6Header &header) const
+{
+  for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
+    {
+      if ((*i)->m_fec->IsMatch (packet, header))
+        {
+          return (*i)->GetNhlfe (0);
+        }
+    }
+
+  return 0;
+}
+
 void
 MplsFib::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
 {

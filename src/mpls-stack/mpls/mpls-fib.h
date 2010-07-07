@@ -61,7 +61,7 @@ public:
    * \param label
    * \returns ILM associated with label
    */
-  Ptr<MplsIlm> GetIlm (const MplsLabel &label) const;
+  Ptr<MplsIlm>& GetIlm (const MplsLabel &label) const;
   /**
    * \brief Remove ILM
    * \param label
@@ -95,6 +95,20 @@ public:
    */
   void RemoveFtn (const Ptr<MplsFtn> &ftn);
   /**
+   * \brief Get NHLFE for specified Ipv4 packet
+   * \param packet Ipv4 packet
+   * \param header Ipv4 header
+   * \returns NHLFE
+   */
+  Ptr<MplsNhlfe> GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const;
+  /**
+   * \brief Get NHLFE for specified Ipv4 packet
+   * \param packet Ipv6 packet
+   * \param header Ipv6 header
+   * \returns NHLFE
+   */
+  Ptr<MplsNhlfe> GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const;
+  /**
    * \brief Remove NHLFE
    * \param nhlfe NHLFE to remove
    */
@@ -106,11 +120,11 @@ public:
   void Print (std::ostream &os) const;
 
 private:
-  typedef std::list<Ptr<MplsFtn> > FtnTable;
-  typedef std::list<Ptr<MplsIlm> > IlmTable;
+  typedef std::list<Ptr<MplsFtn> > FtnList;
+  typedef std::list<Ptr<MplsIlm> > IlmList;
 
-  FtnTable m_ftnTable;
-  IlmTable m_ilmTable;
+  FtnList m_ftnTable;
+  IlmList m_ilmTable;
 }
 
 std::ostream& operator<< (std::ostream& os, const Ptr<MplsFib> &fib);

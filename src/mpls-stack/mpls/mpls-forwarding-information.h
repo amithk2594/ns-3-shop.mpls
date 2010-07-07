@@ -49,6 +49,12 @@ public:
    */
   void AddNhlfe (const Ptr<MplsNhlfe> &nhlfe);
   /**
+   * \brief Get NHLFE by index
+   * \param index
+   * \returns NHLFE
+   */
+  const Ptr<MplsNhlfe>& GetNhlfe (uint32_t index);
+  /**
    * \brief Remove the specific NHLFE from the list
    * \param nhlfe MplsNhlfe
    * \returns true if NHLFE removed
