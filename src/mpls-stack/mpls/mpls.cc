@@ -169,11 +169,7 @@ Mpls::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, co
   MplsLabelStack stack;
   packet->RemoveHeader (stack);
 
-  Ptr<MplsLabelStackEntry> entry = stack.GetTopEntry ();
-
-  NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::Mpls::Receive (): top label " << entry->GetLabel ());
-
-  uint8_t ttl = entry->GetTtl ();
+  uint8_t ttl = stack.GetTop ().GetTtl ();
   if (ttl <= 1)
     {
       /* TTL exceeded */
@@ -182,13 +178,20 @@ Mpls::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, co
       return;
     }
 
-  entry->SetTtl (--ttl);
-
-  Ptr<NetDevice> outDev = RouteMpls (packet, stack, device->GetIfIndex ());
-  if (outDev == 0)
+  MplsLabelStack stack;
+  if (!nhlfe->GetOp ().execute (stack))
     {
-      return;
+      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::Mpls::RouteInput (): "
+                    "dropping received packet -- invalid label operation");
+      return DROP_PACKET;
     }
+
+  stack.GetTop ().SetTtl (--ttl);
+//  Ptr<NetDevice> outDev = RouteMpls (packet, stack, device->GetIfIndex ());
+//  if (outDev == 0)
+//    {
+//      return;
+//    }
 
   MplsForward (packet, stack, 0, outDev);
 }
@@ -238,16 +241,22 @@ Mpls::RouteInput (const Ptr<const Packet> &p, const Ipv4Header &header, const Pt
     }
 
   MplsLabelStack stack;
-  if (!nhlfe->GetOp ().execute (stack))
+  Ptr<MplsInterface> interface = RouteMpls (nhlfe, p, stack);
+  if (interface != 0)
     {
-      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::Mpls::RouteInput (): "
-                    "dropping received packet -- invalid label operation");
-      return DROP_PACKET;
+      interface->Send (p, stack, header);
     }
 
-  RouteMpls (
+//  if (!nhlfe->GetOp ().execute (stack))
+//    {
+//      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::Mpls::RouteInput (): "
+//                    "dropping received packet -- invalid label operation");
+//      return DROP_PACKET;
+//    }
 
-  nhlfe->GetInterface ()->Send (p, header, stack);
+//  RouteMpls (
+
+//  nhlfe->GetInterface ()->Send (p, header, stack);
 
   return MPLS_FORWARDED;
 }
@@ -255,80 +264,22 @@ Mpls::RouteInput (const Ptr<const Packet> &p, const Ipv4Header &header, const Pt
 enum Mpls::ForwardingStatus
 Mpls::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev) const
 {
-  NS_LOG_FUNCTION (this << &idev << p << header);
-
-  Ptr<MplsInterface> interface = GetInterfaceForDevice (idev);
-
-  if (interface == 0)
-    {
-      // just ip forward
-      return IP_FORWARD;
-    }
-
-  Ptr<MplsNhlfe> nhlfe = interface->GetFib ()->GetNhlfe (p, header);
-  if (nhlfe == 0)
-    {
-      nhlfe = m_fib->GetNhlfe (p, header);
-    }
-
-  if (nhlfe == 0)
-    {
-      if (m_strict)
-        {
-          NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::Mpls::RouteInput (): "
-                        "dropping received packet -- FTN not found -- "
-                        "src=" << header.GetSourceAddress () << ", dst=" << header.GetDestinationAddress ());
-          return DROP_PACKET;
-        }
-      else
-        {
-          return IP_FORWARD;
-        }
-    }
-
-  MplsLabelStack stack;
-  if (!nhlfe->GetInterface ()->Send (p, header, stack))
-    {
-      return DROP_PACKET;
-    }
-
-  /* check and decrement TTL */
-  uint8_t ttl = header.GetHopLimit ();
-  if (ttl <= 1)
-    {
-      /* TTL exceeded */
-      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::Mpls::RouteInput (): "
-                    "dropping received packet -- TTL exceeded");
-      return DROP_PACKET;
-    }
-
-  MplsLabelStack stack;
-  if (!nhlfe->GetOp ().execute (stack))
-    {
-      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::Mpls::RouteInput (): "
-                    "dropping received packet -- invalid label operation");
-      return DROP_PACKET;
-    }
-
-  nhlfe->GetInterface ()->Send (p, header, stack);
-
   return MPLS_FORWARDED;
 }
 
-Ptr<NetDevice>
-Mpls::RouteMpls (Ptr<Packet> packet, MplsLabelStack &stack, int32_t inIfIndex) const
+bool
+Mpls::RouteMpls (const Ptr<MplsNhlfe> &nhlfe, Ptr<Packet> packet, MplsLabelStack &stack) const
 {
   NS_LOG_FUNCTION (this);
-
-  Ptr<const MplsLibEntry> libEntry;
 
   Ptr<MplsLabelStackEntry> labelEntry = stack.GetTopEntry ();
 
   uint8_t ttl = labelEntry->GetTtl ();
-  uint32_t i = 0;
 
-  for (; i < MAX_STACK_LOOPS; ++i)
+  for (MplsOp::Iterator i = nhlfe->GetOp ().Begin (), end = nhlfe->GetOp ().End (); i != end; ++i)
     {
+
+      (*i)->execute (stack);
       uint32_t label = labelEntry->GetLabel ();
 
       if (label < MplsLabelStackEntry::MPLS_LABEL_RESERVED_MAX)
@@ -537,147 +488,6 @@ Mpls::MplsForward (Ptr<Packet> packet, const MplsLabelStack &stack, const Header
 
   // XXX: now only PointToPoint devices supported
   outDev->Send (packet, outDev->GetBroadcast (), PROT_NUMBER);
-}
-
-void
-Mpls::AddLibEntry (Ptr<const MplsLibEntry> entry)
-{
-  m_entries.push_back (entry);
-}
-
-void
-Mpls::RemoveLibEntry (Ptr<const MplsLibEntry> entry)
-{
-  m_entries.remove (entry);
-}
-
-//void
-//Mpls::RemoveLibEntry (int32_t ifIndex, uint32_t label)
-//{
-//  MplsLibEntryList::iterator i = m_entries.begin ();
-//  while (i != m_entries.end ())
-//    {
-//      if ((*i)->GetInIfIndex () == ifIndex && (*i)->GetLabel () == label)
-//        {
-//          i = m_entries.erase (i);
-//        }
-//      else
-//        {
-//          ++i;
-//        }
-//    }
-//}
-
-//void
-//Mpls::RemoveLibEntry (const ForwardEquivalenceClass &fec)
-//{
-//  MplsLibEntryList::iterator i = m_entries.begin ();
-//  while (i != m_entries.end ())
-//    {
-//      if (*((*i)->GetFec ()) == fec)
-//        {
-//          i = m_entries.erase (i);
-//        }
-//      else
-//        {
-//          ++i;
-//        }
-//    }
-//}
-
-//void
-//Mpls::RemoveLibEntry (int32_t ifIndex)
-//{
-//  MplsLibEntryList::iterator i = m_entries.begin ();
-//  while (i != m_entries.end ())
-//    {
-//      if ((*i)->GetInIfIndex () == ifIndex)
-//        {
-//          i = m_entries.erase (i);
-//        }
-//      else
-//        {
-//          ++i;
-//        }
-//    }
-//}
-
-Ptr<const MplsLibEntry>
-Mpls::GetLibEntry (int32_t ifIndex, uint32_t label) const
-{
-  NS_LOG_FUNCTION (this);
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      if ((*it)->GetInIfIndex () == ifIndex && (*it)->GetInLabel () == label)
-        {
-          return *it;
-        }
-    }
-
-  return 0;
-}
-
-Ptr<const MplsLibEntry>
-Mpls::GetLibEntry (int32_t ifIndex, Ptr<const Packet> p, const Ipv4Header &header) const
-{
-  NS_LOG_FUNCTION (this);
-
-  uint32_t match = -1;
-  Ptr<const MplsLibEntry> entry = 0;
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      const ForwardingEquivalenceClass *fec = (*it)->GetFec ();
-      if (fec != 0)
-        {
-          uint32_t t = fec->GetMatch (p, header);
-          if (t < match)
-            {
-              match = t;
-              entry = *it;
-            }
-        }
-    }
-
-  return entry;
-}
-
-Ptr<const MplsLibEntry>
-Mpls::GetLibEntry (int32_t ifIndex, Ptr<const Packet> p, const Ipv6Header &header) const
-{
-  NS_LOG_FUNCTION (this);
-
-  uint32_t match = -1;
-  Ptr<const MplsLibEntry> entry = 0;
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      const ForwardingEquivalenceClass *fec = (*it)->GetFec ();
-      if (fec != 0)
-        {
-          uint32_t t = fec->GetMatch (p, header);
-          if (t < match)
-            {
-              match = t;
-              entry = *it;
-            }
-        }
-    }
-
-  return entry;
-}
-
-void
-Mpls::PrintLibEntries (std::ostream &os) const
-{
-  NS_LOG_FUNCTION (this);
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      (*it)->Print (os);
-      os << std::endl;
-    }
 }
 
 } // namespace mpls

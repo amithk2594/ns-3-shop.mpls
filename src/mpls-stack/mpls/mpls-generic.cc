@@ -44,72 +44,84 @@ MplsLabel::MplsLabel (int32_t label)
   m_label = label;
 }
 
+inline
 bool
 MplsLabel::IsInvalid (void) const
 {
   return m_label & 0xfff0000c;
 }
 
+inline
 bool
 MplsLabel::IsIpv4ExplicitNull (void) const
 {
   return m_label == IPV4_EXPLICIT_NULL;
 }
 
+inline
 bool
 MplsLabel::IsRouteAlert (void) const
 {
   return m_label == ROUTE_ALERT;
 }
 
+inline
 bool
 MplsLabel::IsIpv6ExplicitNull (void) const
 {
   return m_label == IPV6_EXPLICIT_NULL;
 }
 
+inline
 bool
 MplsLabel::IsImplicitNull (void) const
 {
   return m_label == IMPLICIT_NULL;
 }
 
+inline
 int32
 MplsLabel::GetValue (void) const
 {
   return m_label;
 }
 
+inline
 MplsLabel
 MplsLabel::GetIpv4ExplicitNull (void)
 {
   return MplsLabel (IPV4_EXPLICIT_NULL);
 }
 
+inline
 MplsLabel
 MplsLabel::GetRouteAlert (void)
 {
   return MplsLabel (ROUTE_ALERT);
 }
 
+inline
 MplsLabel
 MplsLabel::GetIpv6ExplicitNull (void)
 {
   return MplsLabel (IPV6_EXPLICIT_NULL);
 }
 
+inline
 bool
 MplsLabel::operator== (const MplsLabel &label)
 {
   return m_label == label.m_label;
 }
 
+inline
 bool
 MplsLabel::operator!= (const MplsLabel &label)
 {
   return m_label != label.m_label;
 }
 
+inline
 MplsLabel
 MplsLabel::GetImplicitNull (void)
 {

@@ -142,12 +142,22 @@ public:
    * \returns this MplsOp object
    */
   MplsOp& Swap (const MplsLabel &label);
+
+  typedef std::vector<MplsOperation>::const_iterator Iterator;
   /**
-   * \brief Perform operations under the label stack
-   * \param stack mpls label stack to perform operations
-   * \returns false if executing fails
+   * \brief Get an iterator which refers to the first operation
    */
-  bool Execute (MplsLabelStack &stack) const;
+  Iterator Begin (void) const;
+  /**
+   * \brief Get an iterator which indicates past-the-last operation
+   */
+  Iterator End (void) const;
+//  /**
+//   * \brief Perform operations under the label stack
+//   * \param stack mpls label stack to perform operations
+//   * \returns false if executing fails
+//   */
+//  bool Execute (MplsLabelStack &stack) const;
   /**
    * \brief Print operation vector
    * \param os the stream to print to
