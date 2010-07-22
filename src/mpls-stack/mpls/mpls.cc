@@ -205,8 +205,20 @@ Mpls::RouteInput (const Ptr<const Packet> &p, const Ipv4Header &header, const Pt
 
   if (interface == 0)
     {
-      // just ip forward
+      // no mpls interface for device, IP forwarding
       return IP_FORWARD;
+    }
+
+  if (!m_ipv4Enabled)
+    {
+      if (m_strict)
+        {
+          return DROP_PACKET;
+        }
+      else
+        {
+          return IP_FORWARD;
+        }
     }
 
   Ptr<MplsNhlfe> nhlfe = interface->GetFib ()->GetNhlfe (p, header);
@@ -241,7 +253,13 @@ Mpls::RouteInput (const Ptr<const Packet> &p, const Ipv4Header &header, const Pt
     }
 
   MplsLabelStack stack;
+
   Ptr<MplsInterface> interface = RouteMpls (nhlfe, p, stack);
+  if (m_ipv6Enabled)
+    {
+      stack.Back ();
+    }
+    
   if (interface != 0)
     {
       interface->Send (p, stack, header);
