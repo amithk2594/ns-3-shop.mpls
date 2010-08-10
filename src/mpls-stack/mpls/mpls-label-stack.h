@@ -22,7 +22,7 @@
 #define MPLS_LABEL_STACK_H
 
 #include <ostream>
-#include <vector>
+#include <deque>
 #include <stdint.h>
 
 #include "ns3/header.h"
@@ -162,7 +162,7 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  typedef std::vector<MplsStackEntry> MplsStackEntryVector;
+  typedef std::deque<MplsStackEntry> MplsStackEntryVector;
   MplsStackEntryVector m_entries;
 };
 

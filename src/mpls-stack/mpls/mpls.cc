@@ -255,9 +255,10 @@ Mpls::RouteInput (const Ptr<const Packet> &p, const Ipv4Header &header, const Pt
   MplsLabelStack stack;
 
   Ptr<MplsInterface> interface = RouteMpls (nhlfe, p, stack);
+
   if (m_ipv6Enabled)
     {
-      stack.Back ();
+      stack.PushFront (MplsStackEntry (MplsLabel::GetIpv4ExplicitNull ()));
     }
     
   if (interface != 0)
@@ -279,24 +280,15 @@ Mpls::RouteInput (const Ptr<const Packet> &p, const Ipv4Header &header, const Pt
   return MPLS_FORWARDED;
 }
 
-enum Mpls::ForwardingStatus
-Mpls::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev) const
-{
-  return MPLS_FORWARDED;
-}
-
 bool
 Mpls::RouteMpls (const Ptr<MplsNhlfe> &nhlfe, Ptr<Packet> packet, MplsLabelStack &stack) const
 {
   NS_LOG_FUNCTION (this);
 
-  Ptr<MplsLabelStackEntry> labelEntry = stack.GetTopEntry ();
-
-  uint8_t ttl = labelEntry->GetTtl ();
+  const MplsStackEntry& labelEntry = stack.GetTop ();
 
   for (MplsOp::Iterator i = nhlfe->GetOp ().Begin (), end = nhlfe->GetOp ().End (); i != end; ++i)
     {
-
       (*i)->execute (stack);
       uint32_t label = labelEntry->GetLabel ();
 
@@ -404,6 +396,12 @@ Mpls::RouteMpls (const Ptr<MplsNhlfe> &nhlfe, Ptr<Packet> packet, MplsLabelStack
 
   labelEntry->SetTtl (ttl);
   return outDev;
+}
+
+enum Mpls::ForwardingStatus
+Mpls::RouteInput (Ptr<const Packet> p, const Ipv6Header &header, Ptr<const NetDevice> idev) const
+{
+  return MPLS_FORWARDED;
 }
 
 void
