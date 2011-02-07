@@ -19,167 +19,56 @@
  */
 
 #include "mpls-operations.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 namespace mpls {
-namespace op {
 
-////////////////////////////////////////////////////////////////
-// Push class
-////////////////////////////////////////////////////////////////
-
-Push::Push (const MplsLabel &label)
-  : m_label (label)
-{
-  NS_ASSERT_MSG (!m_label.IsInvalid (), "mpls::op::Push (): invalid label");
-}
-
-Push::~Push ()
-{
-}
-
-bool
-Push::Execute (MplsLabelStack &stack) const
-{
-  //XXX: copy exp value from the top???
-  stack.Push (MplsStackEntry (m_label));
-  return true;
-}
-
-void
-Push::Print (std::ostream &os) const
-{
-  os << "push " << m_label;
-}
-
-////////////////////////////////////////////////////////////////
-// Pop class
-////////////////////////////////////////////////////////////////
-
-Pop::Pop ()
-{
-}
-
-Pop::~Pop ()
-{
-}
-
-void
-Pop::Execute (MplsLabelStack &stack) const
-{
-  if (Stack.IsEmpty ())
-    {
-      return false;
-    }
-
-  stack.Pop ();
-  return true;
-}
-
-void
-Pop::Print (std::ostream &os) const
-{
-  os << "pop";
-}
-
-////////////////////////////////////////////////////////////////
-// Swap class
-////////////////////////////////////////////////////////////////
-
-Swap::Swap (const MplsLabel &label)
-  : m_label (label)
-{
-  NS_ASSERT_MSG (!m_label.IsInvalid (), "mpls::op::Swap (): invalid label");
-}
-
-Swap::~Swap ()
-{
-}
-
-bool
-Swap::Execute (MplsLabelStack &stack) const
-{
-  if (Stack.IsEmpty ())
-    {
-      return false;
-    }
-
-  //XXX: copy exp value???
-  stack.Pop ();
-  stack.Push (MplsStackEntry (m_label));
-  return true;
-}
-
-void
-Swap::Print (std::ostream &os) const
-{
-  os << "swap " << m_label;
-}
-
-std::ostream& operator<< (std::ostream& os, const MplsOpBase &op)
-{
-  op.Print (os);
-  return os;
-}
-
-} // namespace op
-
-////////////////////////////////////////////////////////////////
-// MplsOp class
-////////////////////////////////////////////////////////////////
-
+const int32_t MplsOp::PUSH = 0;
+const int32_t MplsOp::POP = 1;
+const int32_t MplsOp::SWAP = 2;
+  
 MplsOp::MplsOp ()
 {
 }
 
 MplsOp::~MplsOp ()
 {
+  m_operations.clear ();
 }
 
-MplsOp&
-MplsOp::AddOp (const op::MplsOperation &op)
+MplsOp::Vector&
+MplsOp::GetOpVector ()
 {
-  m_operations.push_back (op);
-  return this;
+  return m_operations;
 }
 
-MplsOp&
-MplsOp::Push (const MplsLabel &label)
-{
-  m_operations.push_back (op::Push (label));
-  return this;
-}
+namespace op {
 
-MplsOp&
-MplsOp::Pop (void)
+void
+Push (Ptr<MplsOp> &v, Label label)
 {
-  m_operations.push_back (op::Pop ());
-  return this;
-}
-
-MplsOp&
-MplsOp::Swap (const MplsLabel &label)
-{
-  m_operations.push_back (op::Swap (label));
-  return this;
-}
-
-bool
-MplsOp::Execute (MplsLabelStack &stack) const
-{
-  for (OperationVector::const_iterator i = m_operations.begin (); i != m_operations.end (); ++i)
-    {
-      if (!(*i).Execute (stack))
-        {
-          return false;
-        }
-    }
+  MplsOp::Vector& vec = v->GetOpVector ();
+  vec.push_back (MplsOp::PUSH);
+  vec.push_back (label);
 }
 
 void
-MplsOp::Print (std::ostream &os) const
+Pop (Ptr<MplsOp> &v)
 {
+  v->GetOpVector ().push_back (MplsOp::POP);
 }
+
+void
+Swap (Ptr<MplsOp> &v, Label label)
+{
+  MplsOp::Vector& vec = v->GetOpVector ();
+  vec.push_back (MplsOp::SWAP);
+  vec.push_back (label);
+}
+
+} // namespace op 
+
 
 } // namespace mpls
 } // namespace ns3

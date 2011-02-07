@@ -24,35 +24,35 @@
 namespace ns3 {
 namespace mpls {
 
-MplsIlm::MplsIlm ()
+IncomingLabelMap::IncomingLabelMap ()
 {
 }
 
-MplsIlm::MplsIlm (const Ptr<MplsInterface> &interface, const MplsLabel &label)
+IncomingLabelMap::IncomingLabelMap (const Ptr<mpls::Interface> &interface, Label label)
   : m_interface (interface),
     m_label (label)
 {
 }
 
-MplsIlm::~MplsIlm ()
+IncomingLabelMap::~IncomingLabelMap ()
 {
   m_interface = 0;
 }
 
-const MplsLabel&
-MplsIlm::GetLabel (void) const
+Label
+IncomingLabelMap::GetLabel (void) const
 {
   return m_label;
 }
 
-const Ptr<MplsInterface>&
-MplsIlm::GetInterface (void) const
+const Ptr<mpls::Interface>&
+IncomingLabelMap::GetInterface (void) const
 {
   return m_interface;
 }
 
 void
-MplsIlm::Print (std::ostream &os) const
+IncomingLabelMap::Print (std::ostream &os) const
 {
 }
 

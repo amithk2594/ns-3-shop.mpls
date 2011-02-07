@@ -25,7 +25,7 @@
 #include <ostream>
 
 #include "ns3/simple-ref-count.h"
-#include "mpls-nhlfe.h"
+#include "mpls-next-hop-label-forwarding-entry.h"
 
 namespace ns3 {
 namespace mpls {
@@ -33,33 +33,31 @@ namespace mpls {
 /**
  * \ingroup mpls
  * \brief A MPLS forwarding information base class.
- *
- * This is a base class for a MplsIlm and MplsFtn.
  */
-class MplsForwardingInformation : public SimpleRefCount<MplsForwardingInformation>
+class ForwardingInformation : public SimpleRefCount<ForwardingInformation>
 {
 public:
   /**
    * \brief Destructor
    */
-  virtual ~MplsForwardingInformation ();
+  virtual ~ForwardingInformation ();
   /**
-   * \brief Add new NHLFE to the list
-   * \param nhlfe MplsNhlfe
+   * \brief Adds new NHLFE
+   * \param nhlfe Next Hop Label Forwarding Entry
    */
-  void AddNhlfe (const Ptr<MplsNhlfe> &nhlfe);
+  void AddNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe);
   /**
    * \brief Get NHLFE by index
    * \param index
-   * \returns NHLFE
+   * \returns Next Hop Label Forwarding Entry
    */
-  const Ptr<MplsNhlfe>& GetNhlfe (uint32_t index);
+  const Ptr<NextHopLabelForwardingEntry>& GetNhlfe (uint32_t index);
   /**
    * \brief Remove the specific NHLFE from the list
-   * \param nhlfe MplsNhlfe
+   * \param nhlfe NHLFE
    * \returns true if NHLFE removed
    */
-  bool RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
+  bool RemoveNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe);
   /**
    * \brief Get NHLFE's count
    * \returns count of NHLFE
@@ -72,17 +70,17 @@ public:
   virtual void Print (std::ostream &os) const = 0;
 
 protected:
-  MplsForwardingInformation ();
+  ForwardingInformation ();
 
 protected:
-  typedef std::list<Ptr<MplsNhlfe> > NhlfeList;
+  typedef std::list<Ptr<NextHopLabelForwardingEntry> > NhlfeList;
   NhlfeList m_nhlfeList;
 };
 
 /**
- * \brief output operation for MplsForwardingInformation
+ * \brief output operation for ForwardingInformation
  */
-std::ostream& operator<< (std::ostream& os, const MplsForwardingInformation &info);
+std::ostream& operator<< (std::ostream& os, const ForwardingInformation &info);
 
 } // namespace mpls
 } // namespace ns3

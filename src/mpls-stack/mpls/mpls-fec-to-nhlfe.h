@@ -26,13 +26,13 @@
 
 #include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
-#include "mpls-fib.h"
-#include "mpls-fec.h"
+#include "mpls-forwarding-information-base.h"
+#include "mpls-forwarding-equivalence-class.h"
 
 namespace ns3 {
 namespace mpls {
 
-class MplsFib;
+class ForwardingInformation;
 
 /**
  * \ingroup mpls
@@ -41,22 +41,22 @@ class MplsFib;
  * It is used when forwarding packets that arrive unlabeled, but which are to be labeled before being forwarded.
  * For more infomation see RFC 3031 (http://www.ietf.org/rfc/rfc3031.txt)
  */
-class MplsFtn : public MplsForwardingInformation
+class FecToNhlfe : public ForwardingInformation
 {
 public:
   /**
    * \brief Constructor
    */
-  MplsFtn (const Ptr<MplsFec> &fec);
+  FecToNhlfe (const Ptr<ForwardingEquivalenceClass> &fec);
   /**
    * \brief Destructor
    */
-  virtual ~MplsFtn ();
+  virtual ~FecToNhlfe ();
   /**
-   * \brief Get incoming label
-   * \returns label
+   * \brief
+   * \returns
    */
-  const Ptr<MplsFec>& GetFec (void) const;
+  const Ptr<ForwardingEquivalenceClass>& GetFec (void) const;
   /**
    * \brief Print ILM
    * \param os the stream to print to
@@ -64,8 +64,8 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  Ptr<MplsFec> m_fec;
-  friend class MplsFib;
+  Ptr<ForwardingEquivalenceClass> m_fec;
+  friend class ForwardingInformation;
 };
 
 } // namespace mpls

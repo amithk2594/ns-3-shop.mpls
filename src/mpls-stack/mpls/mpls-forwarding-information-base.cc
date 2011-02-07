@@ -18,33 +18,33 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#include "mpls-fib.h"
+#include "forwarding-information-base.h"
 
 namespace ns3 {
 namespace mpls {
 
-MplsFib::MplsFib ()
+ForwardingInformationBase::ForwardingInformationBase ()
 {
 }
 
-MplsFib::~MplsFib ()
+ForwardingInformationBase::~ForwardingInformationBase ()
 {
 }
 
 void
-MplsFib::AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe)
+ForwardingInformationBase::AddIlm (Label label, const Ptr<NextHopLabelForwardingEntry> &nhlfe)
 {
-  Ptr<MplsIlm> ilm = GetIlm (label);
+  Ptr<IncomingLabelMap> ilm = GetIlm (label);
   if (ilm == 0)
     {
-      ilm = Create<MplsIlm> (label);
+      ilm = Create<IncomingLabelMap> (label);
       m_ilmTable.push_back (ilm);
     }
   ilm->AddNhlfe (nhlfe);
 }
 
-Ptr<MplsIlm>
-MplsFib::GetIlm (const MplsLabel &label) const
+Ptr<IncomingLabelMap>
+ForwardingInformationBase::GetIlm (Label label) const
 {
   for (IlmTable::const_iterator i = m_ilmTable.begin (); i != m_ilmTable.end ())
     {
@@ -57,7 +57,7 @@ MplsFib::GetIlm (const MplsLabel &label) const
 }
 
 void
-MplsFib::RemoveIlm (const MplsLabel &label)
+ForwardingInformationBase::RemoveIlm (Label label)
 {
   for (IlmTable::iterator i = m_ilmTable.begin (); i != m_ilmTable.end ())
     {
@@ -70,26 +70,26 @@ MplsFib::RemoveIlm (const MplsLabel &label)
 }
 
 void
-MplsFib::RemoveIlm (const Ptr<MplsIlm> &ilm)
+ForwardingInformationBase::RemoveIlm (const Ptr<IncomingLabelMap> &ilm)
 {
   m_ilmTable.remove (ilm);
 }
 
 void
-MplsFib::AddFtn (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe)
+ForwardingInformationBase::AddFtn (const Ptr<MplsFec> &fec, const Ptr<NextHopLabelForwardingEntry> &nhlfe)
 {
-  Ptr<MplsFtn> ftn = GetFtn (fec);
+  Ptr<FecToNhlfe> ftn = GetFtn (fec);
   if (ftn == 0)
     {
-      ftn = Create<MplsFtn> (fec);
+      ftn = Create<FecToNhlfe> (fec);
       m_ftnTable.push_back (ftn);
     }
 
   ftn->AddNhlfe (nhlfe);
 }
 
-Ptr<MplsFtn>
-MplsFib::GetFtn (const Ptr<MplsFec> &fec) const
+Ptr<FecToNhlfe>
+ForwardingInformationBase::GetFtn (const Ptr<MplsFec> &fec) const
 {
   for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
     {
@@ -102,7 +102,7 @@ MplsFib::GetFtn (const Ptr<MplsFec> &fec) const
 }
 
 void
-MplsFib::RemoveFtn (const Ptr<MplsFec> &fec)
+ForwardingInformationBase::RemoveFtn (const Ptr<MplsFec> &fec)
 {
   for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
     {
@@ -115,13 +115,13 @@ MplsFib::RemoveFtn (const Ptr<MplsFec> &fec)
 }
 
 void
-MplsFib::RemoveFtn (const Ptr<MplsFtn> &ftn)
+ForwardingInformationBase::RemoveFtn (const Ptr<FecToNhlfe> &ftn)
 {
   m_ftnTable.remove (ftn);
 }
 
-Ptr<MplsNhlfe>
-MplsFib::GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const
+Ptr<NextHopLabelForwardingEntry>
+ForwardingInformationBase::GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const
 {
   for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
     {
@@ -134,8 +134,8 @@ MplsFib::GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) co
   return 0;
 }
 
-Ptr<MplsNhlfe>
-MplsFib::GetNhfle (const Ptr<const Packet> &packet, const Ipv6Header &header) const
+Ptr<NextHopLabelForwardingEntry>
+ForwardingInformationBase::GetNhfle (const Ptr<const Packet> &packet, const Ipv6Header &header) const
 {
   for (FtnTable::const_iterator i = m_ftnTable.begin (); i != m_ftnTable.end ())
     {
@@ -149,7 +149,7 @@ MplsFib::GetNhfle (const Ptr<const Packet> &packet, const Ipv6Header &header) co
 }
 
 void
-MplsFib::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
+ForwardingInformationBase::RemoveNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe)
 {
   for (IlmTable::iterator i = m_ilmTable.begin (); i != m_ilmTable.end ())
     {
@@ -165,11 +165,11 @@ MplsFib::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
 }
 
 void
-MplsFib::Print (std::ostream &os) const
+ForwardingInformationBase::Print (std::ostream &os) const
 {
 }
 
-std::ostream& operator<< (std::ostream& os, const Ptr<MplsFib> &fib)
+std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformationBase> &fib)
 {
   fib->Print (os);
 }

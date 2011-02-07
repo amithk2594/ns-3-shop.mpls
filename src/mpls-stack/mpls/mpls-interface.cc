@@ -22,128 +22,73 @@
 #include "ns3/log.h"
 #include "mpls-interface.h"
 
-NS_LOG_COMPONENT_DEFINE ("MplsInterface");
+NS_LOG_COMPONENT_DEFINE ("mpls::Interface");
 
 namespace ns3 {
 namespace mpls {
 
 TypeId
-MplsInterface::GetTypeId (void)
+Interface::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::mpls::MplsInterface")
+  static TypeId tid = TypeId ("ns3::mpls::Interface")
     .SetParent<Object> ()
     ;
   return tid;
 }
 
-MplsInterface::MplsInterface ()
-  : m_strict (false),
-    m_node (0),
-    m_device (0),
+Interface::Interface ()
+  : m_node (0),
+    m_device (0)
 {
   NS_LOG_FUNCTION (this);
-  m_fib = Create<MplsFib> (this);
+  //m_fib = Create<MplsFib> (this);
 }
 
-MplsInterface::~MplsInterface ()
+Interface::~Interface ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
-MplsInterface::DoDispose (void)
+Interface::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
   m_device = 0;
-  m_fib = 0;
+  //m_fib = 0;
   Object::DoDispose ();
 }
 
 void
-MplsInterface::SetNode (const Ptr<Node> &node)
+Interface::SetNode (const Ptr<Node> &node)
 {
   m_node = node;
 }
 
 void
-MplsInterface::SetDevice (const Ptr<NetDevice> &device)
+Interface::SetDevice (const Ptr<NetDevice> &device)
 {
   m_device = device;
 }
 
 Ptr<NetDevice>
-MplsInterface::GetDevice (void) const
+Interface::GetDevice (void) const
 {
   return m_device;
 }
 
-void
-MplsInterface::AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe)
-{
-  m_fib->AddIlm (label, nhlfe);
-}
-
-Ptr<MplsIlm>
-MplsInterface::GetIlm (const MplsLabel &label) const
-{
-  return m_fib->GetIlm (label);
-}
+//const Ptr<MplsFib>&
+//Interface::GetForwardingTable (void) const
+//{
+//  return m_fib;
+//}
 
 void
-MplsInterface::RemoveIlm (const MplsLabel &label)
-{
-  m_fib->RemoveIlm (label);
-}
-
-void
-MplsInterface::RemoveIlm (const Ptr<MplsIlm> &ilm)
-{
-  m_fib->RemoveIlm (ilm);
-}
-
-void
-MplsInterface::AddFtn (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe)
-{
-  m_fib->AddFtn (fec, nhlfe);
-}
-
-Ptr<MplsFtn>
-MplsInterface::GetFtn (const Ptr<MplsFec> &fec) const
-{
-  return m_fib->GetFtn (fec);
-}
-
-void
-MplsInterface::RemoveFtn (const Ptr<MplsFec> &fec)
-{
-  m_fib->RemoveFtn (fec);
-}
-
-void
-MplsInterface::RemoveFtn (const Ptr<MplsFtn> &ftn)
-{
-  m_fib->RemoveFtn (ftn);
-}
-
-void
-MplsInterface::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
-{
-  m_fib->RemoveNhlfe (nhlfe);
-}
-
-const Ptr<MplsFib>&
-MplsInterface::GetForwardingTable (void) const
-{
-  return m_fib;
-}
-
-void
-MplsInterface::Print (std::ostream &os) const
+Interface::Print (std::ostream &os) const
 {
 }
 
-std::ostream& operator<< (std::ostream& os, const Ptr<MplsInterface> &interface)
+std::ostream& operator<< (std::ostream& os, const Ptr<Interface> &interface)
 {
   interface->Print (os);
   return os;

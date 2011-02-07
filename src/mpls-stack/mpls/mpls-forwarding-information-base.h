@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_FIB_H
-#define MPLS_FIB_H
+#ifndef MPLS_FORWARDING_INFORMATION_BASE_H
+#define MPLS_FORWARDING_INFORMATION_BASE_H
 
 #include <ostream>
 #include <list>
@@ -28,91 +28,92 @@
 #include "ns3/simple-ref-count.h"
 
 #include "mpls-generic.h"
-#include "mpls-interface.h"
+#include "mpls-incoming-label-map.h"
+#include "mpls-next-hop-label-forwarding-entry.h"
+#include "mpls-fec-to-nhlfe.h"
+#include "mpls-forwarding-equivalence-class.h"
 
 namespace ns3 {
 namespace mpls {
 
-class MplsInterface;
 /**
  * \ingroup mpls
- * \brief
- * MplsFib represent per interface FIB
+ * \brief ForwardingInformationBase represent per interface FIB
  */
-class MplsFib: public SimpleRefCount<MplsFib>
+class ForwardingInformationBase: public SimpleRefCount<ForwardingInformationBase>
 {
 public:
   /**
    * \brief Create empty forwarding base
    */
-  MplsFib ();
+  ForwardingInformationBase ();
   /**
    * \brief Destructor
    */
-  virtual ~MplsFib ();
+  virtual ~ForwardingInformationBase ();
   /**
    * \brief Add ILM
    * \param label
    * \param nhlfe
    */
-  void AddIlm (const MplsLabel &label, const Ptr<MplsNhlfe> &nhlfe);
+  void AddIlm (Label label, const Ptr<NextHopLabelForwardingEntry> &nhlfe);
   /**
    * \brief Get ILM
    * \param label
    * \returns ILM associated with label
    */
-  Ptr<MplsIlm>& GetIlm (const MplsLabel &label) const;
+  Ptr<IncomingLabelMap>& GetIlm (Label label) const;
   /**
    * \brief Remove ILM
    * \param label
    */
-  void RemoveIlm (const MplsLabel &label);
+  void RemoveIlm (Label label);
   /**
    * \brief Remove ILM
    * \param ilm
    */
-  void RemoveIlm (const Ptr<MplsIlm> &ilm);
+  void RemoveIlm (const Ptr<IncomingLabelMap> &ilm);
   /**
    * \brief Add FTN
    * \param fec
    * \param nhlfe
    */
-  void AddFtn (const Ptr<MplsFec> &fec, const Ptr<MplsNhlfe> &nhlfe);
+  void AddFtn (const Ptr<ForwardingEquivalenceClass> &fec, const Ptr<NextHopLabelForwardingEntry> &nhlfe);
   /**
    * \brief Get FTN
    * \param fec
    * \returns FTN associated with FEC
    */
-  Ptr<MplsFtn> GetFtn (const Ptr<MplsFec> &fec) const;
+  Ptr<FecToNhlfe> GetFtn (const Ptr<ForwardingEquivalenceClass> &fec) const;
   /**
    * \brief Remove FTN
    * \param fec
    */
-  void RemoveFtn (const Ptr<MplsFec> &fec);
+  void RemoveFtn (const Ptr<ForwardingEquivalenceClass> &fec);
   /**
    * \brief Remove FTN
    * \param ftn FTN to remove
    */
-  void RemoveFtn (const Ptr<MplsFtn> &ftn);
+  void RemoveFtn (const Ptr<FecToNhlfe> &ftn);
   /**
    * \brief Get NHLFE for specified Ipv4 packet
    * \param packet Ipv4 packet
    * \param header Ipv4 header
    * \returns NHLFE
    */
-  Ptr<MplsNhlfe> GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const;
+  Ptr<NextHopLabelForwardingEntry> GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const;
   /**
    * \brief Get NHLFE for specified Ipv4 packet
    * \param packet Ipv6 packet
    * \param header Ipv6 header
    * \returns NHLFE
    */
-  Ptr<MplsNhlfe> GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const;
+  Ptr<NextHopLabelForwardingEntry> GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const;
   /**
    * \brief Remove NHLFE
    * \param nhlfe NHLFE to remove
    */
-  void RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe);
+  void RemoveNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe);
   /**
    * \brief Print forwarding information
    * \param os the stream to print to
@@ -120,16 +121,16 @@ public:
   void Print (std::ostream &os) const;
 
 private:
-  typedef std::list<Ptr<MplsFtn> > FtnList;
-  typedef std::list<Ptr<MplsIlm> > IlmList;
+  typedef std::list<Ptr<FecToNhlfe> > FtnList;
+  typedef std::list<Ptr<IncomingLabelMap> > IlmList;
 
   FtnList m_ftnTable;
   IlmList m_ilmTable;
 }
 
-std::ostream& operator<< (std::ostream& os, const Ptr<MplsFib> &fib);
+std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformationBase> &fib);
 
 } // namespace mpls
 } // namespace ns3
 
-#endif /* MPLS_FIB_H */
+#endif /* MPLS_FORWARDING_INFORMATION_BASE_H */

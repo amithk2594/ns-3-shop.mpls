@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_ILM_H
-#define MPLS_ILM_H
+#ifndef MPLS_INCOMING_LABEL_MAP_H
+#define MPLS_INCOMING_LABEL_MAP_H
 
 #include <ostream>
 #include <stdint.h>
@@ -27,12 +27,14 @@
 #include "mpls-generic.h"
 #include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
-#include "mpls-fib.h"
+#include "mpls-forwarding-information-base.h"
 
 namespace ns3 {
 namespace mpls {
 
-class MplsFib;
+class ForwardingInformationBase;
+class Interface;
+
 /**
  * \ingroup mpls
  * \brief
@@ -40,29 +42,29 @@ class MplsFib;
  * It is used when forwarding packets that arrive as labeled packets.
  * For more infomation see RFC 3031 (http://www.ietf.org/rfc/rfc3031.txt)
  */
-class MplsIlm : public MplsForwardingInformation
+class IncomingLabelMap : public ForwardingInformation
 {
 public:
   /**
-   * \brief Construct ilm with specified label and interface
+   * \brief Construct ILM with specified label and interface
    * \param interface incoming interface
    * \param label incoming label
    */
-  MplsIlm (const Ptr<MplsInterface> &interface, const MplsLabel &label);
+  IncomingLabelMap (const Ptr<Interface> &interface, Label label);
   /**
    * \brief Destuctor
    */
-  virtual ~MplsIlm ();
+  virtual ~IncomingLabelMap ();
   /**
    * \brief Get incoming label
    * \returns label
    */
-  const MplsLabel& GetLabel (void) const;
+  Label GetLabel (void) const;
   /**
    * \brief Get incoming interface
    * \returns interface
    */
-  const Ptr<MplsInterface>& GetInterface (void) const;
+  const Ptr<Interface>& GetInterface (void) const;
   /**
    * \brief Print ILM
    * \param os the stream to print to
@@ -70,16 +72,16 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  MplsIlm ();
+  IncomingLabelMap ();
 
 private:
-  Ptr<MplsInterface>  m_interface;
-  MplsLabel           m_label;
+  Ptr<Interface>  m_interface;
+  Label           m_label;
 
-  friend class MplsFib;
+  friend class ForwardingInformationBase;
 };
 
 } // namespace mpls
 } // namespace ns3
 
-#endif /* MPLS_ILM_H */
+#endif /* MPLS_INCOMING_LABEL_MAP_H */

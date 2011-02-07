@@ -23,11 +23,11 @@
 namespace ns3 {
 namespace mpls {
 
-MplsForwardingInformation::MplsForwardingInformation ()
+ForwardingInformation::ForwardingInformation ()
 {
 }
 
-MplsForwardingInformation::~MplsForwardingInformation ()
+ForwardingInformation::~ForwardingInformation ()
 {
   for (NhlfeList::iterator i = m_nhlfeList.begin (); i != m_nhlfeList.end (); ++i)
     {
@@ -36,13 +36,13 @@ MplsForwardingInformation::~MplsForwardingInformation ()
   m_nhlfeList.clear ();
 }
 
-MplsForwardingInformation::AddNhlfe (const Ptr<MplsNhlfe> &nhlfe)
+ForwardingInformation::AddNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe)
 {
   m_nhlfeList.push_back (nhlfe);
 }
 
 bool
-MplsForwardingInformation::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
+ForwardingInformation::RemoveNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe)
 {
   for (NhlfeList::iterator i = m_nhlfeList.begin (); i != m_nhlfeList.end (); ++i)
     {
@@ -57,12 +57,12 @@ MplsForwardingInformation::RemoveNhlfe (const Ptr<MplsNhlfe> &nhlfe)
 }
 
 uint32_t
-MplsForwardingInformation::GetNNhlfe (void) const
+ForwardingInformation::GetNNhlfe (void) const
 {
   return m_nhlfeList.size ();
 }
 
-std::ostream& operator<< (std::ostream& os, const MplsForwardingInformation &info)
+std::ostream& operator<< (std::ostream& os, const ForwardingInformation &info)
 {
   info.Print (os);
   return os;

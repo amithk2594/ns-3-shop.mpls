@@ -3,6 +3,10 @@
 def build(bld):
     module = bld.create_ns3_module('mpls', ['node'])
     module.source = [
+        'mpls-generic.cc',
+        'mpls-interface.cc',
+        #'mpls-operations.cc',
+        #'mpls-label-stack.cc',
         #'mpls-routing-protocol.cc',
         #'ipv4-to-mpls-routing.cc',
         #'ipv6-to-mpls-routing.cc',
@@ -18,7 +22,10 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mpls'
     headers.source = [
-        'mpls-fec.h'
+        'mpls-generic.h',
+        'mpls-interface.h',        
+        #'mpls-operations.h',
+        #'mpls-label-stack.h',
         #'mpls-routing-protocol.h',
         #'ipv4-to-mpls-routing.h',
         #'ipv6-to-mpls-routing.h',

@@ -21,9 +21,10 @@
 #ifndef MPLS_LABEL_STACK_H
 #define MPLS_LABEL_STACK_H
 
-#include <ostream>
-#include <deque>
 #include <stdint.h>
+#include <iostream>
+#include <sstream>
+#include <deque>
 
 #include "ns3/header.h"
 #include "mpls-generic.h"
@@ -31,7 +32,7 @@
 namespace ns3 {
 namespace mpls {
 
-class MplsLabelStack;
+typedef uint32_t Shim;
 
 /**
  * \ingroup mpls
@@ -43,80 +44,8 @@ class MplsLabelStack;
  *  |                Label                  | Exp |S|       TTL     | Stack
  *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Entry
  *
- * For more infomation see RFC 3032 (http://www.ietf.org/rfc/rfc3032.txt)
- */
-class MplsStackEntry
-{
-public:
-  /**
-   * \brief Create an empty entry
-   */
-  MplsStackEntry ();
-  /**
-   * \brief Create an entry with label
-   */
-  MplsStackEntry (const MplsLabel &label);
-  /**
-   * \brief Destructor
-   */
-  virtual ~MplsStackEntry ();
-  /**
-   * \brief Set the actual value of the Label
-   * \param label
-   */
-  void SetLabel (const MplsLabel &label);
-  /**
-   * \returns label
-   */
-  const MplsLabel& GetLabel (void) const;
-  /**
-   * \brief Set three-bit exp field value
-   * \param exp
-   */
-  void SetExp (uint8_t exp);
-  /**
-   * \returns Value of the exp field
-   */
-  uint8_t GetExp (void) const;
-  /**
-   * \brief Set time-to-live value
-   * \param ttl eight-bit time-to-live value
-   */
-  void SetTtl (uint8_t ttl);
-  /**
-   * \returns time-to-live field value
-   */
-  uint8_t GetTtl (void) const;
-  /**
-   * \returns True if this entry is the last entry in the label stack
-   */
-  bool IsBos (void) const;
-  /**
-   * \param os the stream to print to
-   */
-  void Print (std::ostream &os) const;
-
-private:
-  // this functions is used by MplsLabelStack
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
-
-  MplsLabel m_label;
-  uint8_t   m_exp;
-  uint8_t   m_ttl;
-  bool      m_bos;
-
-  friend class MplsLabelStack;
-};
-
-std::ostream& operator<< (std::ostream& os, const MplsStackEntry &entry);
-
-/**
- * \ingroup mpls
- * \brief
+ *
  * The label stack is represented as a sequence of "label stack entries".
- * Each label stack entry is represented by 4 octets.
  * For more infomation see RFC 3032 (http://www.ietf.org/rfc/rfc3032.txt)
  */
 class MplsLabelStack : public Header
@@ -124,7 +53,6 @@ class MplsLabelStack : public Header
 public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-
   /**
    * \brief Create an empty stack.
    */
@@ -134,26 +62,25 @@ public:
    */
   virtual ~MplsLabelStack ();
   /**
-   * \brief pop last entry
+   * \brief Removes and returns the stack's top entry
    */
   void Pop (void);
   /**
-   * \brief push entry to the stack
-   * \param entry
+   * \brief Add a new entry to the top of the stack
    */
-  void Push (const MplsStackEntry &entry);
+  void Push (Shim entry);
   /**
-   * \returns top entry of the stack
+   * \brief Retrieves the stack's top entry
    */
-  MplsStackEntry& GetTop (void);
+  Shim Peek (void) const;
   /**
-   * \returns top entry of the stack
-   */
-  const MplsStackEntry& GetTop (void) const;
-  /**
-   * \returns true if stack is empty
+   * \brief Detects whether the stack is empty
    */
   bool IsEmpty (void) const;
+  /**
+   * \brief Removes all entries from the stack
+   */
+  bool Clear (void);
 
   // Functions defined in base class Header
   virtual uint32_t GetSerializedSize (void) const;
@@ -162,9 +89,52 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  typedef std::deque<MplsStackEntry> MplsStackEntryVector;
-  MplsStackEntryVector m_entries;
+  typedef std::deque<Shim> Stack;
+  Stack m_entries;
 };
+
+
+namespace shimUtils {
+  /**
+   * \brief Calculates and returns shim
+   */
+  Shim GetShim (Label label);
+  Shim GetShim (Label label, uint8_t ttl);
+  Shim GetShim (Label label, uint8_t ttl, uint8_t exp);
+  /**
+   * \brief Set label value
+   */ 
+  void SetLabel (Shim& shim, Label label);
+  /**
+   * \brief Returns label value
+   */ 
+  Label GetLabel (Shim shim);  
+  /**
+   * \brief Set value of 'Experimental Use' field
+   */
+  void SetExperimentalUse (Shim& shim, uint8_t exp);
+  /**
+   * \Brief Returns value of 'Experimental Use' field
+   */
+  uint8_t GetExperimentalUse (Shim shim);
+  /**
+   * \brief Set value of 'Time To Live' field
+   */
+  void SetTimeToLive (Shim& shim, uint8_t ttl);
+ /**
+   * \brief Returns value of 'Time To Live' field
+   */
+  uint8_t GetTimeToLive (Shim shim);
+  /**
+   * \brief Returns true if 'Bottom of Stack' flag is set
+   */
+  bool IsBottomOfStack (Shim shim);
+  /**
+   * \brief Returns string representation of the stack entry
+   */
+  std::string AsString (Shim shim);
+} // namespace stackUtils
+
 
 } // namespace mpls
 } // namespace ns3

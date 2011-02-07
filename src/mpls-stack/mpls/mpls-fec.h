@@ -34,19 +34,19 @@ namespace mpls {
 /**
  * \ingroup Mpls
  * \brief
- * MplsFecBase is the base class of FEC.
+ * ForwardingEquivalenceClassBase is the base class of FEC.
  */
-class MplsFec: public SimpleRefCount<MplsFec>
+class ForwardingEquivalenceClass: public SimpleRefCount<ForwardingEquivalenceClass>
 {
 public:
   /**
    * \brief Constructor
    */
-  MplsFec ();
+  ForwardingEquivalenceClass ();
   /**
    * \brief Destructor
    */
-  virtual ~MplsFec ();
+  virtual ~ForwardingEquivalenceClass ();
   /**
    * \brief Check if packet match the FEC
    * \param packet Packet
@@ -66,13 +66,13 @@ public:
   virtual void Print (std::ostream &os, uint32_t indent) const = 0;
 };
 
-std::ostream& operator<< (std::ostream& os, const Ptr<MplsFec> &fec);
+std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingEquivalenceClass> &fec);
 
 /**
  * \brief
  * 'And' logic composite rule
  */
-class MplsListFec: public MplsFec
+class MplsListFec: public ForwardingEquivalenceClass
 {
 public:
   /**
@@ -97,49 +97,49 @@ public:
    * \brief Add rule
    * \param rule
    */
-  void Add (const Ptr<MplsFec> &fec);
+  void Add (const Ptr<ForwardingEquivalenceClass> &fec);
   /**
    * \brief Remove rule
    * \param rule
    */
-  void Remove (const Ptr<MplsFec> &fec);
+  void Remove (const Ptr<ForwardingEquivalenceClass> &fec);
 
-  // Functions defined in base class MplsFecBase
+  // Functions defined in base class ForwardingEquivalenceClassBase
   virtual bool IsMatch (Ptr<const Packet> packet, const Ipv4Header &header) const;
   virtual bool IsMatch (Ptr<const Packet> packet, const Ipv6Header &header) const;
   virtual void Print (std::ostream &os, uint32_t indent) const;
 
 public:
   static Ptr<MplsListFec> All ();
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1);
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2);
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3);
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4);
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5);
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5, const Ptr<MplsFec> &f6);
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5, const Ptr<MplsFec> &f6, const Ptr<MplsFec> &f7);
-  static Ptr<MplsListFec> All (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5, const Ptr<MplsFec> &f6, const Ptr<MplsFec> &f7, const Ptr<MplsFec> &f8);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5, const Ptr<ForwardingEquivalenceClass> &f6);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5, const Ptr<ForwardingEquivalenceClass> &f6, const Ptr<ForwardingEquivalenceClass> &f7);
+  static Ptr<MplsListFec> All (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5, const Ptr<ForwardingEquivalenceClass> &f6, const Ptr<ForwardingEquivalenceClass> &f7, const Ptr<ForwardingEquivalenceClass> &f8);
 
   static Ptr<MplsListFec> Any ();
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1);
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2);
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3);
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4);
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5);
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5, const Ptr<MplsFec> &f6);
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5, const Ptr<MplsFec> &f6, const Ptr<MplsFec> &f7);
-  static Ptr<MplsListFec> Any (const Ptr<MplsFec> &f1, const Ptr<MplsFec> &f2, const Ptr<MplsFec> &f3, const Ptr<MplsFec> &f4,
-    const Ptr<MplsFec> &f5, const Ptr<MplsFec> &f6, const Ptr<MplsFec> &f7, const Ptr<MplsFec> &f8);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5, const Ptr<ForwardingEquivalenceClass> &f6);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5, const Ptr<ForwardingEquivalenceClass> &f6, const Ptr<ForwardingEquivalenceClass> &f7);
+  static Ptr<MplsListFec> Any (const Ptr<ForwardingEquivalenceClass> &f1, const Ptr<ForwardingEquivalenceClass> &f2, const Ptr<ForwardingEquivalenceClass> &f3, const Ptr<ForwardingEquivalenceClass> &f4,
+    const Ptr<ForwardingEquivalenceClass> &f5, const Ptr<ForwardingEquivalenceClass> &f6, const Ptr<ForwardingEquivalenceClass> &f7, const Ptr<ForwardingEquivalenceClass> &f8);
 
 private:
-  typedef std::list<Ptr<MplsFec> > FecList;
+  typedef std::list<Ptr<ForwardingEquivalenceClass> > FecList;
   Logic m_logic;
   FecList m_fecs;
 };
@@ -148,7 +148,7 @@ private:
  * \brief
  * Source address rule (ipv4 or ipv6)
  */
-class MplsSourceAddressFec: public MplsFec
+class MplsSourceAddressFec: public ForwardingEquivalenceClass
 {
 public:
   /**
@@ -165,7 +165,7 @@ public:
    * \brief Destructor
    */
   virtual ~MplsSourceAddressFec ();
-  // Functions defined in base class MplsFecBase
+  // Functions defined in base class ForwardingEquivalenceClassBase
   virtual bool IsMatch (Ptr<const Packet> packet, const Ipv4Header &header) const;
   virtual bool IsMatch (Ptr<const Packet> packet, const Ipv6Header &header) const;
   virtual void Print (std::ostream &os, uint32_t indent) const;
@@ -178,7 +178,7 @@ private:
  * \brief
  * Source address range rule (ipv4 or ipv6)
  */
-class MplsSourceAddressRangeFec: public MplsFec
+class MplsSourceAddressRangeFec: public ForwardingEquivalenceClass
 {
 public:
   /**
@@ -212,7 +212,7 @@ private:
  * \brief
  * Destination address rule
  */
-class MplsDestinationAddressFec: public MplsFec
+class MplsDestinationAddressFec: public ForwardingEquivalenceClass
 {
 public:
   /**
@@ -230,7 +230,7 @@ public:
    */
   virtual ~MplsDestinationAddressFec ();
 
-  // Function defined in base class MplsFecBase
+  // Function defined in base class ForwardingEquivalenceClassBase
   virtual bool IsMatch (Ptr<const Packet> packet, const Ipv4Header &header) const;
   virtual bool IsMatch (Ptr<const Packet> packet, const Ipv6Header &header) const;
   virtual void Print (std::ostream &os, uint32_t indent) const;
@@ -243,7 +243,7 @@ private:
  * \brief
  * Ipv4 destination address range rule
  */
-class MplsDestinationAddressRangeFec: public MplsFec
+class MplsDestinationAddressRangeFec: public ForwardingEquivalenceClass
 {
 public:
   /**
@@ -277,7 +277,7 @@ private:
  * \brief
  * Protocol rule
  */
-class MplsProtocolFec: public MplsFec
+class MplsProtocolFec: public ForwardingEquivalenceClass
 {
 public:
   /**

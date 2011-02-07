@@ -63,17 +63,17 @@ public:
    * \brief Set operation vector
    * \param op MplsOp
    */
-  void SetOp (const MplsOp& op);
+  void SetMplsOp (const Ptr<MplsOp>& op);
   /**
    * \brief Get operation vector
    * \returns MplsOp
    */
-  MplsOp& GetOp ();
+  Ptr<MplsOp>& GetOp ();
   /**
    * \brief Get operation vector
    * \returns MplsOp
    */
-  const MplsOp& GetOp () const;
+  const Ptr<MplsOp>& GetOp () const;
   /**
    * \brief Set outgoing interface
    * \param interface MplsInterface
@@ -92,7 +92,7 @@ public:
 
 private:
   Ptr<MplsInterface> m_interface;
-  MplsOp             m_operations;
+  Ptr<MplsOp>        m_op;
 };
 
 /**

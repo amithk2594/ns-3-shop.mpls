@@ -22,85 +22,14 @@
 #define MPLS_OPERATIONS_H
 
 #include <ostream>
+#include <vector>
+
+#include "ns3/simple-ref-count.h"
+#include "ns3/ptr.h"
 #include "mpls-generic.h"
-#include "mpls-label-stack.h"
 
 namespace ns3 {
-
 namespace mpls {
-namespace op {
-/**
- * \ingroup mpls
- * \brief A MPLS 'label push' operation.
- */
-class Push : public MplsOperation
-{
-public:
-  /**
-   * \brief Create a label push operation.
-   * \param label MplsLabel
-   */
-  Push (const MplsLabel &label);
-  /**
-   * \brief Destructor
-   */
-  virtual ~Push ();
-
-  // Functions defined in base class MplsOperation
-  virtual bool Execute (MplsLabelStack &stack) const;
-  virtual void Print (std::ostream &os) const;
-
-private:
-  MplsLabel m_label;
-};
-
-/**
- * \ingroup mpls
- * \brief A MPLS 'label pop' operation.
- */
-class Pop : public MplsOperation
-{
-public:
-  /**
-   * \brief Create a label pop operation.
-   */
-  Pop ();
-  /**
-   * \brief Destructor
-   */
-  virtual ~Pop ();
-
-  // Functions defined in base class MplsOperation
-  virtual bool Execute (MplsLabelStack &stack) const;
-  virtual void Print (std::ostream &os) const;
-};
-
-/**
- * \ingroup mpls
- * \brief A MPLS 'label swap' operation.
- */
-class Swap : public MplsOperation
-{
-public:
- /**
-   * \brief Create a label swap operation.
-   * \param label MplsLabel
-   */
-  Swap (const MplsLabel &label);
-  /**
-   * \brief Destructor
-   */
-  virtual ~Swap ();
-
-  // Functions defined in base class MplsOperation
-  virtual bool Execute (MplsLabelStack &stack) const;
-  virtual void Print (std::ostream &os) const;
-
-private:
-  MplsLabel m_label;
-};
-
-} // namespace op
 
 /**
  * \ingroup mpls
@@ -108,8 +37,14 @@ private:
  *
  * This class is used for creating operation sequence
  */
-class MplsOp
+class MplsOp : public SimpleRefCount<MplsOp>
 {
+public:
+  static const int32_t PUSH;
+  static const int32_t POP;
+  static const int32_t SWAP;
+  typedef std::vector<int32_t> Vector;
+
 public:
   /**
    * \brief Create empty operation vector
@@ -120,59 +55,36 @@ public:
    */
   virtual ~MplsOp ();
   /**
-   * \brief Add custom label operation.
-   * \param oper MplsOperation
-   * \returns this MplsOp object
+   * \brief Returns operation vector
    */
-  MplsOp& AddOp (const op::MplsOperation &oper);
-  /**
-   * \brief Push label operation shortcut
-   * \param label MplsLabel
-   * \returns this MplsOp object
-   */
-  MplsOp& Push (const MplsLabel &label);
-  /**
-   * \brief Pop label operation shortcut
-   * \returns this MplsOp object
-   */
-  MplsOp& Pop ();
-  /**
-   * \brief Swap label operation shortcut
-   * \param label MplsLabel
-   * \returns this MplsOp object
-   */
-  MplsOp& Swap (const MplsLabel &label);
-
-  typedef std::vector<MplsOperation>::const_iterator Iterator;
-  /**
-   * \brief Get an iterator which refers to the first operation
-   */
-  Iterator Begin (void) const;
-  /**
-   * \brief Get an iterator which indicates past-the-last operation
-   */
-  Iterator End (void) const;
-//  /**
-//   * \brief Perform operations under the label stack
-//   * \param stack mpls label stack to perform operations
-//   * \returns false if executing fails
-//   */
-//  bool Execute (MplsLabelStack &stack) const;
-  /**
-   * \brief Print operation vector
-   * \param os the stream to print to
-   */
-  void Print (std::ostream &os) const;
+  virtual MplsOp::Vector& GetOpVector ();
 
 private:
-  typedef std::vector<MplsOperation> OperationVector;
-  OperationVector m_operations;
+  Vector m_operations;
 };
 
+
+namespace op {
+
 /**
- * \brief output operation for MplsOp
+ * \ingroup mpls
+ * \brief Push operation
  */
-std::ostream& operator<< (std::ostream& os, const MplsOp &op);
+void Push (Ptr<MplsOp> &v, Label label);
+
+/**
+ * \ingroup mpls
+ * \brief Pop operation.
+ */
+void Pop (Ptr<MplsOp> &v);
+
+/**
+ * \ingroup mpls
+ * \brief Swap operation.
+ */
+void Swap (Ptr<MplsOp> &v, Label label);
+
+} // namespace op 
 
 } // namespace mpls
 } // namespace ns3
