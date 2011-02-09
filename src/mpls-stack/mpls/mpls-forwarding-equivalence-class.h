@@ -42,6 +42,19 @@
 namespace ns3 {
 namespace mpls {
 
+
+class ProtocolInformationObject : public SimpleRefCount<ProtocolInformationObject>
+{
+public:
+  typedef Callback <Ptr<TypeLengthValue> > PioCallback;
+  static void Register (int32_t &type, PioCallback cb);
+
+private:
+  typedef std::vector<PioCallback> PioVector;
+  static PioVector s_pio;
+};
+
+
 /**
  * \ingroup Mpls
  * \brief
@@ -83,7 +96,8 @@ private:
   typedef std::vector<Callback <Ptr<TypeLengthValue> > > RegistredPio;
   static RegistredPio& GetRegistredPio (void);
 };
-  
+
+
 ///**
 // * \ingroup Mpls
 // * \brief
