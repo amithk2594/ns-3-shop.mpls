@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_FEC_H
-#define MPLS_FEC_H
+#ifndef MPLS_FORWARDING_EQUIVALENCE_CLASS_H
+#define MPLS_FORWARDING_EQUIVALENCE_CLASS_H
 
 #include <ostream>
 #include <list>
@@ -34,7 +34,7 @@ namespace mpls {
 /**
  * \ingroup Mpls
  * \brief
- * ForwardingEquivalenceClassBase is the base class of FEC.
+ * ForwardingEquivalenceClassBase is abstract FEC class.
  */
 class ForwardingEquivalenceClass: public SimpleRefCount<ForwardingEquivalenceClass>
 {
@@ -47,18 +47,11 @@ public:
    * \brief Destructor
    */
   virtual ~ForwardingEquivalenceClass ();
-  /**
+  /*
    * \brief Check if packet match the FEC
-   * \param packet Packet
-   * \param header IPv4 header
+   * \param pi Protocol information context
    */
-  virtual bool IsMatch (Ptr<const Packet> packet, const Ipv4Header &header) const = 0;
-  /**
-   * \brief Check if packet match the FEC
-   * \param packet Packet
-   * \param header IPv6 header
-   */
-  virtual bool IsMatch (Ptr<const Packet> packet, const Ipv6Header &header) const = 0;
+  virtual bool Match (const ProtocolInformation* pi) const = 0;
   /**
    * \brief Print FEC
    * \param os the stream to print to
