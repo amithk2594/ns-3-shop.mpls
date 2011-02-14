@@ -113,7 +113,7 @@ public:
    */
   Ptr<MplsInterface> GetInterfaceForDevice (const Ptr<NetDevice> &device) const;
   /**
-   * \brief Get count of mpls interfaces
+   * \brief Get mpls interface count
    */
   uint32_t GetNInterfaces (void) const;
   /**

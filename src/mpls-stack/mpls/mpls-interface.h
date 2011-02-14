@@ -59,6 +59,7 @@ public:
    * \brief Get device associated with interface
    */
   Ptr<NetDevice> GetDevice (void) const;
+
   /**
    * \brief Get device associated with interface
    */

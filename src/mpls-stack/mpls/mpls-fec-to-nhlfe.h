@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_FTN_H
-#define MPLS_FTN_H
+#ifndef MPLS_FEC_TO_NHLFE_H
+#define MPLS_FEC_TO_NHLFE_H
 
 #include <ostream>
 #include <stdint.h>
@@ -27,7 +27,7 @@
 #include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
 #include "mpls-forwarding-information-base.h"
-#include "mpls-forwarding-equivalence-class.h"
+#include "mpls-fec.h"
 
 namespace ns3 {
 namespace mpls {
@@ -47,7 +47,7 @@ public:
   /**
    * \brief Constructor
    */
-  FecToNhlfe (const Ptr<ForwardingEquivalenceClass> &fec);
+  FecToNhlfe (const Fec& fec);
   /**
    * \brief Destructor
    */
@@ -56,7 +56,7 @@ public:
    * \brief
    * \returns
    */
-  const Ptr<ForwardingEquivalenceClass>& GetFec (void) const;
+  const Ptr<Fec>& GetFec (void) const;
   /**
    * \brief Print ILM
    * \param os the stream to print to
@@ -64,11 +64,11 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  Ptr<ForwardingEquivalenceClass> m_fec;
+  Fec m_fec;
   friend class ForwardingInformation;
 };
 
 } // namespace mpls
 } // namespace ns3
 
-#endif /* MPLS_FTN_H */
+#endif /* MPLS_FEC_TO_NHLFE_H */

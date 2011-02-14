@@ -34,7 +34,7 @@
 namespace ns3 {
 namespace mpls {
 
-class MplsInterface;
+class Interface;
 
 /**
  * \ingroup mpls
@@ -42,23 +42,23 @@ class MplsInterface;
  *
  * The "Next Hop Label Forwarding Entry" (NHLFE) is used to forward a labeled packet.
  */
-class MplsNhlfe : public SimpleRefCount<MplsNhlfe>
+class NextHopLabelForwardingEntry : public SimpleRefCount<NextHopLabelForwardingEntry>
 {
 public:
   /**
    * \brief construct empty NHLFE
    */
-  MplsNhlfe ();
+  NextHopLabelForwardingEntry ();
   /**
    * \brief construct NHLFE with specified operation vector and interface
    * \param interface MplsInterface
    * \param op MplsOp
    */
-  MplsNhlfe (const Ptr<MplsInterface> &interface, const MplsOp& op);
+  NextHopLabelForwardingEntry (const Ptr<MplsInterface> &interface, const MplsOp& op);
   /**
    * \brief Destructor
    */
-  virtual ~MplsNhlfe ();
+  virtual ~NextHopLabelForwardingEntry ();
   /**
    * \brief Set operation vector
    * \param op MplsOp
@@ -96,9 +96,9 @@ private:
 };
 
 /**
- * \brief output operation for MplsNhlfe
+ * \brief output operation for NextHopLabelForwardingEntry
  */
-std::ostream& operator<< (std::ostream& os, const Ptr<MplsNhlfe> &nhlfe);
+std::ostream& operator<< (std::ostream& os, const Ptr<NextHopLabelForwardingEntry> &nhlfe);
 
 } // namespace mpls
 } // namespace ns3

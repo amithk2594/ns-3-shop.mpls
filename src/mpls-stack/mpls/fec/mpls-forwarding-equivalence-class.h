@@ -34,22 +34,16 @@ namespace mpls {
 /**
  * \ingroup Mpls
  * \brief
- * ForwardingEquivalenceClassBase is abstract FEC class.
+ * FecBase is abstract FEC class.
  */
-class ForwardingEquivalenceClass: public SimpleRefCount<ForwardingEquivalenceClass>
+class FecBase: public SimpleRefCount<FecBase>
 {
 public:
-  /**
-   * \brief Constructor
-   */
-  ForwardingEquivalenceClass ();
-  /**
-   * \brief Destructor
-   */
-  virtual ~ForwardingEquivalenceClass ();
+  FecBase ();
+  virtual ~FecBase ();
   /*
    * \brief Check if packet match the FEC
-   * \param pi Protocol information context
+   * \param pi Protocol information 
    */
   virtual bool Match (const ProtocolInformation* pi) const = 0;
   /**
