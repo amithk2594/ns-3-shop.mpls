@@ -31,18 +31,17 @@
 
 namespace ns3 {
 namespace mpls {
-namespace fec {
 
 /**
  * \ingroup Mpls
  * \brief
- * Base is abstract FEC class.
+ * Fec is abstract FEC class.
  */
-class Base: public SimpleRefCount<Base>
+class Fec: public SimpleRefCount<Fec>
 {
 public:
-  Base ();
-  virtual ~Base ();
+  Fec ();
+  virtual ~Fec ();
   /*
    * \brief Check if packet match the FEC
    * \param pi Protocol information 
@@ -55,7 +54,7 @@ public:
   virtual void Print (std::ostream &os, uint32_t indent) const = 0;
 };
 
-std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingEquivalenceClass> &fec);
+std::ostream& operator<< (std::ostream& os, const Ptr<Fec> &fec);
 
 
 ///**
@@ -63,7 +62,7 @@ std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingEquivalenceClass
 // * \brief
 // * 
 // */
-//class Callback: public Base
+//class Callback: public Fec
 //{
 //public:
 //  typedef Callback<bool, const ProtocolInformation* pi> FecMatcher;
@@ -71,7 +70,7 @@ std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingEquivalenceClass
 //  Callback (const FecMatcher& matcher);
 //  virtual ~Callback ();
 
-//  // Functions defined in base class FecBase   
+//  // Functions defined in Fec class FecFec   
 //  virtual bool Match (const ProtocolInformation* pi) const;
 //  virtual void Print (std::ostream &os, uint32_t indent) const;
 //  
@@ -80,7 +79,6 @@ std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingEquivalenceClass
 //};
 
 
-} // namespace fec
 } // namespace mpls
 } // namespace ns3
 

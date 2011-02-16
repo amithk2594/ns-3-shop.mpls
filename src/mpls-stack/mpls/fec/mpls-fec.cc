@@ -23,17 +23,15 @@
 
 namespace ns3 {
 namespace mpls {
-namespace fec {
 
-Base::Base ()
+Fec::Fec ()
 {
 }
 
-Base::~Base ()
+Fec::~Fec ()
 {
 }
 
 
-} // namespace fec
 } // namespace mpls
 } // namespace ns3
