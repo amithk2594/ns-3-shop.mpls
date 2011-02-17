@@ -32,6 +32,12 @@ Fec::~Fec ()
 {
 }
 
+// std::ostream& 
+// operator<< (std::ostream& os, const Fec& fec)
+// {
+    // // 
+    // return os;
+// }
 
 } // namespace mpls
 } // namespace ns3

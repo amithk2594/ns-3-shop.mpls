@@ -25,9 +25,7 @@
 #include <list>
 
 #include "ns3/callback.h"
-#include "ns3/packet.h"
-#include "ns3/ipv4-header.h"
-#include "ns3/ipv6-header.h"
+#include "ns3/packet-information.h"
 
 namespace ns3 {
 namespace mpls {
@@ -37,47 +35,22 @@ namespace mpls {
  * \brief
  * Fec is abstract FEC class.
  */
-class Fec: public SimpleRefCount<Fec>
+class Fec
 {
 public:
   Fec ();
   virtual ~Fec ();
   /*
    * \brief Check if packet match the FEC
-   * \param pi Protocol information 
+   * \param pi Packet information 
    */
-  virtual bool Match (const ProtocolInformation* pi) const = 0;
-  /**
-   * \brief Print FEC
-   * \param os the stream to print to
-   */
-  virtual void Print (std::ostream &os, uint32_t indent) const = 0;
+  virtual bool Match (const PacketInformation* pi) const = 0;
 };
 
-std::ostream& operator<< (std::ostream& os, const Ptr<Fec> &fec);
+//std::ostream& operator<< (std::ostream& os, const Fec& fec);
 
 
-///**
-// * \ingroup Mpls
-// * \brief
-// * 
-// */
-//class Callback: public Fec
-//{
-//public:
-//  typedef Callback<bool, const ProtocolInformation* pi> FecMatcher;
-
-//  Callback (const FecMatcher& matcher);
-//  virtual ~Callback ();
-
-//  // Functions defined in Fec class FecFec   
-//  virtual bool Match (const ProtocolInformation* pi) const;
-//  virtual void Print (std::ostream &os, uint32_t indent) const;
-//  
-//private:
-//  FecMatcher m_matcher;
-//};
-
+// Fecs
 
 } // namespace mpls
 } // namespace ns3
