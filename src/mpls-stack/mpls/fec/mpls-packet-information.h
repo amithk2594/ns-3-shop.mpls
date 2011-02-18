@@ -42,20 +42,28 @@ public:
   PacketContext (const Ptr<const Packet> &packet, const Ipv4Header &header);
   PacketContext (const Ptr<const Packet> &packet, const Ipv6Header &header);
   ~PacketContext ();
-  
+
   /**
+   * Find protocol information
    * \param typeId 
-   * \returns ProtocolInformation or 0
+   * \return ProtocolInformation or 0
    */
   const ProtocolInformation* GetInfo (uint32_t typeId);
-  // void AddInfo (uint32_t id, const ProtocolInformationObject* obj);
-
-private:
-  static FactoryVector& GetRegistredFactories (void);
+  /**
+   * Get packet
+   * \return Packet 
+   */
+  Ptr<Packet>& GetPacket ();
 
   typedef Callback <ProtocolInformation*, PacketContext*> FactoryCallback;
+ 
+private:
   typedef std::vector<FactoryCallback> FactoryVector;
   typedef std::map<uint32_t, ProtocolInformation*> ContextMap;
+
+private:  
+  static FactoryVector& GetRegistredFactories (void);
+
   ContextMap m_map;
   Ptr<Packet> m_packet;
 };

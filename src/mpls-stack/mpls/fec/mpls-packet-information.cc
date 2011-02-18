@@ -174,8 +174,19 @@ static
 ProtocolInformation* 
 UdpInfo::Factory (PacketContext* context)
 {
-  // check if Ipv4 or Ipv6 exists
-  Ipv4Info* ipv4info = context->GetInfo (Ipv4Info::GetType());
+  // check if ipv4
+  Ipv4Info* ipv4info = context->GetInfo (Ipv4Info::GetType ());
+  if (ipv4info)
+    {
+      if (ipv4info->GetProtocol () == 17) {
+        UdpHeader udpHeader;
+        context->GetPacket ()->RemoveHeader (udpHeader);
+        return new UdpInfo (updHeader);
+      }
+      return 0;
+    }
+  // TODO: add ipv6 support here
+  return 0;
 }
 
 UdpInfo::UdpInfo (const UdpHeader &header)

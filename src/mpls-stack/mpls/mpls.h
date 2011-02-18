@@ -99,7 +99,7 @@ public:
   /**
    * \brief Assign a mpls interface to the device
    * \param device NetDevice
-   * \returns interface index
+   * \return interface index
    */
   uint32_t AddInterface (const Ptr<NetDevice> &device);
   /**
@@ -109,7 +109,7 @@ public:
   Ptr<MplsInterface> GetInterface (uint32_t index) const;
   /**
    * \brief Get mpls interface for specified device
-   * \returns MplsInterface
+   * \return MplsInterface
    */
   Ptr<MplsInterface> GetInterfaceForDevice (const Ptr<NetDevice> &device) const;
   /**
