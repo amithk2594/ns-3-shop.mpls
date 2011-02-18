@@ -33,24 +33,175 @@ namespace mpls {
 /**
  * \ingroup Mpls
  * \brief
- * Fec is abstract FEC class.
+ * Fec is abstract FEC class. It is inherited by two kinds of classes:
+ * - FEC rules (which need copy constructor and destructor)
+ * - Logic operations (which need default copy constructor and destructor)
  */
 class Fec
 {
 public:
   Fec ();
   virtual ~Fec ();
-  /*
-   * \brief Check if packet match the FEC
-   * \param pi Packet information 
+  /**
+   * \brief Check if the packet matches the FEC
+   * \param pc Packet Context
    */
-  virtual bool Match (const PacketInformation* pi) const = 0;
+  virtual bool Match (const PacketContext* pc) const = 0;
+  /**
+   * \brief Virtual copy constructor
+   */
+  virtual Fec* Copy () const = 0;
+  /**
+   * \brief Remove data allocated for the FEC
+   */
+  virtual void Remove () const = 0;
 };
 
 //std::ostream& operator<< (std::ostream& os, const Fec& fec);
 
 
-// Fecs
+// FEC rules
+
+/**
+ * \ingroup Mpls
+ * \brief
+ * Ipv4SourceAddressPrefixFec matches a given IPv4 source address prefix
+ */
+class Ipv4SourceAddressPrefixFec : public Fec
+{
+public:
+  Ipv4SourceAddressPrefixFec (const Ipv4Address &address);
+  Ipv4SourceAddressPrefixFec (const Ipv4Address &address, uint8_t prefix);
+  Ipv4SourceAddressPrefixFec (char const *address);
+
+  Ipv4SourceAddressPrefixFec (const Ipv4SourceAddressPrefixFec &fec);
+  
+  virtual ~Ipv4SourceAddressPrefixFec ();
+  
+  /**
+   * \brief Get the IP address of the FEC
+   */
+  Ipv4Address GetAddress (void) const;
+  /**
+   * \brief Get the prefix of the FEC
+   */
+  uint8_t GetPrefix (void) const;
+  /**
+   * \brief Check if the packet matches the FEC
+   * \param pc Packet Context
+   */
+  virtual bool Match (const PacketContext* pc) const;
+  /**
+   * \brief Virtual copy constructor
+   */
+  virtual Ipv4SourceAddressPrefixFec* Copy () const;
+  /**
+   * \brief Remove data allocated for the FEC
+   */
+  virtual void Remove () const;
+  
+private:
+  Ipv4Address m_address;
+  uint8_t m_prefix;
+};
+
+
+// FEC logic operations
+
+/**
+ * \ingroup Mpls
+ * \brief
+ * FecAnd keeps pointers to two FEC rules that must match both
+ */
+class FecAnd : public Fec
+{
+public:
+  FecAnd (const Fec &left, const Fec &right);
+
+  /**
+   * \brief Check if the packet matches both FEC rules
+   * \param pc Packet Context
+   */
+  virtual bool Match (const PacketContext* pc) const;
+  /**
+   * \brief Virtual copy constructor
+   */
+  virtual FecAnd* Copy () const;
+  /**
+   * \brief Remove data allocated for the FEC
+   */
+  virtual void Remove () const;
+  
+private:
+  Fec* m_left;
+  Fec* m_right;
+};
+
+FecAnd operator &&(const Fec &left, const Fec &right);
+
+
+/**
+ * \ingroup Mpls
+ * \brief
+ * FecOr keeps pointers to two FEC rules that must match either
+ */
+class FecOr : public Fec
+{
+public:
+  FecOr (const Fec &left, const Fec &right);
+
+  /**
+   * \brief Check if the packet matches either FEC rules
+   * \param pc Packet Context
+   */
+  virtual bool Match (const PacketContext* pc) const;
+  /**
+   * \brief Virtual copy constructor
+   */
+  virtual FecOr* Copy () const;
+  /**
+   * \brief Remove data allocated for the FEC
+   */
+  virtual void Remove () const;
+  
+private:
+  Fec* m_left;
+  Fec* m_right;
+};
+
+FecOr operator ||(const Fec &left, const Fec &right);
+
+
+/**
+ * \ingroup Mpls
+ * \brief
+ * FecNot keeps a pointer to the FEC rule that must not match
+ */
+class FecNot : public Fec
+{
+public:
+  FecNot (const Fec &fec);
+
+  /**
+   * \brief Check if the packet does not match the FEC rule
+   * \param pc Packet Context
+   */
+  virtual bool Match (const PacketContext* pc) const;
+  /**
+   * \brief Virtual copy constructor
+   */
+  virtual FecNot* Copy () const;
+  /**
+   * \brief Remove data allocated for the FEC
+   */
+  virtual void Remove () const;
+  
+private:
+  Fec* m_fec;
+};
+
+FecNot operator !(const Fec &fec);
+
 
 } // namespace mpls
 } // namespace ns3
