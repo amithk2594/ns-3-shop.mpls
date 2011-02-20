@@ -34,8 +34,8 @@ namespace mpls {
  * \ingroup Mpls
  * \brief
  * Fec is abstract FEC class. It is inherited by two kinds of classes:
- * - FEC rules (which need copy constructor and destructor)
- * - Logic operations (which need default copy constructor and destructor)
+ * - FEC rules
+ * - Logic operations
  */
 class Fec
 {
@@ -51,10 +51,6 @@ public:
    * \brief Virtual copy constructor
    */
   virtual Fec* Copy () const = 0;
-  /**
-   * \brief Remove data allocated for the FEC
-   */
-  virtual void Remove () const = 0;
 };
 
 //std::ostream& operator<< (std::ostream& os, const Fec& fec);
@@ -95,10 +91,6 @@ public:
    * \brief Virtual copy constructor
    */
   virtual Ipv4SourceAddressPrefixFec* Copy () const;
-  /**
-   * \brief Remove data allocated for the FEC
-   */
-  virtual void Remove () const;
   
 private:
   Ipv4Address m_address;
@@ -116,7 +108,11 @@ private:
 class FecAnd : public Fec
 {
 public:
-  FecAnd (const Fec &left, const Fec &right);
+  FecAnd (const Fec* left, const Fec* right);
+
+  FecAnd (const FecAnd& fec);
+
+  virtual ~FecAnd ();
 
   /**
    * \brief Check if the packet matches both FEC rules
@@ -127,14 +123,10 @@ public:
    * \brief Virtual copy constructor
    */
   virtual FecAnd* Copy () const;
-  /**
-   * \brief Remove data allocated for the FEC
-   */
-  virtual void Remove () const;
   
 private:
-  Fec* m_left;
-  Fec* m_right;
+  const Fec* m_left;
+  const Fec* m_right;
 };
 
 FecAnd operator &&(const Fec &left, const Fec &right);
@@ -148,7 +140,11 @@ FecAnd operator &&(const Fec &left, const Fec &right);
 class FecOr : public Fec
 {
 public:
-  FecOr (const Fec &left, const Fec &right);
+  FecOr (const Fec* left, const Fec* right);
+
+  FecOr (const FecOr& fec);
+
+  virtual ~FecOr ();
 
   /**
    * \brief Check if the packet matches either FEC rules
@@ -159,14 +155,10 @@ public:
    * \brief Virtual copy constructor
    */
   virtual FecOr* Copy () const;
-  /**
-   * \brief Remove data allocated for the FEC
-   */
-  virtual void Remove () const;
   
 private:
-  Fec* m_left;
-  Fec* m_right;
+  const Fec* m_left;
+  const Fec* m_right;
 };
 
 FecOr operator ||(const Fec &left, const Fec &right);
@@ -180,10 +172,14 @@ FecOr operator ||(const Fec &left, const Fec &right);
 class FecNot : public Fec
 {
 public:
-  FecNot (const Fec &fec);
+  FecNot (const Fec* fec);
+
+  FecNot (const FecNot& fec);
+
+  virtual ~FecNot ();
 
   /**
-   * \brief Check if the packet does not match the FEC rule
+   * \brief Check if the packet does not match the FEC
    * \param pc Packet Context
    */
   virtual bool Match (const PacketContext* pc) const;
@@ -191,13 +187,9 @@ public:
    * \brief Virtual copy constructor
    */
   virtual FecNot* Copy () const;
-  /**
-   * \brief Remove data allocated for the FEC
-   */
-  virtual void Remove () const;
   
 private:
-  Fec* m_fec;
+  const Fec* m_fec;
 };
 
 FecNot operator !(const Fec &fec);

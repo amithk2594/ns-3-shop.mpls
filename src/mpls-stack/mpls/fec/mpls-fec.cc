@@ -122,14 +122,24 @@ Ipv4SourceAddressPrefixFec::Copy () const
   return new Ipv4SourceAddressPrefixFec (*this);
 }
 
-void
-Ipv4SourceAddressPrefixFec::Remove() const
+
+
+FecAnd::FecAnd(const Fec* left, const Fec* right): m_left (left), m_right (right)
 {
+  NS_ASSERT_MSG (m_left, "mpls::FecAnd(): invalid first argument");
+  NS_ASSERT_MSG (m_right, "mpls::FecAnd(): invalid second argument");
 }
 
-
-FecAnd::FecAnd(const Fec &left, const Fec &right): m_left (left.Copy ()), m_right (right.Copy ())
+FecAnd::FecAnd(const FecAnd& fec)
 {
+  m_left = fec.m_left->Copy();
+  m_right = fec.m_right->Copy();
+}
+
+FecAnd::~FecAnd()
+{
+  delete m_left;
+  delete m_right;
 }
 
 bool
@@ -144,23 +154,30 @@ FecAnd::Copy() const
   return new FecAnd(*this);
 }
 
-void
-FecAnd::Remove() const
-{
-  m_left->Remove ();
-  m_right->Remove ();
-}
-
 FecAnd
 operator &&(const Fec &left, const Fec &right)
 {
-  return FecAnd (left,right);
+  return FecAnd (left.Copy(), right.Copy());
 }
 
 
 
-FecOr::FecOr(const Fec &left, const Fec &right): m_left (left.Copy ()), m_right (right.Copy ())
+FecOr::FecOr(const Fec* left, const Fec* right): m_left (left), m_right (right)
 {
+  NS_ASSERT_MSG (m_left, "mpls::FecOr(): invalid first argument");
+  NS_ASSERT_MSG (m_right, "mpls::FecOr(): invalid second argument");
+}
+
+FecOr::FecOr(const FecOr& fec)
+{
+  m_left = fec.m_left->Copy();
+  m_right = fec.m_right->Copy();
+}
+
+FecOr::~FecOr()
+{
+  delete m_left;
+  delete m_right;
 }
 
 bool
@@ -175,22 +192,27 @@ FecOr::Copy() const
   return new FecOr(*this);
 }
 
-void
-FecOr::Remove() const
-{
-  m_left->Remove ();
-  m_right->Remove ();
-}
-
 FecOr
-operator &&(const Fec &left, const Fec &right)
+operator ||(const Fec &left, const Fec &right)
 {
-  return FecOr (left,right);
+  return FecOr (left.Copy(), right.Copy());
 }
 
 
-FecNot::FecNot(const Fec &fec): m_fec (fec.Copy ())
+
+FecNot::FecNot(const Fec* fec): m_fec (fec)
 {
+  NS_ASSERT_MSG (m_fec, "mpls::FecNot(): invalid first argument");
+}
+
+FecNot::FecNot(const FecNot& fec)
+{
+  m_fec = fec.m_fec->Copy();
+}
+
+FecNot::~FecNot()
+{
+  delete m_fec;
 }
 
 bool
@@ -205,16 +227,10 @@ FecNot::Copy() const
   return new FecNot(*this);
 }
 
-void
-FecNot::Remove() const
-{
-  m_fec->Remove ();
-}
-
 FecNot
 operator !(const Fec &fec)
 {
-  return FecNot (fec);
+  return FecNot (fec.Copy());
 }
 
   
