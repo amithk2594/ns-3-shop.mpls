@@ -63,12 +63,12 @@ public:
 
 private:  
   Ptr<Packet> m_packet;
-  bool m_udpSearched;
-  bool m_tcpSearched;
   Ipv4Header* m_ipv4Header;
   Ipv6Header* m_ipv6Header;
   UdpHeader* m_udpHeader;
+  bool m_udpSearched;
   TcpHeader* m_tcpHeader;
+  bool m_tcpSearched;
 };
 
 } // namespace mpls
