@@ -29,9 +29,9 @@ PacketContext::PacketContext (const Ptr<const Packet> &packet, const Ipv4Header 
     m_ipv4Header (new Ipv4Header (header)), // XXX: will work?
     m_ipv6Header (NULL),
     m_udpHeader (NULL),
-    m_udpSearched (false),
+    m_udpResolved (false),
     m_tcpHeader (NULL),
-    m_tcpSearched (false)
+    m_tcpResolved (false)
 {
 }
 
@@ -40,9 +40,9 @@ PacketContext::PacketContext (const Ptr<const Packet> &packet, const Ipv6Header 
     m_ipv4Header (NULL), 
     m_ipv6Header (new Ipv6Header (header)),// XXX: will work?
     m_udpHeader (NULL),
-    m_udpSearched (false),
+    m_udpResolved (false),
     m_tcpHeader (NULL),
-    m_tcpSearched (false)
+    m_tcpResolved (false)
 {
 }
 
@@ -69,10 +69,9 @@ PacketContext::GetIpv6 ()
 const TcpHeader*
 PacketContext::GetTcp ()
 {
-  if (!m_tcpSearched) 
+  if (!m_tcpResolved) 
     {
-      // search tcp header
-      m_tcpSearched = true;
+      ResolveTcpHeader ();
     }
   return m_tcpHeader;
 }
@@ -80,12 +79,49 @@ PacketContext::GetTcp ()
 const UdpHeader*
 PacketContext::GetUdp ()
 {
-  if (!m_udpSearched) 
+  if (!m_udpResolved) 
     {
-      // search tcp header
-      m_udpSearched = true;
+      ResolveUdpHeader ();
     }
   return m_udpHeader;
+}
+
+void
+PacketContext::ResolveUdpHeader ()
+{
+  if (m_ipv4Header)
+    {
+      if (m_ipv4Header->GetProtocol () == 17) 
+        {
+          // XXX: possible implement in seperated method? 
+          m_udpHeader = new UdpHeader ();
+          m_packet->RemoveHeader (*m_udpHeader);
+        }
+    }
+  else if (m_ipv6Header)
+    {
+      // TODO: implement
+    }
+  m_udpResolved = true;
+}
+
+void
+PacketContext::ResolveTcpHeader ()
+{
+  if (m_ipv4Header)
+    {
+      if (m_ipv4Header->GetProtocol () == 6) 
+        {
+          // XXX: possible implement in seperated method? 
+          m_tcpHeader = new TcpHeader ();
+          m_packet->RemoveHeader (*m_tcpHeader);
+        }
+    }
+  else if (m_ipv6Header)
+    {
+      // TODO: implement
+    }
+  m_tcpResolved = true;
 }
 
 } // namespace mpls
