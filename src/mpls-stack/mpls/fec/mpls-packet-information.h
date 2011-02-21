@@ -61,14 +61,20 @@ public:
    */
   const TcpHeader* GetTcp (void);
 
+private:
+  void ResolveUdpHeader (void);
+  void ResolveUdpHeader (void);
+//  void ResolveIcmpHeader (void);
+// etc
+
 private:  
   Ptr<Packet> m_packet;
   Ipv4Header* m_ipv4Header;
   Ipv6Header* m_ipv6Header;
   UdpHeader* m_udpHeader;
-  bool m_udpSearched;
+  bool m_udpResolved;
   TcpHeader* m_tcpHeader;
-  bool m_tcpSearched;
+  bool m_tcpResolved;
 };
 
 } // namespace mpls
