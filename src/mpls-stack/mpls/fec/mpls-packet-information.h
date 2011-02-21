@@ -22,11 +22,12 @@
 #define MPLS_PACKET_INFORMATION_H
 
 #include <ostream>
-#include <list>
 
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv6-header.h"
+#include "ns3/udp-header.h"
+#include "ns3/tcp-header.h"
 
 namespace ns3 {
 namespace mpls {
@@ -34,7 +35,7 @@ namespace mpls {
 /**
  * \ingroup Mpls
  * \brief
- * Packet information
+ * Packet information context
  */
 class PacketContext
 {
@@ -44,87 +45,30 @@ public:
   ~PacketContext ();
 
   /**
-   * Find protocol information
-   * \param typeId 
-   * \return ProtocolInformation or 0
+   * Get Ipv4 header if exists
    */
-  const ProtocolInformation* GetInfo (uint32_t typeId);
+  const Ipv4Header* GetIpv4 (void); 
   /**
-   * Get packet
-   * \return Packet 
+   * Get Ipv6 header if exists
    */
-  Ptr<Packet>& GetPacket ();
-
-  typedef Callback <ProtocolInformation*, PacketContext*> FactoryCallback;
- 
-private:
-  typedef std::vector<FactoryCallback> FactoryVector;
-  typedef std::map<uint32_t, ProtocolInformation*> ContextMap;
+  const Ipv6Header* GetIpv6 (void);
+  /**
+   * Get Udp header if exists
+   */
+  const UdpHeader* GetUdp (void);
+  /**
+   * Get Tcp header if exists
+   */
+  const TcpHeader* GetTcp (void);
 
 private:  
-  static FactoryVector& GetRegistredFactories (void);
-
-  ContextMap m_map;
   Ptr<Packet> m_packet;
-};
-
-class ProtocolInformation
-{
-public:
-  ProtocolInformation ();
-  virtual ~ProtocolInformation ();
-};
-
-class Ipv4Info: public ProtocolInformation
-{
-public:
-  static uint32_t GetType (void);
-
-  Ipv4Info (const Ipv4Header &header);
-  virtual ~Ipv4Info ();
-
-  // from Ipv4Header
-  uint16_t GetIdentification (void) const;
-  uint8_t GetTos (void) const;
-  uint8_t GetTtl (void) const;
-  uint8_t GetProtocol (void) const;
-  const Ipv4Address& GetSource (void) const;
-  const Ipv4Address& GetDestination (void) const;
-
-private:
-  uint16_t m_identification;
-  uint8_t m_tos;
-  uint8_t m_ttl;
-  uint32_t m_protocol;
-  Ipv4Address m_source;
-  Ipv4Address m_destination;
-};
-
-class Ipv6Info: public ProtocolInformation
-{
-public:
-  static uint32_t GetType (void);
-
-  Ipv6Info (const Ipv6Header &header);
-  virtual ~Ipv6Info ();
-};
-
-class UdpInfo: public ProtocolInformation
-{
-public:
-  static uint32_t GetType (void);
-  static ProtocolInformation* Factory (PacketContext* context);
-
-  UdpInfo (const UdpHeader &header);
-  virtual ~UdpInfo ();
-
-  // from UdpHeader
-  uint16_t GetSourcePort (void) const;
-  uint16_t GetDestinationPort (void) const;
-
-private:
-  uint16_t m_sourcePort;
-  uint16_t m_destinationPort;
+  bool m_udpSearched;
+  bool m_tcpSearched;
+  Ipv4Header* m_ipv4Header;
+  Ipv6Header* m_ipv6Header;
+  UdpHeader* m_udpHeader;
+  TcpHeader* m_tcpHeader;
 };
 
 } // namespace mpls
