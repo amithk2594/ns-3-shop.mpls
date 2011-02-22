@@ -35,47 +35,52 @@ namespace mpls {
 /**
  * \ingroup Mpls
  * \brief
- * Packet information context
+ * Packet context which holds common headers for Ipv4 and Ipv6
  */
-class PacketContext
+class CommonPacketData
 {
 public:
-  PacketContext (const Ptr<const Packet> &packet, const Ipv4Header &header);
-  PacketContext (const Ptr<const Packet> &packet, const Ipv6Header &header);
-  ~PacketContext ();
+  virtual ~CommonPacketData ();
 
+public:
   /**
-   * Get Ipv4 header if exists
+   * \return Ipv4 header if exists
    */
-  const Ipv4Header* GetIpv4 (void); 
+  virtual const Ipv4Header* GetIpv4Header (void);
   /**
-   * Get Ipv6 header if exists
+   * \return Ipv6 header if exists
    */
-  const Ipv6Header* GetIpv6 (void);
+  virtual const Ipv6Header* GetIpv6Header (void);
   /**
-   * Get Udp header if exists
+   * \return Udp header if exists
    */
-  const UdpHeader* GetUdp (void);
+  virtual const UdpHeader* GetUdpHeader (void);
   /**
-   * Get Tcp header if exists
+   * \return Tcp header if exists
    */
-  const TcpHeader* GetTcp (void);
+  virtual const TcpHeader* GetTcpHeader (void);
+  
+protected:
+  CommonPacketData (const Ptr<const Packet> &packet);
+  virtual bool HeaderFound (uint8_t type) = 0;
+  virtual Header* GetHeader (Header* header);
+  
+private:
+  Ptr<Packet> m_packet;
+}
+
+class Ipv4PacketData: public CommonPacketData
+{
+public:
+  Ipv4PacketData (const Ptr<const Packet> &packet, const Ipv4Header &header);  
+  virtual const Ipv4Header* GetIpv4Header (void);
+
+protected:
+  virtual bool HeaderFound (uint8_t type);
 
 private:
-  void ResolveUdpHeader (void);
-  void ResolveUdpHeader (void);
-//  void ResolveIcmpHeader (void);
-// etc
-
-private:  
-  Ptr<Packet> m_packet;
   Ipv4Header* m_ipv4Header;
-  Ipv6Header* m_ipv6Header;
-  UdpHeader* m_udpHeader;
-  bool m_udpResolved;
-  TcpHeader* m_tcpHeader;
-  bool m_tcpResolved;
-};
+}
 
 } // namespace mpls
 } // namespace ns3
