@@ -37,7 +37,7 @@ Fec::~Fec ()
 // }
 
 template <class Address, class Mask>
-static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, char const *hostprefix, bool slash)
+static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, bool slash)
 {
   #define MAX_STR_LEN 80
   
@@ -45,13 +45,12 @@ static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, ch
   char tmp[MAX_STR_LEN];
   char ch = 0;
   char *tp = tmp;
-  Mask pmask (hostprefix);
 
   while ((ch = *addrstr++) != '\0')
     {
       if (ch == '/')
         {
-          pmask = Mask (slash ? --addrstr : addrstr);
+          mask = Mask (slash ? --addrstr : addrstr);
           break;
         }
       else
@@ -62,7 +61,6 @@ static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, ch
   *tp = 0;
 
   address = Address (tmp);
-  mask = pmask;
 }
 
 
@@ -72,8 +70,9 @@ Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (const Ipv4Address &addre
 {}
 
 Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (char const *address)
+  : m_mask (Ipv4Mask ("/32"))
 {
-  AsciiToPrefix (address, m_address, m_mask, "/32", true);
+  AsciiToPrefix (address, m_address, m_mask, true);
 }
 
 bool
@@ -96,8 +95,9 @@ Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec(const Ipv4Addre
 {}
 
 Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec(char const *address)
+  : m_mask (Ipv4Mask ("/32"))
 {
-  AsciiToPrefix (address, m_address, m_mask, "/32", true);
+  AsciiToPrefix (address, m_address, m_mask, true);
 }
 
 bool
@@ -120,8 +120,9 @@ Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (const Ipv6Address &addre
 {}
 
 Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (char const *address)
+  : m_mask (Ipv6Prefix (128))
 {
-  AsciiToPrefix (address, m_address, m_mask, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", false);
+  AsciiToPrefix (address, m_address, m_mask, false);
 }
 
 bool
@@ -144,8 +145,9 @@ Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec(const Ipv6Addre
 {}
 
 Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec(char const *address)
+  : m_mask (Ipv6Prefix (128))
 {
-  AsciiToPrefix (address, m_address, m_mask, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", false);
+  AsciiToPrefix (address, m_address, m_mask, false);
 }
 
 bool
