@@ -25,10 +25,6 @@
 namespace ns3 {
 namespace mpls {
 
-Fec::Fec ()
-{
-}
-
 Fec::~Fec ()
 {
 }
@@ -40,33 +36,22 @@ Fec::~Fec ()
     // return os;
 // }
 
-
-Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (const Ipv4Address &address)
+template <class Address, class Mask>
+static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, char const *hostprefix, bool slash)
 {
-  m_address = address;
-  m_prefix = 32;
-}
-
-Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (const Ipv4Address &address, uint8_t prefix)
-{
-  NS_ASSERT (prefix <= 32);
-  m_address = address;
-  m_prefix = prefix;
-}
-
-Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (char const *address)
-{
-  NS_ASSERT (strlen (address) < 19);
-  char tmp[19];
+  #define MAX_STR_LEN 80
+  
+  NS_ASSERT (strlen (addrstr) < MAX_STR_LEN);
+  char tmp[MAX_STR_LEN];
   char ch = 0;
   char *tp = tmp;
-  uint8_t plen = 32;
+  Mask pmask (hostprefix);
 
-  while ((ch = *address++) != '\0')
+  while ((ch = *addrstr++) != '\0')
     {
       if (ch == '/')
         {
-          plen = static_cast<uint32_t> (atoi (address));
+          pmask = Mask (slash ? --addrstr : addrstr);
           break;
         }
       else
@@ -76,40 +61,27 @@ Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (char const *address)
     }
   *tp = 0;
 
-  m_address = Ipv4Address (tmp);
-  m_prefix = plen;
+  address = Address (tmp);
+  mask = pmask;
 }
 
-Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (const Ipv4SourceAddressPrefixFec &fec)
-{
-  m_address = fec.m_address;
-  m_prefix = fec.m_prefix;
-}
 
-Ipv4SourceAddressPrefixFec::~Ipv4SourceAddressPrefixFec ()
-{
-}
+Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask)
+  : m_address (address),
+    m_mask (mask)
+{}
 
-Ipv4Address
-Ipv4SourceAddressPrefixFec::GetAddress (void) const
+Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (char const *address)
 {
-  return m_address;
-}
-
-uint8_t
-Ipv4SourceAddressPrefixFec::GetPrefix (void) const
-{
-  return m_prefix;
+  AsciiToPrefix (address, m_address, m_mask, "/32", true);
 }
 
 bool
-Ipv4SourceAddressPrefixFec::Match(const PacketContext* pc) const
+Ipv4SourceAddressPrefixFec::operator()(const CommonPacketData &pd) const
 {
-  uint8_t match = 32 - m_prefix;
+  Ipv4Header* h = pd.GetIpv4Header ();
   
-  ProtocolInformation* pi = pc->GetInfo (Ipv4Info::GetType ());
-  
-  if ((pi) && ((m_address.Get () >> match) == (pi->GetSource ().Get () >> match)))
+  if ((h) && (m_mask.IsMatch (h->GetSource (), m_address)))
     {
       return true;
     }
@@ -117,123 +89,229 @@ Ipv4SourceAddressPrefixFec::Match(const PacketContext* pc) const
   return false;
 }
 
-Ipv4SourceAddressPrefixFec*
-Ipv4SourceAddressPrefixFec::Copy () const
+
+Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec(const Ipv4Address &address, const Ipv4Mask &mask)
+  : m_address (address),
+    m_mask (mask)
+{}
+
+Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec(char const *address)
 {
-  return new Ipv4SourceAddressPrefixFec (*this);
-}
-
-
-
-FecAnd::FecAnd(const Fec* left, const Fec* right): m_left (left), m_right (right)
-{
-  NS_ASSERT_MSG (m_left, "mpls::FecAnd(): invalid first argument");
-  NS_ASSERT_MSG (m_right, "mpls::FecAnd(): invalid second argument");
-}
-
-FecAnd::FecAnd(const FecAnd& fec)
-{
-  m_left = fec.m_left->Copy();
-  m_right = fec.m_right->Copy();
-}
-
-FecAnd::~FecAnd()
-{
-  delete m_left;
-  delete m_right;
+  AsciiToPrefix (address, m_address, m_mask, "/32", true);
 }
 
 bool
-FecAnd::Match(const PacketContext* pc) const
+Ipv4DestinationAddressPrefixFec::operator()(const CommonPacketData &pd) const
 {
-  return m_left->Match (pc) && m_right->Match (pc);
-}
-
-FecAnd*
-FecAnd::Copy() const
-{
-  return new FecAnd(*this);
-}
-
-FecAnd
-operator &&(const Fec &left, const Fec &right)
-{
-  return FecAnd (left.Copy(), right.Copy());
+  Ipv4Header* h = pd.GetIpv4Header ();
+  
+  if ((h) && (m_mask.IsMatch (h->GetDestination (), m_address)))
+    {
+      return true;
+    }
+  
+  return false;
 }
 
 
+Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask)
+  : m_address (address),
+    m_mask (mask)
+{}
 
-FecOr::FecOr(const Fec* left, const Fec* right): m_left (left), m_right (right)
+Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (char const *address)
 {
-  NS_ASSERT_MSG (m_left, "mpls::FecOr(): invalid first argument");
-  NS_ASSERT_MSG (m_right, "mpls::FecOr(): invalid second argument");
-}
-
-FecOr::FecOr(const FecOr& fec)
-{
-  m_left = fec.m_left->Copy();
-  m_right = fec.m_right->Copy();
-}
-
-FecOr::~FecOr()
-{
-  delete m_left;
-  delete m_right;
+  AsciiToPrefix (address, m_address, m_mask, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", false);
 }
 
 bool
-FecOr::Match(const PacketContext* pc) const
+Ipv6SourceAddressPrefixFec::operator()(const CommonPacketData &pd) const
 {
-  return m_left->Match (pc) || m_right->Match (pc);
-}
-
-FecOr*
-FecOr::Copy() const
-{
-  return new FecOr(*this);
-}
-
-FecOr
-operator ||(const Fec &left, const Fec &right)
-{
-  return FecOr (left.Copy(), right.Copy());
-}
-
-
-
-FecNot::FecNot(const Fec* fec): m_fec (fec)
-{
-  NS_ASSERT_MSG (m_fec, "mpls::FecNot(): invalid first argument");
-}
-
-FecNot::FecNot(const FecNot& fec)
-{
-  m_fec = fec.m_fec->Copy();
-}
-
-FecNot::~FecNot()
-{
-  delete m_fec;
-}
-
-bool
-FecNot::Match(const PacketContext* pc) const
-{
-  return !(m_fec->Match (pc));
-}
-
-FecNot*
-FecNot::Copy() const
-{
-  return new FecNot(*this);
-}
-
-FecNot
-operator !(const Fec &fec)
-{
-  return FecNot (fec.Copy());
+  Ipv6Header* h = pd.GetIpv6Header ();
+  
+  if ((h) && (m_mask.IsMatch (h->GetSourceAddress (), m_address)))
+    {
+      return true;
+    }
+  
+  return false;
 }
 
   
+Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec(const Ipv6Address &address, const Ipv6Prefix &mask)
+  : m_address (address),
+    m_mask (mask)
+{}
+
+Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec(char const *address)
+{
+  AsciiToPrefix (address, m_address, m_mask, "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff", false);
+}
+
+bool
+Ipv6DestinationAddressPrefixFec::operator()(const CommonPacketData &pd) const
+{
+  Ipv6Header* h = pd.GetIpv6Header ();
+  
+  if ((h) && (m_mask.IsMatch (h->GetDestinationAddress (), m_address)))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+UdpSourcePortFec::UdpSourcePortFec(uint16_t port)
+  : m_port (port)
+{}
+
+bool
+UdpSourcePortFec::operator()(const CommonPacketData& pd) const
+{
+  UdpHeader* h = pd.GetUdpHeader ();
+  
+  if ((h) && (h->GetSourcePort () == m_port))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+
+UdpSourcePortRangeFec::UdpSourcePortRangeFec(uint16_t minport, uint16_t maxport)
+  : m_minport (minport),
+    m_maxport (maxport)
+{}
+
+bool
+UdpSourcePortRangeFec::operator()(const CommonPacketData& pd) const
+{
+  UdpHeader* h = pd.GetUdpHeader ();
+  
+  if ((h) && (h->GetSourcePort () >= m_minport) && (h->GetSourcePort () <= m_maxport))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+UdpDestinationPortFec::UdpDestinationPortFec(uint16_t port)
+  : m_port (port)
+{}
+
+bool
+UdpDestinationPortFec::operator()(const CommonPacketData& pd) const
+{
+  UdpHeader* h = pd.GetUdpHeader ();
+  
+  if ((h) && (h->GetDestinationPort () == m_port))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+
+UdpDestinationPortRangeFec::UdpDestinationPortRangeFec(uint16_t minport, uint16_t maxport)
+  : m_minport (minport),
+    m_maxport (maxport)
+{}
+
+bool
+UdpDestinationPortRangeFec::operator()(const CommonPacketData& pd) const
+{
+  UdpHeader* h = pd.GetUdpHeader ();
+  
+  if ((h) && (h->GetDestinationPort () >= m_minport) && (h->GetDestinationPort () <= m_maxport))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+TcpSourcePortFec::TcpSourcePortFec(uint16_t port)
+  : m_port (port)
+{}
+
+bool
+TcpSourcePortFec::operator()(const CommonPacketData& pd) const
+{
+  TcpHeader* h = pd.GetTcpHeader ();
+  
+  if ((h) && (h->GetSourcePort () == m_port))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+
+TcpSourcePortRangeFec::TcpSourcePortRangeFec(uint16_t minport, uint16_t maxport)
+  : m_minport (minport),
+    m_maxport (maxport)
+{}
+
+bool
+TcpSourcePortRangeFec::operator()(const CommonPacketData& pd) const
+{
+  TcpHeader* h = pd.GetTcpHeader ();
+  
+  if ((h) && (h->GetSourcePort () >= m_minport) && (h->GetSourcePort () <= m_maxport))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+TcpDestinationPortFec::TcpDestinationPortFec(uint16_t port)
+  : m_port (port)
+{}
+
+bool
+TcpDestinationPortFec::operator()(const CommonPacketData& pd) const
+{
+  TcpHeader* h = pd.GetTcpHeader ();
+  
+  if ((h) && (h->GetDestinationPort () == m_port))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
+
+
+TcpDestinationPortRangeFec::TcpDestinationPortRangeFec(uint16_t minport, uint16_t maxport)
+  : m_minport (minport),
+    m_maxport (maxport)
+{}
+
+bool
+TcpDestinationPortRangeFec::operator()(const CommonPacketData& pd) const
+{
+  TcpHeader* h = pd.GetTcpHeader ();
+  
+  if ((h) && (h->GetDestinationPort () >= m_minport) && (h->GetDestinationPort () <= m_maxport))
+    {
+      return true;
+    }
+  
+  return false;
+}
+
 } // namespace mpls
 } // namespace ns3
