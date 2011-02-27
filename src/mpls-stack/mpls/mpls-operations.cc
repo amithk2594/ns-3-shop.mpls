@@ -24,51 +24,62 @@
 namespace ns3 {
 namespace mpls {
 
-const int32_t MplsOp::PUSH = 0;
-const int32_t MplsOp::POP = 1;
-const int32_t MplsOp::SWAP = 2;
-  
-MplsOp::MplsOp ()
+OperationBuilder::OperationBuilder (OperationVector* op)
+  : m_operations (op)
 {
+  NS_ASSERT_MSG (op != 0, "mpls::OperationBuilder(): invalid operation vector");
 }
 
-MplsOp::~MplsOp ()
+OperationBuilder::~OperationBuilder ()
 {
-  m_operations.clear ();
-}
-
-MplsOp::Vector&
-MplsOp::GetOpVector ()
-{
-  return m_operations;
-}
-
-namespace op {
-
-void
-Push (Ptr<MplsOp> &v, Label label)
-{
-  MplsOp::Vector& vec = v->GetOpVector ();
-  vec.push_back (MplsOp::PUSH);
-  vec.push_back (label);
 }
 
 void
-Pop (Ptr<MplsOp> &v)
+OperationBuilder::Push (Label label)
 {
-  v->GetOpVector ().push_back (MplsOp::POP);
+  m_operations->push_back (OP_PUSH);
+  m_operations->push_back (label);
+  return this;
 }
 
 void
-Swap (Ptr<MplsOp> &v, Label label)
+OperationBuilder::Pop ()
 {
-  MplsOp::Vector& vec = v->GetOpVector ();
-  vec.push_back (MplsOp::SWAP);
-  vec.push_back (label);
+  m_operations->push_back (OP_POP);
+  return this;
 }
 
-} // namespace op 
+void
+OperationBuilder::Swap (Label label)
+{
+  m_operations->push_back (OP_SWAP);
+  m_operations->push_back (label);
+  return this;
+}
 
+OperationIterator::OperationIterator (const OperationVector* op)
+{
+  NS_ASSERT_MSG (op != 0, "mpls::OperationIterator(): invalid operation vector");
+  m_start = op->begin ();
+  m_end = op->end ();
+}
+
+OperationIterator::~OperationIterator ()
+{
+}
+
+bool
+OperationIterator::HasNext () const
+{
+  return m_start != m_end;
+}
+
+uint32_t
+OperationIterator::Get () const
+{
+  NS_ASSERT_MSG (HasNextOpCode (), "mpls::OperationIterator(): malformed operation vector");
+  return *(m_start++);
+}
 
 } // namespace mpls
 } // namespace ns3

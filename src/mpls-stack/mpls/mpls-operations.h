@@ -24,12 +24,16 @@
 #include <ostream>
 #include <vector>
 
-#include "ns3/simple-ref-count.h"
-#include "ns3/ptr.h"
 #include "mpls-generic.h"
 
 namespace ns3 {
 namespace mpls {
+
+typedef std::vector<int32_t> OperationVector;
+
+const uint32_t OP_PUSH = 0;
+const uint32_t OP_POP  = 1;
+const uint32_t OP_SWAP = 2;
 
 /**
  * \ingroup mpls
@@ -37,54 +41,41 @@ namespace mpls {
  *
  * This class is used for creating operation sequence
  */
-class MplsOp : public SimpleRefCount<MplsOp>
+class OperationBuilder
 {
 public:
-  static const int32_t PUSH;
-  static const int32_t POP;
-  static const int32_t SWAP;
-  typedef std::vector<int32_t> Vector;
-
-public:
+  OperationBuilder (OperationVector* op);
+  ~OperationBuilder ();
   /**
-   * \brief Create empty operation vector
+   * @brief Push operation
    */
-  MplsOp ();
+  OperationBuilder& Push (Label label);
   /**
-   * \brief Destructor
+   * @brief Pop operation.
    */
-  virtual ~MplsOp ();
+  OperationBuilder& Pop ();
   /**
-   * \brief Returns operation vector
+   * @brief Swap operation.
    */
-  virtual MplsOp::Vector& GetOpVector ();
+  OperationBuilder& Swap (Label label);
 
 private:
-  Vector m_operations;
+  OperationVector m_operations;  
 };
 
 
-namespace op {
-
-/**
- * \ingroup mpls
- * \brief Push operation
- */
-void Push (Ptr<MplsOp> &v, Label label);
-
-/**
- * \ingroup mpls
- * \brief Pop operation.
- */
-void Pop (Ptr<MplsOp> &v);
-
-/**
- * \ingroup mpls
- * \brief Swap operation.
- */
-void Swap (Ptr<MplsOp> &v, Label label);
-
-} // namespace op 
+class OperationIterator
+{
+public:
+  OperationIterator (const OperationVector* op);
+  ~OperationIterator ();
+  bool HasNext () const;
+  uint32_t Get () const;
+  
+private:
+  OperationVector::const_iterator m_iter;
+  OperationVector::const_iterator m_end;
+}
 
 } // namespace mpls
 } // namespace ns3
