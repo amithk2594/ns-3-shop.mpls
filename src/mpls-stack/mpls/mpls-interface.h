@@ -44,29 +44,28 @@ class Interface : public Object
 public:
   static TypeId GetTypeId (void);
   /**
-   * \brief Create mpls interface
+   * @brief Create mpls interface
    */
   Interface ();
   /**
-   * \brief Destructor
+   * @brief Destructor
    */
   virtual ~Interface ();
-
+  /**
+   * @brief Set device
+   */
   void SetDevice (const Ptr<NetDevice> &device);
+  /**
+   * @brief Set node
+   */  
   void SetNode (const Ptr<Node> &node);
-
   /**
-   * \brief Get device associated with interface
+   * @brief Get device associated with interface
    */
-  Ptr<NetDevice> GetDevice (void) const;
-
+  Ptr<NetDevice>& GetDevice (void);
   /**
-   * \brief Get device associated with interface
-   */
-//  const Ptr<MplsFib>& GetForwardingInformationBase (void) const;
-  /**
-   * \brief Print interface information
-   * \param os the stream to print to
+   * @brief Print interface information
+   * 2param os the stream to print to
    */
   void Print (std::ostream &os) const;
 

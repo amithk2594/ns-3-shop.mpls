@@ -23,61 +23,55 @@
 namespace ns3 {
 namespace mpls {
 
-MplsNhlfe::MplsNhlfe ()
+Nhlfe::Nhlfe ()
   : m_interface (0)
 {
 }
 
-MplsNhlfe::MplsNhlfe (const Ptr<MplsInterface> &interface, const MplsOp& op);
+Nhlfe::Nhlfe (const Ptr<mpls::Interface>& interface, const OperationVector& op)
   : m_interface (interface),
     m_operations (op)
 {
 }
 
-MplsNhlfe::~MplsNhlfe ()
+Nhlfe::~Nhlfe ()
 {
   m_interface = 0;
 }
 
 void
-MplsNhlfe::SetOp (const MplsOp& op)
+Nhlfe::SetOperations (const OperationVector& op)
 {
   m_operations = op;
 }
 
-MplsOp&
-MplsNhlfe::GetOp ()
-{
-  return m_operations;
-}
-
-const MplsOp&
-MplsNhlfe::GetOp () const
+const OperationVector&
+Nhlfe::GetOperations (void) const
 {
   return m_operations;
 }
 
 void
-MplsNhlfe::SetInterface (const Ptr<MplsInterface> &interface)
+Nhlfe::SetInterface (const Ptr<mpls::Interface> &interface)
 {
   m_interface = interface;
 }
 
-const Ptr<MplsInterface>&
-MplsNhlfe::GetInterface (void) const
+const Ptr<mpls::Interface>&
+Nhlfe::GetInterface (void) const
 {
   return m_interface;
 }
 
 void
-MplsNhlfe::Print (std::ostream &os) const
+Nhlfe::Print (std::ostream &os) const
 {
-  os << m_interface
-     << "operations: " << m_operations << std::endl
-    ;
+//  os << m_interface
+//     << "operations: " << m_operations << std::endl
+//    ;
 }
 
-std::ostream& operator<< (std::ostream& os, const Ptr<MplsNhlfe> &nhlfe)
+std::ostream& operator<< (std::ostream& os, const Ptr<Nhlfe> &nhlfe)
 {
   nhlfe->Print (os);
   return os;

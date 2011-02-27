@@ -41,7 +41,6 @@ Interface::Interface ()
     m_device (0)
 {
   NS_LOG_FUNCTION (this);
-  //m_fib = Create<MplsFib> (this);
 }
 
 Interface::~Interface ()
@@ -55,7 +54,6 @@ Interface::DoDispose (void)
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
   m_device = 0;
-  //m_fib = 0;
   Object::DoDispose ();
 }
 
@@ -71,17 +69,11 @@ Interface::SetDevice (const Ptr<NetDevice> &device)
   m_device = device;
 }
 
-Ptr<NetDevice>
-Interface::GetDevice (void) const
+Ptr<NetDevice>&
+Interface::GetDevice (void)
 {
   return m_device;
 }
-
-//const Ptr<MplsFib>&
-//Interface::GetForwardingTable (void) const
-//{
-//  return m_fib;
-//}
 
 void
 Interface::Print (std::ostream &os) const

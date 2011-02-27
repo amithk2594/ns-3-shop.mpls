@@ -23,7 +23,6 @@
 
 #include <ostream>
 #include <vector>
-#include <stdint.h>
 
 #include "ns3/simple-ref-count.h"
 
@@ -42,63 +41,54 @@ class Interface;
  *
  * The "Next Hop Label Forwarding Entry" (NHLFE) is used to forward a labeled packet.
  */
-class NextHopLabelForwardingEntry : public SimpleRefCount<NextHopLabelForwardingEntry>
+class Nhlfe : public SimpleRefCount<Nhlfe>
 {
 public:
   /**
-   * \brief construct empty NHLFE
+   * @brief construct empty NHLFE
    */
-  NextHopLabelForwardingEntry ();
+  Nhlfe ();
   /**
-   * \brief construct NHLFE with specified operation vector and interface
-   * \param interface MplsInterface
-   * \param op MplsOp
+   * @brief construct NHLFE with specified operation vector and interface
+   * @param interface
+   * @param op
    */
-  NextHopLabelForwardingEntry (const Ptr<MplsInterface> &interface, const MplsOp& op);
+  Nhlfe (const Ptr<mpls::Interface> &interface, const OperationVector& op);
   /**
-   * \brief Destructor
+   * @brief Destructor
    */
-  virtual ~NextHopLabelForwardingEntry ();
+  virtual ~Nhlfe ();
   /**
-   * \brief Set operation vector
-   * \param op MplsOp
+   * @brief Set operation vector
    */
-  void SetMplsOp (const Ptr<MplsOp>& op);
+  void SetOperations (const OperationVector& op);
   /**
-   * \brief Get operation vector
-   * \returns MplsOp
+   * @brief Returns operation vector
    */
-  Ptr<MplsOp>& GetOp ();
+  const OperationVector& GetOperations (void) const;
   /**
-   * \brief Get operation vector
-   * \returns MplsOp
+   * @brief Set outgoing interface
    */
-  const Ptr<MplsOp>& GetOp () const;
+  void SetInterface (const Ptr<mpls::Interface> &interface);
   /**
-   * \brief Set outgoing interface
-   * \param interface MplsInterface
+   * @brief Get outgoing interface
    */
-  void SetInterface (const Ptr<MplsInterface> &interface);
+  const Ptr<mpls::Interface>& GetInterface (void) const;
   /**
-   * \brief Get outgoing interface
-   * \returns MplsInterface
-   */
-  const Ptr<MplsInterface>& GetInterface (void) const;
-  /**
-   * \brief print NHLFE
-   * \param os the stream to print to
+   * @brief print NHLFE
+   * @param os the stream to print to
    */
   virtual void Print (std::ostream &os) const;
 
 private:
-  Ptr<MplsInterface> m_interface;
-  Ptr<MplsOp>        m_op;
+  Ptr<mpls::Interface> m_interface;
+  OperationVector m_operations;
 };
 
 /**
- * \brief output operation for NextHopLabelForwardingEntry
+ * @brief output operation for NHLFE
  */
-std::ostream& operator<< (std::ostream& os, const Ptr<NextHopLabelForwardingEntry> &nhlfe);
+std::ostream& operator<< (std::ostream& os, const Ptr<Nhlfe> &nhlfe);
 
 } // namespace mpls
 } // namespace ns3
