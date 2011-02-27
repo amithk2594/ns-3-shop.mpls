@@ -19,13 +19,14 @@
  */
 
 #include <iomanip>
-#include "mpls-packet-data.h"
+#include "ns3/assert.h"
+#include "mpls-packet-demux.h"
 
 namespace ns3 {
 namespace mpls {
 
 HeaderHolderBase::HeaderHolderBase ()
-  : m_state (CLEAR),
+  : m_state (RESET),
     m_header (0)
 {
 }
@@ -35,13 +36,13 @@ HeaderHolderBase::~HeaderHolderBase ()
 }
 
 Header*
-HeaderHolderBase::Get (void)
+HeaderHolderBase::Get (void) const
 {
   return m_state == SET ? m_header : NULL;
 }
 
-bool
-HeaderHolderBase::UnSet (void) const
+void
+HeaderHolderBase::UnSet (void)
 {
   m_state = UNSET;
 }
@@ -58,7 +59,11 @@ HeaderHolderBase::IsReset (void) const
   return m_state == RESET;
 }
 
-FlyweightHeaderHolder::~UnmanagedHeaderHolder ()
+FlyweightHeaderHolder::FlyweightHeaderHolder ()
+{
+}
+
+FlyweightHeaderHolder::~FlyweightHeaderHolder ()
 {
 }
 
@@ -70,8 +75,8 @@ FlyweightHeaderHolder::Set (Header* header)
 }
 
 HeaderHolder::HeaderHolder (Header* header)
-  : m_header (header)
 {
+  m_header = header;
 }
 
 HeaderHolder::~HeaderHolder ()
@@ -87,21 +92,21 @@ HeaderHolder::SetFromPacket (const Ptr<Packet>& packet)
   return m_header;
 }
 
-PacketData::PacketData (const Ptr<Node>& node)
+PacketDemux::PacketDemux (const Ptr<Node>& node)
   : m_node (node),
     m_packet (0),
     m_ipv4Holder (),
     m_tcpHolder (new TcpHeader),
-    m_udpHolder (new UdpHeader),
+    m_udpHolder (new UdpHeader)
 {
 }
 
-PacketData::~PacketData ()
+PacketDemux::~PacketDemux ()
 {
 }
 
 void
-PacketData::Assign (const Ptr<const Packet> &packet, const Ipv4Header &header)
+PacketDemux::Assign (const Ptr<const Packet> &packet, Ipv4Header &header)
 {
   ResetHolders ();
   m_ipv4Holder.Set (&header);
@@ -109,7 +114,13 @@ PacketData::Assign (const Ptr<const Packet> &packet, const Ipv4Header &header)
 }
 
 void
-PacketData::ResetHeaders (void)
+PacketDemux::Assign (const Ptr<const Packet> &packet, Ipv6Header &header)
+{
+  NS_ASSERT_MSG (0, "PacketDemux for Ipv6 not implemented");
+}
+
+void
+PacketDemux::ResetHolders (void)
 {
   m_ipv4Holder.Reset ();
   m_tcpHolder.Reset ();
@@ -117,12 +128,12 @@ PacketData::ResetHeaders (void)
 }
 
 Header*
-PacketData::GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder)
+PacketDemux::GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder)
 {
   if (holder.IsReset ()) 
     {
-      Ipv4Header* ipv4 = GetIpv4Header ();
-      if (ipv4 && ipv4->GetProtocol() == procotol)
+      const Ipv4Header* ipv4 = GetIpv4Header ();
+      if (ipv4 && ipv4->GetProtocol() == protocol)
         {
           return holder.SetFromPacket (m_packet);
         }
@@ -142,19 +153,25 @@ PacketData::GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder)
 }
 
 const Ipv4Header*
-PacketData::GetIpv4Header ()
+PacketDemux::GetIpv4Header ()
 {
   return (Ipv4Header*)m_ipv4Holder.Get ();
 }
 
+const Ipv6Header*
+PacketDemux::GetIpv6Header ()
+{
+  return 0;
+}
+
 const TcpHeader*
-PacketData::GetTcp ()
+PacketDemux::GetTcpHeader ()
 {
   return (TcpHeader*)GetHeaderFromHolder (6, m_tcpHolder);
 }
 
 const UdpHeader*
-PacketData::GetUdp ()
+PacketDemux::GetUdpHeader ()
 {
   return (UdpHeader*)GetHeaderFromHolder (17, m_udpHolder);
 }

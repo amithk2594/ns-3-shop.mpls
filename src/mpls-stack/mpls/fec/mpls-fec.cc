@@ -19,7 +19,10 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#include <iomanip>
+#include "ns3/ipv4-header.h"
+#include "ns3/ipv6-header.h"
+#include "ns3/tcp-header.h"
+#include "ns3/udp-header.h"
 #include "mpls-fec.h"
 
 namespace ns3 {
@@ -28,13 +31,6 @@ namespace mpls {
 Fec::~Fec ()
 {
 }
-
-// std::ostream& 
-// operator<< (std::ostream& os, const Fec& fec)
-// {
-    // // 
-    // return os;
-// }
 
 template <class Address, class Mask>
 static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, bool slash)
@@ -67,7 +63,8 @@ static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, bo
 Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask)
   : m_address (address),
     m_mask (mask)
-{}
+{
+}
 
 Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (char const *address)
   : m_mask (Ipv4Mask ("/32"))
@@ -76,11 +73,11 @@ Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (char const *address)
 }
 
 bool
-Ipv4SourceAddressPrefixFec::operator()(const CommonPacketData &pd) const
+Ipv4SourceAddressPrefixFec::operator() (PacketDemux &pd) const
 {
-  Ipv4Header* h = pd.GetIpv4Header ();
+  const Ipv4Header* h = pd.GetIpv4Header ();
   
-  if ((h) && (m_mask.IsMatch (h->GetSource (), m_address)))
+  if (h && (m_mask.IsMatch (h->GetSource (), m_address)))
     {
       return true;
     }
@@ -89,23 +86,24 @@ Ipv4SourceAddressPrefixFec::operator()(const CommonPacketData &pd) const
 }
 
 
-Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec(const Ipv4Address &address, const Ipv4Mask &mask)
+Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask)
   : m_address (address),
     m_mask (mask)
-{}
+{
+}
 
-Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec(char const *address)
+Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec (char const *address)
   : m_mask (Ipv4Mask ("/32"))
 {
   AsciiToPrefix (address, m_address, m_mask, true);
 }
 
 bool
-Ipv4DestinationAddressPrefixFec::operator()(const CommonPacketData &pd) const
+Ipv4DestinationAddressPrefixFec::operator() (PacketDemux &pd) const
 {
-  Ipv4Header* h = pd.GetIpv4Header ();
+  const Ipv4Header* h = pd.GetIpv4Header ();
   
-  if ((h) && (m_mask.IsMatch (h->GetDestination (), m_address)))
+  if (h && (m_mask.IsMatch (h->GetDestination (), m_address)))
     {
       return true;
     }
@@ -117,7 +115,8 @@ Ipv4DestinationAddressPrefixFec::operator()(const CommonPacketData &pd) const
 Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask)
   : m_address (address),
     m_mask (mask)
-{}
+{
+}
 
 Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (char const *address)
   : m_mask (Ipv6Prefix (128))
@@ -126,11 +125,11 @@ Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (char const *address)
 }
 
 bool
-Ipv6SourceAddressPrefixFec::operator()(const CommonPacketData &pd) const
+Ipv6SourceAddressPrefixFec::operator() (PacketDemux &pd) const
 {
-  Ipv6Header* h = pd.GetIpv6Header ();
+  const Ipv6Header* h = pd.GetIpv6Header ();
   
-  if ((h) && (m_mask.IsMatch (h->GetSourceAddress (), m_address)))
+  if (h && (m_mask.IsMatch (h->GetSourceAddress (), m_address)))
     {
       return true;
     }
@@ -139,23 +138,24 @@ Ipv6SourceAddressPrefixFec::operator()(const CommonPacketData &pd) const
 }
 
   
-Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec(const Ipv6Address &address, const Ipv6Prefix &mask)
+Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask)
   : m_address (address),
     m_mask (mask)
-{}
+{
+}
 
-Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec(char const *address)
+Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec (char const *address)
   : m_mask (Ipv6Prefix (128))
 {
   AsciiToPrefix (address, m_address, m_mask, false);
 }
 
 bool
-Ipv6DestinationAddressPrefixFec::operator()(const CommonPacketData &pd) const
+Ipv6DestinationAddressPrefixFec::operator() (PacketDemux &pd) const
 {
-  Ipv6Header* h = pd.GetIpv6Header ();
+  const Ipv6Header* h = pd.GetIpv6Header ();
   
-  if ((h) && (m_mask.IsMatch (h->GetDestinationAddress (), m_address)))
+  if (h && (m_mask.IsMatch (h->GetDestinationAddress (), m_address)))
     {
       return true;
     }
@@ -164,14 +164,15 @@ Ipv6DestinationAddressPrefixFec::operator()(const CommonPacketData &pd) const
 }
 
 
-UdpSourcePortFec::UdpSourcePortFec(uint16_t port)
+UdpSourcePortFec::UdpSourcePortFec (uint16_t port)
   : m_port (port)
-{}
+{
+}
 
 bool
-UdpSourcePortFec::operator()(const CommonPacketData& pd) const
+UdpSourcePortFec::operator() (PacketDemux& pd) const
 {
-  UdpHeader* h = pd.GetUdpHeader ();
+  const UdpHeader* h = pd.GetUdpHeader ();
   
   if ((h) && (h->GetSourcePort () == m_port))
     {
@@ -183,17 +184,18 @@ UdpSourcePortFec::operator()(const CommonPacketData& pd) const
 
 
 
-UdpSourcePortRangeFec::UdpSourcePortRangeFec(uint16_t minport, uint16_t maxport)
-  : m_minport (minport),
-    m_maxport (maxport)
-{}
+UdpSourcePortRangeFec::UdpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort)
+  : m_minPort (minPort),
+    m_maxPort (maxPort)
+{
+}
 
 bool
-UdpSourcePortRangeFec::operator()(const CommonPacketData& pd) const
+UdpSourcePortRangeFec::operator() (PacketDemux& pd) const
 {
-  UdpHeader* h = pd.GetUdpHeader ();
+  const UdpHeader* h = pd.GetUdpHeader ();
   
-  if ((h) && (h->GetSourcePort () >= m_minport) && (h->GetSourcePort () <= m_maxport))
+  if ((h) && (h->GetSourcePort () >= m_minPort) && (h->GetSourcePort () <= m_maxPort))
     {
       return true;
     }
@@ -202,16 +204,17 @@ UdpSourcePortRangeFec::operator()(const CommonPacketData& pd) const
 }
 
 
-UdpDestinationPortFec::UdpDestinationPortFec(uint16_t port)
+UdpDestinationPortFec::UdpDestinationPortFec (uint16_t port)
   : m_port (port)
-{}
+{
+}
 
 bool
-UdpDestinationPortFec::operator()(const CommonPacketData& pd) const
+UdpDestinationPortFec::operator() (PacketDemux& pd) const
 {
-  UdpHeader* h = pd.GetUdpHeader ();
+  const UdpHeader* h = pd.GetUdpHeader ();
   
-  if ((h) && (h->GetDestinationPort () == m_port))
+  if (h && (h->GetDestinationPort () == m_port))
     {
       return true;
     }
@@ -221,17 +224,18 @@ UdpDestinationPortFec::operator()(const CommonPacketData& pd) const
 
 
 
-UdpDestinationPortRangeFec::UdpDestinationPortRangeFec(uint16_t minport, uint16_t maxport)
-  : m_minport (minport),
-    m_maxport (maxport)
-{}
+UdpDestinationPortRangeFec::UdpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort)
+  : m_minPort (minPort),
+    m_maxPort (maxPort)
+{
+}
 
 bool
-UdpDestinationPortRangeFec::operator()(const CommonPacketData& pd) const
+UdpDestinationPortRangeFec::operator() (PacketDemux& pd) const
 {
-  UdpHeader* h = pd.GetUdpHeader ();
+  const UdpHeader* h = pd.GetUdpHeader ();
   
-  if ((h) && (h->GetDestinationPort () >= m_minport) && (h->GetDestinationPort () <= m_maxport))
+  if (h && (h->GetDestinationPort () >= m_minPort) && (h->GetDestinationPort () <= m_maxPort))
     {
       return true;
     }
@@ -240,16 +244,17 @@ UdpDestinationPortRangeFec::operator()(const CommonPacketData& pd) const
 }
 
 
-TcpSourcePortFec::TcpSourcePortFec(uint16_t port)
+TcpSourcePortFec::TcpSourcePortFec (uint16_t port)
   : m_port (port)
-{}
+{
+}
 
 bool
-TcpSourcePortFec::operator()(const CommonPacketData& pd) const
+TcpSourcePortFec::operator() (PacketDemux& pd) const
 {
-  TcpHeader* h = pd.GetTcpHeader ();
+  const TcpHeader* h = pd.GetTcpHeader ();
   
-  if ((h) && (h->GetSourcePort () == m_port))
+  if (h && (h->GetSourcePort () == m_port))
     {
       return true;
     }
@@ -259,17 +264,18 @@ TcpSourcePortFec::operator()(const CommonPacketData& pd) const
 
 
 
-TcpSourcePortRangeFec::TcpSourcePortRangeFec(uint16_t minport, uint16_t maxport)
-  : m_minport (minport),
-    m_maxport (maxport)
-{}
+TcpSourcePortRangeFec::TcpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort)
+  : m_minPort (minPort),
+    m_maxPort (maxPort)
+{
+}
 
 bool
-TcpSourcePortRangeFec::operator()(const CommonPacketData& pd) const
+TcpSourcePortRangeFec::operator() (PacketDemux& pd) const
 {
-  TcpHeader* h = pd.GetTcpHeader ();
+  const TcpHeader* h = pd.GetTcpHeader ();
   
-  if ((h) && (h->GetSourcePort () >= m_minport) && (h->GetSourcePort () <= m_maxport))
+  if (h && (h->GetSourcePort () >= m_minPort) && (h->GetSourcePort () <= m_maxPort))
     {
       return true;
     }
@@ -278,16 +284,17 @@ TcpSourcePortRangeFec::operator()(const CommonPacketData& pd) const
 }
 
 
-TcpDestinationPortFec::TcpDestinationPortFec(uint16_t port)
+TcpDestinationPortFec::TcpDestinationPortFec (uint16_t port)
   : m_port (port)
-{}
+{
+}
 
 bool
-TcpDestinationPortFec::operator()(const CommonPacketData& pd) const
+TcpDestinationPortFec::operator() (PacketDemux& pd) const
 {
-  TcpHeader* h = pd.GetTcpHeader ();
+  const TcpHeader* h = pd.GetTcpHeader ();
   
-  if ((h) && (h->GetDestinationPort () == m_port))
+  if (h && (h->GetDestinationPort () == m_port))
     {
       return true;
     }
@@ -297,17 +304,18 @@ TcpDestinationPortFec::operator()(const CommonPacketData& pd) const
 
 
 
-TcpDestinationPortRangeFec::TcpDestinationPortRangeFec(uint16_t minport, uint16_t maxport)
-  : m_minport (minport),
-    m_maxport (maxport)
-{}
+TcpDestinationPortRangeFec::TcpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort)
+  : m_minPort (minPort),
+    m_maxPort (maxPort)
+{
+}
 
 bool
-TcpDestinationPortRangeFec::operator()(const CommonPacketData& pd) const
+TcpDestinationPortRangeFec::operator() (PacketDemux& pd) const
 {
-  TcpHeader* h = pd.GetTcpHeader ();
+  const TcpHeader* h = pd.GetTcpHeader ();
   
-  if ((h) && (h->GetDestinationPort () >= m_minport) && (h->GetDestinationPort () <= m_maxport))
+  if (h && (h->GetDestinationPort () >= m_minPort) && (h->GetDestinationPort () <= m_maxPort))
     {
       return true;
     }

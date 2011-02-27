@@ -23,10 +23,11 @@
 #define MPLS_FEC_H
 
 #include <ostream>
-#include <list>
 
-#include "ns3/callback.h"
-#include "ns3/packet-information.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
+
+#include "mpls-packet-demux.h"
 
 namespace ns3 {
 namespace mpls {
@@ -36,7 +37,7 @@ namespace mpls {
  * \brief
  * Fec is abstract FEC class. It is inherited by Fec rules classes
  */
-class Fec : public std::unary_function<CommonPacketData, bool>
+class Fec : public std::unary_function<PacketDemux, bool>
 {
 public:
   virtual ~Fec ();
@@ -44,51 +45,46 @@ public:
    * \brief Check if the packet matches the FEC
    * \param pc Packet Context
    */
-  virtual bool operator()(const CommonPacketData &pd) const = 0;
+  virtual bool operator() (PacketDemux &pd) const = 0;
 };
 
 //std::ostream& operator<< (std::ostream& os, const Fec& fec);
 
 // We need to define compositing function objects that inherits from Fec
 
-template <class _Operation1, class _Operation2>
-class unary_compose : public Fec
+template <class Operation1, class Operation2>
+class UnaryCompose : public Fec
 {
 protected:
-  _Operation1 _M_fn1;
-  _Operation2 _M_fn2;
+  Operation1 m_fn1;
+  Operation2 m_fn2;
 
 public:
-  unary_compose(const _Operation1& __x, const _Operation2& __y)
-    : _M_fn1(__x), _M_fn2(__y)
-  {}
+  UnaryCompose (const Operation1& x, const Operation2& y): m_fn1(x), m_fn2(y) {}
 
-  typename _Operation1::result_type
-  operator()(const typename _Operation2::argument_type& __x) const
+  typename Operation1::result_type
+  operator() (const typename Operation2::argument_type& x) const
   { 
-    return _M_fn1(_M_fn2(__x));
+    return m_fn1 (m_fn2 (x));
   }
 };
 
 
-template <class _Operation1, class _Operation2, class _Operation3>
-class binary_compose : public Fec
+template <class Operation1, class Operation2, class Operation3>
+class BinaryCompose : public Fec
 {
 protected:
-  _Operation1 _M_fn1;
-  _Operation2 _M_fn2;
-  _Operation3 _M_fn3;
+  Operation1 m_fn1;
+  Operation2 m_fn2;
+  Operation3 m_fn3;
   
 public:
-  binary_compose(const _Operation1& __x, const _Operation2& __y,
-		  const _Operation3& __z)
-    : _M_fn1(__x), _M_fn2(__y), _M_fn3(__z)
-  {}
+  BinaryCompose(const Operation1& x, const Operation2& y, const Operation3& z): m_fn1(x), m_fn2(y), m_fn3(z) {}
 
-  typename _Operation1::result_type
-  operator()(const typename _Operation2::argument_type& __x) const
+  typename Operation1::result_type
+  operator()(const typename Operation2::argument_type& x) const
   {
-    return _M_fn1(_M_fn2(__x), _M_fn3(__x)); 
+    return m_fn1 (m_fn2 (x), m_fn3 (x));
   }
 };
 
@@ -96,26 +92,26 @@ public:
 // Logic Operations
 
 template <class LeftPred, class RightPred>
-binary_compose<std::logical_and<bool>, LeftPred, RightPred> 
-operator &&(const LeftPred &left, const RightPred &right)
+BinaryCompose<std::logical_and<bool>, LeftPred, RightPred> 
+operator&& (const LeftPred &left, const RightPred &right)
 {
-  return binary_compose<std::logical_and<bool>, LeftPred, RightPred>(std::logical_and<bool>(), left, right);
+  return BinaryCompose<std::logical_and<bool>, LeftPred, RightPred> (std::logical_and<bool> (), left, right);
 }
 
 
 template <class LeftPred, class RightPred>
-binary_compose<std::logical_or<bool>, LeftPred, RightPred> 
-operator ||(const LeftPred &left, const RightPred &right)
+BinaryCompose<std::logical_or<bool>, LeftPred, RightPred> 
+operator|| (const LeftPred &left, const RightPred &right)
 {
-  return binary_compose<std::logical_or<bool>, LeftPred, RightPred>(std::logical_or<bool>(), left, right);
+  return BinaryCompose<std::logical_or<bool>, LeftPred, RightPred> (std::logical_or<bool> (), left, right);
 }
 
 
 template <class Pred>
-unary_compose<std::logical_not<bool>, Pred> 
-operator !(const Pred &pred)
+UnaryCompose<std::logical_not<bool>, Pred> 
+operator! (const Pred &pred)
 {
-  return unary_compose<std::logical_not<bool>, Pred>(std::logical_not<bool>(), pred);
+  return UnaryCompose<std::logical_not<bool>, Pred> (std::logical_not<bool> (), pred);
 }
 
 
@@ -132,7 +128,7 @@ public:
   Ipv4SourceAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
   Ipv4SourceAddressPrefixFec (char const *address);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   Ipv4Address m_address;
@@ -151,7 +147,7 @@ public:
   Ipv4DestinationAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
   Ipv4DestinationAddressPrefixFec (char const *address);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   Ipv4Address m_address;
@@ -170,7 +166,7 @@ public:
   Ipv6SourceAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
   Ipv6SourceAddressPrefixFec (char const *address);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   Ipv6Address m_address;
@@ -189,7 +185,7 @@ public:
   Ipv6DestinationAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
   Ipv6DestinationAddressPrefixFec (char const *address);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   Ipv6Address m_address;
@@ -207,7 +203,7 @@ class UdpSourcePortFec : public Fec
 public:
   UdpSourcePortFec (uint16_t port);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   uint16_t m_port;
@@ -222,13 +218,13 @@ private:
 class UdpSourcePortRangeFec : public Fec
 {
 public:
-  UdpSourcePortRangeFec (uint16_t minport, uint16_t maxport);
+  UdpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
-  uint16_t m_minport;
-  uint16_t m_maxport;
+  uint16_t m_minPort;
+  uint16_t m_maxPort;
 };
 
 
@@ -242,7 +238,7 @@ class UdpDestinationPortFec : public Fec
 public:
   UdpDestinationPortFec (uint16_t port);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   uint16_t m_port;
@@ -257,13 +253,13 @@ private:
 class UdpDestinationPortRangeFec : public Fec
 {
 public:
-  UdpDestinationPortRangeFec (uint16_t minport, uint16_t maxport);
+  UdpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
-  uint16_t m_minport;
-  uint16_t m_maxport;
+  uint16_t m_minPort;
+  uint16_t m_maxPort;
 };
 
 
@@ -277,7 +273,7 @@ class TcpSourcePortFec : public Fec
 public:
   TcpSourcePortFec (uint16_t port);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   uint16_t m_port;
@@ -292,13 +288,13 @@ private:
 class TcpSourcePortRangeFec : public Fec
 {
 public:
-  TcpSourcePortRangeFec (uint16_t minport, uint16_t maxport);
+  TcpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
-  uint16_t m_minport;
-  uint16_t m_maxport;
+  uint16_t m_minPort;
+  uint16_t m_maxPort;
 };
 
 
@@ -312,7 +308,7 @@ class TcpDestinationPortFec : public Fec
 public:
   TcpDestinationPortFec (uint16_t port);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
   uint16_t m_port;
@@ -327,13 +323,13 @@ private:
 class TcpDestinationPortRangeFec : public Fec
 {
 public:
-  TcpDestinationPortRangeFec (uint16_t minport, uint16_t maxport);
+  TcpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort);
 
-  bool operator() (const CommonPacketData &pd) const;
+  bool operator() (PacketDemux &pd) const;
   
 private:
-  uint16_t m_minport;
-  uint16_t m_maxport;
+  uint16_t m_minPort;
+  uint16_t m_maxPort;
 };
 
 } // namespace mpls

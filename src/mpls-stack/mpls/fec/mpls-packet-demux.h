@@ -18,12 +18,14 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_PACKET_DATA_H
-#define MPLS_PACKET_DATA_H
+#ifndef MPLS_PACKET_DEMUX_H
+#define MPLS_PACKET_DEMUX_H
 
 #include <ostream>
 
 #include "ns3/packet.h"
+#include "ns3/node.h"
+#include "ns3/header.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv6-header.h"
 #include "ns3/udp-header.h"
@@ -43,15 +45,14 @@ public:
   virtual bool IsReset (void) const;
 
 protected:
-  enum {
+  enum State {
     RESET = 0,
     SET,    
     UNSET
-  } State;
+  };
 
-  State m_state;
+  enum State m_state;
 
-private:
   Header* m_header;
 };
 
@@ -61,7 +62,7 @@ public:
   FlyweightHeaderHolder ();
   virtual ~FlyweightHeaderHolder ();
   virtual void Set (Header* header);
-}
+};
 
 class HeaderHolder: public HeaderHolderBase
 {
@@ -76,20 +77,28 @@ public:
  * \brief
  * Packet context which holds common headers for Ipv4 and Ipv6
  */
-class PacketData
+class PacketDemux
 {
 public:
-  PacketData (const Ptr<Node>& node);
-  ~PacketData ();
+  PacketDemux (const Ptr<Node>& node);
+  ~PacketDemux ();
   
   /**
    * @brief Assign new packet and Ipv4 header.
    */
-  void Assign (const Ptr<const Packet> &packet, const Ipv4Header &header);
+  void Assign (const Ptr<const Packet> &packet, Ipv4Header &header);
+  /**
+   * @brief Assign new packet and Ipv6 header.
+   */
+  void Assign (const Ptr<const Packet> &packet, Ipv6Header &header);  
   /**
    * \return Ipv4 header if exists
    */
   const Ipv4Header* GetIpv4Header (void);
+  /**
+   * \return Ipv4 header if exists
+   */
+  const Ipv6Header* GetIpv6Header (void);  
   /**
    * \return Udp header if exists
    */
@@ -101,15 +110,17 @@ public:
 
 private:
   Header* GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder);
+  void ResetHolders (void);  
 
   Ptr<Node> m_node;
   Ptr<Packet> m_packet;
   FlyweightHeaderHolder m_ipv4Holder;
+  FlyweightHeaderHolder m_ipv6Holder;  
   HeaderHolder m_tcpHolder;
   HeaderHolder m_udpHolder;
-}
+};
 
 } // namespace mpls
 } // namespace ns3
 
-#endif /* MPLS_PACKET_DATA_H */
+#endif /* MPLS_PACKET_DEMUX_H */
