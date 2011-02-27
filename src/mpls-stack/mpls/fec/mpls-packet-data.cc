@@ -87,11 +87,12 @@ HeaderHolder::SetFromPacket (const Ptr<Packet>& packet)
   return m_header;
 }
 
-PacketData::PacketData ()
-  : m_packet (0),
+PacketData::PacketData (const Ptr<Node>& node)
+  : m_node (node),
+    m_packet (0),
     m_ipv4Holder (),
     m_tcpHolder (new TcpHeader),
-    m_udpHolder (new UdpHeader)
+    m_udpHolder (new UdpHeader),
 {
 }
 
@@ -127,6 +128,7 @@ PacketData::GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder)
         }
 
 //      Ipv6Header* ipv6 = GetIpv6Header ();
+//      XXX: should use Ipv6ExtensionDemux here
 //      if (ipv6)
 //        {
 //           && ipv6->GetNextHeader() == procotol

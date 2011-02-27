@@ -79,7 +79,7 @@ public:
 class PacketData
 {
 public:
-  PacketData ();
+  PacketData (const Ptr<Node>& node);
   ~PacketData ();
   
   /**
@@ -102,6 +102,7 @@ public:
 private:
   Header* GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder);
 
+  Ptr<Node> m_node;
   Ptr<Packet> m_packet;
   FlyweightHeaderHolder m_ipv4Holder;
   HeaderHolder m_tcpHolder;
