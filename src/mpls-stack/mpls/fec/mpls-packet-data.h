@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef MPLS_PACKET_INFORMATION_H
-#define MPLS_PACKET_INFORMATION_H
+#ifndef MPLS_PACKET_DATA_H
+#define MPLS_PACKET_DATA_H
 
 #include <ostream>
 
@@ -32,57 +32,83 @@
 namespace ns3 {
 namespace mpls {
 
+class HeaderHolderBase
+{
+public:
+  HeaderHolderBase ();
+  virtual ~HeaderHolderBase ();
+  virtual Header* Get () const;
+  virtual void UnSet (void);
+  virtual void Reset (void);
+  virtual bool IsReset (void) const;
+
+protected:
+  enum {
+    RESET = 0,
+    SET,    
+    UNSET
+  } State;
+
+  State m_state;
+
+private:
+  Header* m_header;
+};
+
+class FlyweightHeaderHolder: public HeaderHolderBase
+{
+public:
+  FlyweightHeaderHolder ();
+  virtual ~FlyweightHeaderHolder ();
+  virtual void Set (Header* header);
+}
+
+class HeaderHolder: public HeaderHolderBase
+{
+public:
+  HeaderHolder (Header* header);
+  ~HeaderHolder ();
+  Header* SetFromPacket (const Ptr<Packet>& packet);
+};
+
 /**
  * \ingroup Mpls
  * \brief
  * Packet context which holds common headers for Ipv4 and Ipv6
  */
-class CommonPacketData
+class PacketData
 {
 public:
-  virtual ~CommonPacketData ();
-
-public:
+  PacketData ();
+  ~PacketData ();
+  
+  /**
+   * @brief Assign new packet and Ipv4 header.
+   */
+  void Assign (const Ptr<const Packet> &packet, const Ipv4Header &header);
   /**
    * \return Ipv4 header if exists
    */
-  virtual const Ipv4Header* GetIpv4Header (void);
-  /**
-   * \return Ipv6 header if exists
-   */
-  virtual const Ipv6Header* GetIpv6Header (void);
+  const Ipv4Header* GetIpv4Header (void);
   /**
    * \return Udp header if exists
    */
-  virtual const UdpHeader* GetUdpHeader (void);
+  const UdpHeader* GetUdpHeader (void);
   /**
    * \return Tcp header if exists
    */
-  virtual const TcpHeader* GetTcpHeader (void);
-  
-protected:
-  CommonPacketData (const Ptr<const Packet> &packet);
-  virtual bool HeaderFound (uint8_t type) = 0;
-  virtual Header* GetHeader (Header* header);
-  
+  const TcpHeader* GetTcpHeader (void);
+
 private:
+  Header* GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder);
+
   Ptr<Packet> m_packet;
-}
-
-class Ipv4PacketData: public CommonPacketData
-{
-public:
-  Ipv4PacketData (const Ptr<const Packet> &packet, const Ipv4Header &header);  
-  virtual const Ipv4Header* GetIpv4Header (void);
-
-protected:
-  virtual bool HeaderFound (uint8_t type);
-
-private:
-  Ipv4Header* m_ipv4Header;
+  FlyweightHeaderHolder m_ipv4Holder;
+  HeaderHolder m_tcpHolder;
+  HeaderHolder m_udpHolder;
 }
 
 } // namespace mpls
 } // namespace ns3
 
-#endif /* MPLS_PROTOCOL_INFORMATION_H */
+#endif /* MPLS_PACKET_DATA_H */

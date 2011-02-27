@@ -24,74 +24,137 @@
 namespace ns3 {
 namespace mpls {
 
-CommonPacketData::CommonPacketData (const Ptr<const Packet> &packet)
-  : m_packet (packet->Copy ()),
-    m_udpHeader (UNRESOLVED),
-    m_tcpHeader (UNRESOLVED)
+HeaderHolderBase::HeaderHolderBase ()
+  : m_state (CLEAR),
+    m_header (0)
 {
 }
 
-CommonPacketData::~CommonPacketData ()
+HeaderHolderBase::~HeaderHolderBase ()
 {
-  delete m_tcpHeader;
-  delete m_udpHeader;
-}
-
-const Ipv4Header*
-CommonPacketData::GetIpv4Header ()
-{
-  return 0;
-}
-
-const Ipv6Header*
-CommonPacketData::GetIpv6Header ()
-{
-  return 0;
-}
-
-const TcpHeader*
-CommonPacketData::GetTcp ()
-{
-  if (m_tcpHeader == UNRESOLVED)
-    {
-      m_tcpHeader = HeaderFound (6) ? GetHeader (new TcpHeader ()): 0;
-    }
-  return m_tcpHeader;
-}
-
-const UdpHeader*
-CommonPacketData::GetUdp ()
-{
-  if (m_udpHeader == UNRESOLVED) 
-    {
-      m_udpHeader = HeaderFound (17) ? GetHeader (new UdpHeader ()) : 0;
-    }
-  return m_udpHeader;
 }
 
 Header*
-CommonPacketData::GetHeader (Header* header)
+HeaderHolderBase::Get (void)
 {
-  m_packet->RemoveHeader (*header);
-  return header;
+  return m_state == SET ? m_header : NULL;
 }
 
-Ipv4PacketData::Ipv4PacketData (const Ptr<const Packet> &packet, const Ipv4Header &header)
-  : CommonPacketData (packet),
-    m_ipv4Header (header)
+bool
+HeaderHolderBase::UnSet (void) const
 {
+  m_state = UNSET;
+}
+
+void
+HeaderHolderBase::Reset (void)
+{
+  m_state = RESET;
+}
+
+bool
+HeaderHolderBase::IsReset (void) const
+{
+  return m_state == RESET;
+}
+
+FlyweightHeaderHolder::~UnmanagedHeaderHolder ()
+{
+}
+
+void
+FlyweightHeaderHolder::Set (Header* header)
+{
+  m_header = header;
+  m_state = SET;
+}
+
+HeaderHolder::HeaderHolder (Header* header)
+  : m_header (header)
+{
+}
+
+HeaderHolder::~HeaderHolder ()
+{
+  delete m_header;
+}
+
+Header*
+HeaderHolder::SetFromPacket (const Ptr<Packet>& packet)
+{
+  packet->RemoveHeader (*m_header);
+  m_state = SET;
+  return m_header;
+}
+
+PacketData::PacketData ()
+  : m_packet (0),
+    m_ipv4Holder (),
+    m_tcpHolder (new TcpHeader),
+    m_udpHolder (new UdpHeader)
+{
+}
+
+PacketData::~PacketData ()
+{
+}
+
+void
+PacketData::Assign (const Ptr<const Packet> &packet, const Ipv4Header &header)
+{
+  ResetHolders ();
+  m_ipv4Holder.Set (&header);
+  m_packet = packet->Copy ();
+}
+
+void
+PacketData::ResetHeaders (void)
+{
+  m_ipv4Holder.Reset ();
+  m_tcpHolder.Reset ();
+  m_udpHolder.Reset ();
+}
+
+Header*
+PacketData::GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder)
+{
+  if (holder.IsReset ()) 
+    {
+      Ipv4Header* ipv4 = GetIpv4Header ();
+      if (ipv4 && ipv4->GetProtocol() == procotol)
+        {
+          return holder.SetFromPacket (m_packet);
+        }
+
+//      Ipv6Header* ipv6 = GetIpv6Header ();
+//      if (ipv6)
+//        {
+//           && ipv6->GetNextHeader() == procotol
+//          holder.UnSet ();
+//        }
+
+      holder.UnSet ();
+      return 0;
+    }
+  return holder.Get ();
 }
 
 const Ipv4Header*
-Ipv4PacketData::GetIpv4Header ()
+PacketData::GetIpv4Header ()
 {
-  return &m_ipv4Header;
+  return (Ipv4Header*)m_ipv4Holder.Get ();
 }
-  
-bool
-Ipv4PacketData::HeaderFound (unit8_t type)
+
+const TcpHeader*
+PacketData::GetTcp ()
 {
-  return m_ipv4Header.GetProtocol() == type;
+  return (TcpHeader*)GetHeaderFromHolder (6, m_tcpHolder);
+}
+
+const UdpHeader*
+PacketData::GetUdp ()
+{
+  return (UdpHeader*)GetHeaderFromHolder (17, m_udpHolder);
 }
 
 } // namespace mpls
