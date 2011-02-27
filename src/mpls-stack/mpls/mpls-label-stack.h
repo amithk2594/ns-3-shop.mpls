@@ -54,31 +54,31 @@ public:
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
   /**
-   * \brief Create an empty stack.
+   * @brief Create an empty stack.
    */
   MplsLabelStack ();
   /**
-   * \brief Destructor
+   * @brief Destructor
    */
   virtual ~MplsLabelStack ();
   /**
-   * \brief Removes and returns the stack's top entry
+   * @brief Removes and returns the stack's top entry
    */
   void Pop (void);
   /**
-   * \brief Add a new entry to the top of the stack
+   * @brief Add a new entry to the top of the stack
    */
   void Push (Shim entry);
   /**
-   * \brief Retrieves the stack's top entry
+   * @brief Retrieves the stack's top entry
    */
   Shim Peek (void) const;
   /**
-   * \brief Detects whether the stack is empty
+   * @brief Detects whether the stack is empty
    */
   bool IsEmpty (void) const;
   /**
-   * \brief Removes all entries from the stack
+   * @brief Removes all entries from the stack
    */
   bool Clear (void);
 
@@ -96,43 +96,44 @@ private:
 
 namespace shimUtils {
   /**
-   * \brief Calculates and returns shim
+   * @brief Calculates and returns shim
    */
   Shim GetShim (Label label);
   Shim GetShim (Label label, uint8_t ttl);
   Shim GetShim (Label label, uint8_t ttl, uint8_t exp);
   /**
-   * \brief Set label value
+   * @brief Set label value
    */ 
   void SetLabel (Shim& shim, Label label);
   /**
-   * \brief Returns label value
+   * @brief Returns label value
    */ 
   Label GetLabel (Shim shim);  
   /**
-   * \brief Set value of 'Experimental Use' field
+   * @brief Set value of 'Experimental Use' field
    */
   void SetExperimentalUse (Shim& shim, uint8_t exp);
   /**
-   * \Brief Returns value of 'Experimental Use' field
+   * @Brief Returns value of 'Experimental Use' field
    */
   uint8_t GetExperimentalUse (Shim shim);
   /**
-   * \brief Set value of 'Time To Live' field
+   * @brief Set value of 'Time To Live' field
    */
   void SetTimeToLive (Shim& shim, uint8_t ttl);
- /**
-   * \brief Returns value of 'Time To Live' field
+  /**
+   * @brief Returns value of 'Time To Live' field
    */
   uint8_t GetTimeToLive (Shim shim);
   /**
-   * \brief Returns true if 'Bottom of Stack' flag is set
+   * @brief Returns true if 'Bottom of Stack' flag is set
    */
   bool IsBottomOfStack (Shim shim);
   /**
-   * \brief Returns string representation of the stack entry
+   * @brief Returns string representation of the stack entry
    */
   std::string AsString (Shim shim);
+
 } // namespace stackUtils
 
 

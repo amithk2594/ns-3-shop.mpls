@@ -52,6 +52,22 @@ public:
    */
   virtual ~Interface ();
   /**
+   * @brief Returns true if this interface is enabled  
+   */
+  bool IsUp () const;
+  /**
+   * @brief Returns true if this interface is disabled
+   */
+  bool IsDown () const;
+  /**
+   * @brief Enable interface
+   */
+  void SetUp ();
+  /**
+   * @brief Disable interface
+   */
+  void SetDown ();
+  /**
    * @brief Set device
    */
   void SetDevice (const Ptr<NetDevice> &device);
@@ -60,12 +76,16 @@ public:
    */  
   void SetNode (const Ptr<Node> &node);
   /**
+   * @brier Send packet 
+   */
+  void Send (Ptr<Packet>& packet);
+  /**
    * @brief Get device associated with interface
    */
   Ptr<NetDevice>& GetDevice (void);
   /**
    * @brief Print interface information
-   * 2param os the stream to print to
+   * @param os the stream to print to
    */
   void Print (std::ostream &os) const;
 
@@ -77,6 +97,7 @@ private:
 
   Ptr<Node> m_node;
   Ptr<NetDevice> m_device;
+  bool m_ifup;
 };
 
 std::ostream& operator<< (std::ostream& os, const Ptr<Interface> &interface);

@@ -38,7 +38,8 @@ Interface::GetTypeId (void)
 
 Interface::Interface ()
   : m_node (0),
-    m_device (0)
+    m_device (0),
+    m_ifup (true)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -75,6 +76,35 @@ Interface::GetDevice (void)
   return m_device;
 }
 
+bool
+Interface::IsUp () const
+{
+  return m_ifup;
+}
+
+bool
+Interface::IsDown () const
+{
+  return !m_ifup;
+}
+
+void
+Interface::SetUp ()
+{
+  m_ifup = true;
+}
+
+void
+Interface::SetDown ()
+{
+  m_ifup = false;
+}
+
+void
+Interface::Send (Ptr<Packet>& packet)
+{
+}
+  
 void
 Interface::Print (std::ostream &os) const
 {
