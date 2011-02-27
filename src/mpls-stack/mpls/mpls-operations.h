@@ -73,7 +73,7 @@ public:
   uint32_t Get () const;
   
 private:
-  OperationVector::const_iterator m_iter;
+  OperationVector::const_iterator m_start;
   OperationVector::const_iterator m_end;
 }
 
