@@ -24,44 +24,42 @@
 namespace ns3 {
 namespace mpls {
 
-OperationBuilder::OperationBuilder (OperationVector* op)
-  : m_operations (op)
+OperationBuilder::OperationBuilder (OperationVector& op)
+  : m_operations (&op)
 {
-  NS_ASSERT_MSG (op != 0, "mpls::OperationBuilder(): invalid operation vector");
 }
 
 OperationBuilder::~OperationBuilder ()
 {
 }
 
-void
+OperationBuilder&
 OperationBuilder::Push (Label label)
 {
   m_operations->push_back (OP_PUSH);
   m_operations->push_back (label);
-  return this;
+  return *this;
 }
 
-void
+OperationBuilder&
 OperationBuilder::Pop ()
 {
   m_operations->push_back (OP_POP);
-  return this;
+  return *this;
 }
 
-void
+OperationBuilder&
 OperationBuilder::Swap (Label label)
 {
   m_operations->push_back (OP_SWAP);
   m_operations->push_back (label);
-  return this;
+  return *this;
 }
 
-OperationIterator::OperationIterator (const OperationVector* op)
+OperationIterator::OperationIterator (const OperationVector& op)
 {
-  NS_ASSERT_MSG (op != 0, "mpls::OperationIterator(): invalid operation vector");
-  m_start = op->begin ();
-  m_end = op->end ();
+  m_start = op.begin ();
+  m_end = op.end ();
 }
 
 OperationIterator::~OperationIterator ()
@@ -75,10 +73,10 @@ OperationIterator::HasNext () const
 }
 
 uint32_t
-OperationIterator::Get () const
+OperationIterator::Get ()
 {
-  NS_ASSERT_MSG (HasNextOpCode (), "mpls::OperationIterator(): malformed operation vector");
-  return *(m_start++);
+  NS_ASSERT_MSG (HasNext (), "mpls::OperationIterator(): malformed operation vector");
+  return *m_start++;
 }
 
 } // namespace mpls

@@ -5,9 +5,9 @@ def build(bld):
     module.source = [
         'fec/mpls-packet-demux.cc',
         'fec/mpls-fec.cc',
-        #'mpls-generic.cc',
+        'mpls-generic.cc',
         #'mpls-interface.cc',
-        #'mpls-operations.cc',
+        'mpls-operations.cc',
         #'mpls-label-stack.cc',
         #'mpls-routing-protocol.cc',
         #'ipv4-to-mpls-routing.cc',
@@ -26,9 +26,9 @@ def build(bld):
     headers.source = [
         'fec/mpls-packet-demux.h',
         'fec/mpls-fec.h',    
-        #'mpls-generic.h',
+        'mpls-generic.h',
         #'mpls-interface.h',        
-        #'mpls-operations.h',
+        'mpls-operations.h',
         #'mpls-label-stack.h',
         #'mpls-routing-protocol.h',
         #'ipv4-to-mpls-routing.h',

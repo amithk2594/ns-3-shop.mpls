@@ -44,7 +44,7 @@ const uint32_t OP_SWAP = 2;
 class OperationBuilder
 {
 public:
-  OperationBuilder (OperationVector* op);
+  OperationBuilder (OperationVector& op);
   ~OperationBuilder ();
   /**
    * @brief Push operation
@@ -60,22 +60,22 @@ public:
   OperationBuilder& Swap (Label label);
 
 private:
-  OperationVector m_operations;  
+  OperationVector* m_operations;  
 };
 
 
 class OperationIterator
 {
 public:
-  OperationIterator (const OperationVector* op);
+  OperationIterator (const OperationVector& op);
   ~OperationIterator ();
   bool HasNext () const;
-  uint32_t Get () const;
+  uint32_t Get ();
   
 private:
   OperationVector::const_iterator m_start;
   OperationVector::const_iterator m_end;
-}
+};
 
 } // namespace mpls
 } // namespace ns3
