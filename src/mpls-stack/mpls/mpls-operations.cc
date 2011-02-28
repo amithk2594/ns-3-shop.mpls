@@ -35,23 +35,23 @@ OperationBuilder::~OperationBuilder ()
 OperationBuilder&
 OperationBuilder::Push (Label label)
 {
-  m_operations->push_back (OP_PUSH);
-  m_operations->push_back (label);
+  m_operations.push_back (OP_PUSH);
+  m_operations.push_back (label);
   return *this;
 }
 
 OperationBuilder&
 OperationBuilder::Pop ()
 {
-  m_operations->push_back (OP_POP);
+  m_operations.push_back (OP_POP);
   return *this;
 }
 
 OperationBuilder&
 OperationBuilder::Swap (Label label)
 {
-  m_operations->push_back (OP_SWAP);
-  m_operations->push_back (label);
+  m_operations.push_back (OP_SWAP);
+  m_operations.push_back (label);
   return *this;
 }
 
