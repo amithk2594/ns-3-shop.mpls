@@ -44,8 +44,9 @@ const uint32_t OP_SWAP = 2;
 class OperationBuilder
 {
 public:
-  OperationBuilder (OperationVector& op);
+  OperationBuilder ();
   ~OperationBuilder ();
+
   /**
    * @brief Push operation
    */
@@ -53,14 +54,17 @@ public:
   /**
    * @brief Pop operation.
    */
-  OperationBuilder& Pop ();
+  OperationBuilder& Pop (void);
   /**
    * @brief Swap operation.
    */
   OperationBuilder& Swap (Label label);
-
+	/**
+	 * @brief Returns operations
+	 */
+	const OperationVector& GetOperations (void) const;
 private:
-  OperationVector* m_operations;  
+  OperationVector m_operations;  
 };
 
 

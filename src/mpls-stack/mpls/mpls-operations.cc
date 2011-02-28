@@ -24,8 +24,7 @@
 namespace ns3 {
 namespace mpls {
 
-OperationBuilder::OperationBuilder (OperationVector& op)
-  : m_operations (&op)
+OperationBuilder::OperationBuilder ()
 {
 }
 
@@ -54,6 +53,12 @@ OperationBuilder::Swap (Label label)
   m_operations->push_back (OP_SWAP);
   m_operations->push_back (label);
   return *this;
+}
+
+const OperationVector&
+OperationBuilder::GetOperations (void) const
+{
+  return m_operations;
 }
 
 OperationIterator::OperationIterator (const OperationVector& op)
