@@ -33,6 +33,7 @@ namespace ns3 {
 namespace mpls {
 
 class ForwardingInformation;
+class ForwardingInformationBase;
 
 /**
  * \ingroup mpls
@@ -45,27 +46,30 @@ class FecToNhlfe : public ForwardingInformation
 {
 public:
   /**
-   * \brief Constructor
+   * @brief Constructor
    */
   FecToNhlfe (const Fec& fec);
   /**
-   * \brief Destructor
+   * @brief Destructor
    */
   virtual ~FecToNhlfe ();
   /**
-   * \brief
-   * \returns
+   * @brief Returns FEC
    */
-  const Ptr<Fec>& GetFec (void) const;
+  const Fec& GetFec (void) const;
+	/**
+   * @brief Set new FEC
+   */
+  void SetFec (const Fec& fec);
   /**
-   * \brief Print ILM
-   * \param os the stream to print to
+   * @brief Print FTN
+   * @param os the stream to print to
    */
   virtual void Print (std::ostream &os) const;
 
 private:
-  Fec m_fec;
-  friend class ForwardingInformation;
+  Fec* m_fec;
+  friend class ForwardingInformationBase;
 };
 
 } // namespace mpls

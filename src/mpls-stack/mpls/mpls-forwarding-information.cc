@@ -32,10 +32,12 @@ ForwardingInformation::~ForwardingInformation ()
   m_nhlfe.clear ();
 }
 
-void
+uint32_t
 ForwardingInformation::AddNhlfe (const Nhlfe& nhlfe)
 {
+  uint32_t index = m_nhlfe.size ();
   m_nhlfe.push_back (nhlfe);
+	return index;
 }
 
 void
@@ -52,9 +54,9 @@ ForwardingInformation::GetNNhlfe (void) const
   return m_nhlfe.size ();
 }
 
-std::ostream& operator<< (std::ostream& os, const ForwardingInformation &info)
+std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info)
 {
-  info.Print (os);
+  info->Print (os);
   return os;
 }
 

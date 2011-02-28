@@ -46,28 +46,26 @@ class IncomingLabelMap : public ForwardingInformation
 {
 public:
   /**
-   * \brief Construct ILM with specified label and interface
-   * \param interface incoming interface
-   * \param label incoming label
+   * @brief Construct ILM with specified label and interface
+   * @param interface incoming interface
+   * @param label incoming label
    */
-  IncomingLabelMap (const Ptr<Interface> &interface, Label label);
+  IncomingLabelMap (const Ptr<mpls::Interface>& interface, Label label);
   /**
-   * \brief Destuctor
+   * @brief Destuctor
    */
   virtual ~IncomingLabelMap ();
   /**
-   * \brief Get incoming label
-   * \returns label
+   * @brief Get incoming label
    */
   Label GetLabel (void) const;
   /**
-   * \brief Get incoming interface
-   * \returns interface
+   * @brief Get incoming interface
    */
   const Ptr<Interface>& GetInterface (void) const;
   /**
-   * \brief Print ILM
-   * \param os the stream to print to
+   * @brief Print ILM
+   * @param os the stream to print to
    */
   virtual void Print (std::ostream &os) const;
 
@@ -75,8 +73,8 @@ private:
   IncomingLabelMap ();
 
 private:
-  Ptr<Interface>  m_interface;
-  Label           m_label;
+  Ptr<mpls::Interface> m_interface;
+  Label m_label;
 
   friend class ForwardingInformationBase;
 };

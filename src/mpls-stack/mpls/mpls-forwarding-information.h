@@ -44,8 +44,9 @@ public:
   /**
    * @brief Add new NHLFE
    * @param nhlfe Next Hop Label Forwarding Entry
+	 * @return NHLFE index
    */
-  void AddNhlfe (const Nhlfe& nhlfe);
+  uint32_t AddNhlfe (const Nhlfe& nhlfe);
   /**
    * @brief Get NHLFE by index
    * @param index NHLFE index
@@ -78,7 +79,7 @@ protected:
 /**
  * \brief output operation for ForwardingInformation
  */
-std::ostream& operator<< (std::ostream& os, const ForwardingInformation &info);
+std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info);
 
 } // namespace mpls
 } // namespace ns3
