@@ -22,9 +22,6 @@
 #define MPLS_NHLFE_H
 
 #include <ostream>
-#include <vector>
-
-#include "ns3/simple-ref-count.h"
 
 #include "mpls-generic.h"
 #include "mpls-operations.h"
@@ -88,7 +85,7 @@ private:
 /**
  * @brief output operation for NHLFE
  */
-std::ostream& operator<< (std::ostream& os, const Ptr<Nhlfe> &nhlfe);
+std::ostream& operator<< (std::ostream& os, const Nhlfe& nhlfe);
 
 } // namespace mpls
 } // namespace ns3
