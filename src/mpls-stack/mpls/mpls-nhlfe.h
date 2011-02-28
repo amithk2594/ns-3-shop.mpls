@@ -41,7 +41,7 @@ class Interface;
  *
  * The "Next Hop Label Forwarding Entry" (NHLFE) is used to forward a labeled packet.
  */
-class Nhlfe : public SimpleRefCount<Nhlfe>
+class Nhlfe
 {
 public:
   /**

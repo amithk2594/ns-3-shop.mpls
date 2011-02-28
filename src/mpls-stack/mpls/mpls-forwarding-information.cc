@@ -29,37 +29,27 @@ ForwardingInformation::ForwardingInformation ()
 
 ForwardingInformation::~ForwardingInformation ()
 {
-  for (NhlfeList::iterator i = m_nhlfeList.begin (); i != m_nhlfeList.end (); ++i)
-    {
-      *i = 0;
-    }
-  m_nhlfeList.clear ();
+  m_nhlfe.clear ();
 }
 
-ForwardingInformation::AddNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe)
+void
+ForwardingInformation::AddNhlfe (const Nhlfe& nhlfe)
 {
-  m_nhlfeList.push_back (nhlfe);
+  m_nhlfe.push_back (nhlfe);
 }
 
-bool
-ForwardingInformation::RemoveNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe)
+void
+ForwardingInformation::RemoveNhlfe (uint32_t index)
 {
-  for (NhlfeList::iterator i = m_nhlfeList.begin (); i != m_nhlfeList.end (); ++i)
-    {
-      if ((*i) == nhlfe)
-        {
-          m_nhlfeList.erase (i);
-          return true;
-        }
-    }
-
-  return false;
+	NS_ASSERT_MSG (index < m_nhlfe.size (), 
+									"ForwardingInformation::RemoveNhlfe (): invalid NHLFE index");
+  m_nhlfe.erase (m_nhlfe.begin () + index);
 }
 
 uint32_t
 ForwardingInformation::GetNNhlfe (void) const
 {
-  return m_nhlfeList.size ();
+  return m_nhlfe.size ();
 }
 
 std::ostream& operator<< (std::ostream& os, const ForwardingInformation &info)

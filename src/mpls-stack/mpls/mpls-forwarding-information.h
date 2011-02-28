@@ -21,51 +21,49 @@
 #ifndef MPLS_FORWARDING_INFORMATION_H
 #define MPLS_FORWARDING_INFORMATION_H
 
-#include <list>
+#include <vector>
 #include <ostream>
 
 #include "ns3/simple-ref-count.h"
-#include "mpls-next-hop-label-forwarding-entry.h"
+#include "mpls-nhlfe.h"
 
 namespace ns3 {
 namespace mpls {
 
 /**
  * \ingroup mpls
- * \brief A MPLS forwarding information base class.
+ * \brief A MPLS forwarding information
  */
 class ForwardingInformation : public SimpleRefCount<ForwardingInformation>
 {
 public:
   /**
-   * \brief Destructor
+   * @brief Destructor
    */
   virtual ~ForwardingInformation ();
   /**
-   * \brief Adds new NHLFE
-   * \param nhlfe Next Hop Label Forwarding Entry
+   * @brief Add new NHLFE
+   * @param nhlfe Next Hop Label Forwarding Entry
    */
-  void AddNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe);
+  void AddNhlfe (const Nhlfe& nhlfe);
   /**
-   * \brief Get NHLFE by index
-   * \param index
-   * \returns Next Hop Label Forwarding Entry
+   * @brief Get NHLFE by index
+   * @param index NHLFE index
    */
-  const Ptr<NextHopLabelForwardingEntry>& GetNhlfe (uint32_t index);
+  Nhlfe& GetNhlfe (uint32_t index);
   /**
-   * \brief Remove the specific NHLFE from the list
-   * \param nhlfe NHLFE
-   * \returns true if NHLFE removed
+   * @brief Remove the specific NHLFE
+   * @param nhlfe NHLFE
    */
-  bool RemoveNhlfe (const Ptr<NextHopLabelForwardingEntry> &nhlfe);
+  void RemoveNhlfe (uint32_t index);
   /**
-   * \brief Get NHLFE's count
-   * \returns count of NHLFE
+   * @brief Get NHLFE count
+   * @return NHLFE count
    */
   uint32_t GetNNhlfe (void) const;
   /**
-   * \brief Print NHLFE
-   * \param os the stream to print to
+   * @brief Print NHLFE
+   * @param os the stream to print to
    */
   virtual void Print (std::ostream &os) const = 0;
 
@@ -73,8 +71,8 @@ protected:
   ForwardingInformation ();
 
 protected:
-  typedef std::list<Ptr<NextHopLabelForwardingEntry> > NhlfeList;
-  NhlfeList m_nhlfeList;
+  typedef std::vector<Nhfle> NhlfeVector;
+  NhlfeVector m_nhlfe;
 };
 
 /**
