@@ -71,9 +71,9 @@ Nhlfe::Print (std::ostream &os) const
 //    ;
 }
 
-std::ostream& operator<< (std::ostream& os, const Ptr<Nhlfe> &nhlfe)
+std::ostream& operator<< (std::ostream& os, const Nhlfe& nhlfe)
 {
-  nhlfe->Print (os);
+  nhlfe.Print (os);
   return os;
 }
 
