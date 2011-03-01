@@ -19,106 +19,112 @@
  */
 
 #include "ns3/assert.h"
-#include "ns3/log.h"
 #include "mpls-label-stack.h"
 
 namespace ns3 {
 namespace mpls {
 
-/// MplsLabelStack
-
-NS_OBJECT_ENSURE_REGISTERED (MplsLabelStack);
+NS_OBJECT_ENSURE_REGISTERED (LabelStack);
 
 TypeId
-MplsLabelStack::GetTypeId (void)
+LabelStack::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::mpls::MplsLabelStack")
+  static TypeId tid = TypeId ("ns3::mpls::LabelStack")
     .SetParent<Header> ()
-    .AddConstructor<MplsLabelStack> ()
+    .AddConstructor<LabelStack> ()
   ;
   return tid;
 }
 
 TypeId
-MplsLabelStack::GetInstanceTypeId (void) const
+LabelStack::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
 
-MplsLabelStack::MplsLabelStack ()
+LabelStack::LabelStack ()
+  : m_broken (false)
 {
 }
 
-MplsLabelStack::~MplsLabelStack ()
+LabelStack::~LabelStack ()
 {
   m_entries.clear ();
 }
 
 void
-MplsLabelStack::Push (Shim shim)
+LabelStack::Push (uint32_t s)
 {
-  NS_ASSERT_MSG (!(shim & 0x100), 
-                  "mpls::MplsLabelStack::Push(): Bottom Of Stack flag is set");
-      
-  if (!m_entries.size ())
-    {
-      // set Bottom Of Stack flag
-      shim = (shim & 0xfffffeff) | 0x100;
-    }
-
-  m_entries.push_back (shim);
+  m_entries.push_back (s);
 }
 
 void
-MplsLabelStack::Pop (void)
+LabelStack::Pop (void)
 {
   m_entries.pop_back ();
 }
 
 bool
-MplsLabelStack::IsEmpty (void) const
+LabelStack::IsEmpty (void) const
 {
   return m_entries.empty ();
 }
 
-Shim
-MplsLabelStack::Peek (void) const
+uint32_t
+LabelStack::Peek (void) const
 {
   return m_entries.back ();
 }
 
+bool
+LabelStack::IsBroken (void) const
+{
+  return m_broken;
+}
+
 uint32_t
-MplsLabelStack::GetSerializedSize (void) const
+LabelStack::GetSerializedSize (void) const
 {
   return m_entries.size () * 4;
 }
 
 void
-MplsLabelStack::Serialize (Buffer::Iterator start) const
+LabelStack::Serialize (Buffer::Iterator start) const
 {
-  NS_ASSERT_MSG (m_entries.size(), 
-                  "mpls::MplsLabelStack::Serialize(): stack is empty");
+  NS_ASSERT_MSG (m_entries.size(), "Empty label stack");
 
-  for (Stack::const_reverse_iterator i = m_entries.rbegin (); i != m_entries.rend (); ++i)
+  Stack::const_reverse_iterator i = m_entries.rbegin ();
+  Stack::const_reverse_iterator end = m_entries.rend () + 1;
+
+  while (i != end)
     {
-      start.WriteHtonU32 (*i);
+      start.WriteHtonU32 (*i++);
     }
+
+  start.WriteHtonU32 (shim::SetBos (m_entries[0]));
 }
 
 uint32_t
-MplsLabelStack::Deserialize (Buffer::Iterator start)
+LabelStack::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint32_t size = start.GetSize ();
-  Shim shim;
+  uint32_t s;
+  
+  m_broken = true;
 
   while (size > 0)
     {
-      shim = i.ReadNtohU32 ();
-      m_entries.push_front (shim);
-      if (shimUtils::IsBottomOfStack (shim))
+      s = i.ReadNtohU32 ();
+      if (shim::IsBos (s))
         {
+          m_entries.push_front (shim::ClearBos (s));
+          m_broken = false;
           break;
+        }
+      else
+        {
+          m_entries.push_front (s);
         }
       size -= 4;
     }
@@ -127,106 +133,25 @@ MplsLabelStack::Deserialize (Buffer::Iterator start)
 }
 
 void
-MplsLabelStack::Print (std::ostream &os) const
+LabelStack::Print (std::ostream &os) const
 {
-  for (Stack::const_iterator i = m_entries.end (); i != m_entries.begin (); --i)
-    {
-      os << shimUtils::AsString (*i) << " ";
-    }
+//  for (Stack::const_iterator i = m_entries.end (); i != m_entries.begin (); --i)
+//    {
+//      os << shimUtils::AsString (*i) << " ";
+//    }
 }
 
-
-namespace shimUtils {
-
-Shim
-GetShim (Label label)
-{
-  NS_ASSERT_MSG (labelUtils::IsValidLabel (label), 
-                  "mpls::shimUtils::GetShim(): invalid label value");
-  return label << 12;
-}
-
-Shim
-GetShim (Label label, uint8_t ttl)
-{
-  NS_ASSERT_MSG (labelUtils::IsValidLabel (label), 
-                  "mpls::shimUtils::GetShim(): invalid label value");
-  return (label << 12) | ttl;
-}
-
-Shim
-GetShim (Label label, uint8_t ttl, uint8_t exp)
-{
-  NS_ASSERT_MSG (labelUtils::IsValidLabel (label), 
-                  "mpls::shimUtils::GetShim(): invalid label value");
-  NS_ASSERT_MSG (exp < 8,
-                  "mpls::shimUtils::GetShim(): invalid 'experimental use' field value");
-  return (label << 12) | ttl | (exp << 9);
-}
-
-void
-SetLabel (Shim& shim, Label label)
-{
-  NS_ASSERT_MSG (labelUtils::IsValidLabel (label), 
-                  "mpls::shimUtils::SetLabel(): invalid label value");
-  shim = (shim & 0xfffff000) | label;
-}
-
-Label
-GetLabel (Shim shim)
-{
-  return shim >> 12;
-}
-
-
-void 
-SetExperimentalUse (Shim& shim, uint8_t exp)
-{
-  NS_ASSERT_MSG (exp < 8,
-                  "mpls::shimUtils::setExperimentalUse(): invalid 'experimental use' field value");
-  shim = (shim & 0xfffff1ff) | (exp << 9);
-}
-
-uint8_t 
-GetExperimentalUse (Shim shim)
-{
-  return (shim >> 9) & 0x7;
-}
-
-
-void 
-SetTimeToLive (Shim& shim, uint8_t ttl)
-{
-  shim = (shim & 0xffffff00) | ttl;
-}
-
-uint8_t
-GetTimeToLive (Shim shim)
-{
-  return shim;
-}
-
-
-bool
-IsBottomOfStack (Shim shim)
-{
-  return (shim >> 8) & 1;
-}
-
-std::string 
-AsString (Shim shim)
-{
-  std::ostringstream os (std::ostringstream::out);
-  
-  os << GetLabel (shim) << " "
-     << "(exp=" << (uint32_t)GetExperimentalUse (shim) << " "
-     << "bos=" << (uint32_t)IsBottomOfStack (shim) << " "
-     << "ttl=" << (uint32_t)GetTimeToLive (shim) << ")"
-  ;
-  return os.str();
-}
-
-} // namespace shimUtils
-
+//std::string 
+//AsString (Shim shim)
+//{
+//  std::ostringstream os (std::ostringstream::out);
+//  
+//  os << GetLabel (shim) << " "
+//     << "(exp=" << (uint32_t)GetExperimentalUse (shim) << " "
+//     << "bos=" << (uint32_t)IsBottomOfStack (shim) << " "
+//     << "ttl=" << (uint32_t)GetTimeToLive (shim) << ")"
+//  ;
+//  return os.str();
+//}
 } // namespace mpls
 } // namespace ns3

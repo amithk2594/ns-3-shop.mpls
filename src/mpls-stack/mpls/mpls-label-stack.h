@@ -23,16 +23,13 @@
 
 #include <stdint.h>
 #include <iostream>
-#include <sstream>
 #include <deque>
 
 #include "ns3/header.h"
-#include "mpls-generic.h"
+#include "mpls-label.h"
 
 namespace ns3 {
 namespace mpls {
-
-typedef uint32_t Shim;
 
 /**
  * \ingroup mpls
@@ -48,7 +45,7 @@ typedef uint32_t Shim;
  * The label stack is represented as a sequence of "label stack entries".
  * For more infomation see RFC 3032 (http://www.ietf.org/rfc/rfc3032.txt)
  */
-class MplsLabelStack : public Header
+class LabelStack : public Header
 {
 public:
   static TypeId GetTypeId (void);
@@ -56,31 +53,31 @@ public:
   /**
    * @brief Create an empty stack.
    */
-  MplsLabelStack ();
+  LabelStack ();
   /**
    * @brief Destructor
    */
-  virtual ~MplsLabelStack ();
+  virtual ~LabelStack ();
   /**
-   * @brief Removes and returns the stack's top entry
+   * @brief Removes the stack's top entry
    */
   void Pop (void);
   /**
    * @brief Add a new entry to the top of the stack
    */
-  void Push (Shim entry);
+  void Push (uint32_t s);
   /**
    * @brief Retrieves the stack's top entry
    */
-  Shim Peek (void) const;
+  uint32_t Peek (void) const;
   /**
    * @brief Detects whether the stack is empty
    */
   bool IsEmpty (void) const;
   /**
-   * @brief Removes all entries from the stack
+   * @brief Check if stack is broken. We should drop packet if stack is broken.
    */
-  bool Clear (void);
+  bool IsBroken (void) const;
 
   // Functions defined in base class Header
   virtual uint32_t GetSerializedSize (void) const;
@@ -89,53 +86,10 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  typedef std::deque<Shim> Stack;
+  typedef std::deque<uint32_t> Stack;
   Stack m_entries;
+  bool m_broken;
 };
-
-
-namespace shimUtils {
-  /**
-   * @brief Calculates and returns shim
-   */
-  Shim GetShim (Label label);
-  Shim GetShim (Label label, uint8_t ttl);
-  Shim GetShim (Label label, uint8_t ttl, uint8_t exp);
-  /**
-   * @brief Set label value
-   */ 
-  void SetLabel (Shim& shim, Label label);
-  /**
-   * @brief Returns label value
-   */ 
-  Label GetLabel (Shim shim);  
-  /**
-   * @brief Set value of 'Experimental Use' field
-   */
-  void SetExperimentalUse (Shim& shim, uint8_t exp);
-  /**
-   * @Brief Returns value of 'Experimental Use' field
-   */
-  uint8_t GetExperimentalUse (Shim shim);
-  /**
-   * @brief Set value of 'Time To Live' field
-   */
-  void SetTimeToLive (Shim& shim, uint8_t ttl);
-  /**
-   * @brief Returns value of 'Time To Live' field
-   */
-  uint8_t GetTimeToLive (Shim shim);
-  /**
-   * @brief Returns true if 'Bottom of Stack' flag is set
-   */
-  bool IsBottomOfStack (Shim shim);
-  /**
-   * @brief Returns string representation of the stack entry
-   */
-  std::string AsString (Shim shim);
-
-} // namespace stackUtils
-
 
 } // namespace mpls
 } // namespace ns3

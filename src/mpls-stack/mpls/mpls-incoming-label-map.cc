@@ -18,7 +18,7 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#include <iosteam>
+#include <iostream>
 #include "mpls-incoming-label-map.h"
 
 namespace ns3 {
@@ -28,6 +28,7 @@ IncomingLabelMap::IncomingLabelMap (const Ptr<mpls::Interface> &interface, Label
   : m_interface (interface),
     m_label (label)
 {
+  NS_ASSERT_MSG (labelUtils::
 }
 
 IncomingLabelMap::~IncomingLabelMap ()

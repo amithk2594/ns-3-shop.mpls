@@ -22,9 +22,8 @@
 #define MPLS_INCOMING_LABEL_MAP_H
 
 #include <ostream>
-#include <stdint.h>
 
-#include "mpls-generic.h"
+#include "mpls-label.h"
 #include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
 #include "mpls-forwarding-information-base.h"
