@@ -19,14 +19,10 @@
  */
 
 #include <iosteam>
-#include "mpls-ilm.h"
+#include "mpls-incoming-label-map.h"
 
 namespace ns3 {
 namespace mpls {
-
-IncomingLabelMap::IncomingLabelMap ()
-{
-}
 
 IncomingLabelMap::IncomingLabelMap (const Ptr<mpls::Interface> &interface, Label label)
   : m_interface (interface),
@@ -49,6 +45,18 @@ const Ptr<mpls::Interface>&
 IncomingLabelMap::GetInterface (void) const
 {
   return m_interface;
+}
+
+void
+IncomingLabelMap::SetLabel (Label label)
+{
+  m_label = label;
+}
+
+void
+IncomingLabelMap::SetInterface (const Ptr<mpls::Interface>& interface)
+{
+  m_interface = interface;
 }
 
 void

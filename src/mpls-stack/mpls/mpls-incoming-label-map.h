@@ -62,7 +62,15 @@ public:
   /**
    * @brief Get incoming interface
    */
-  const Ptr<Interface>& GetInterface (void) const;
+  const Ptr<mpls::Interface>& GetInterface (void) const;
+  /**
+   * @brief Set incoming label
+   */
+  void SetLabel (Label label);
+  /**
+   * @brief Set incoming interface
+   */
+  void SetInterface (const Ptr<mpls::Interface>& interface);
   /**
    * @brief Print ILM
    * @param os the stream to print to

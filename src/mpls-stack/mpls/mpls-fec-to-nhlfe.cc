@@ -24,24 +24,37 @@
 namespace ns3 {
 namespace mpls {
 
-MplsFtn::MplsFtn (const Ptr<MplsFec> &fec);
-  : m_fec (fec)
+template <class T>
+Fec* CopyFec (T fec)
+{
+  return new T(fec);
+}
+
+FecToNhlfe::FecToNhlfe (const Fec& fec);
+  : m_fec (CopyFec (fec))
 {
 }
 
-MplsFtn::~MplsFtn ()
+FecToNhlfe::~FecToNhlfe ()
 {
-  m_fec = 0;
+  delete m_fec;
 }
 
-const Ptr<MplsFec>&
-MplsFtn::GetFec (void) const
+const Fec&
+FecToNhlfe::GetFec (void) const
 {
-  return m_fec;
+  return *m_fec;
 }
 
 void
-MplsFtn::Print (std::ostream &os) const
+FecToNhlfe::SetFec (const Fec& fec)
+{
+  delete m_fec;
+  m_fec = CopyFec (fec);
+}
+
+void
+FecToNhlfe::Print (std::ostream &os) const
 {
 }
 

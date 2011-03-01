@@ -32,7 +32,6 @@
 namespace ns3 {
 namespace mpls {
 
-class ForwardingInformation;
 class ForwardingInformationBase;
 
 /**

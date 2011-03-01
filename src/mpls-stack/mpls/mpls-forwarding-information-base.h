@@ -29,9 +29,9 @@
 
 #include "mpls-generic.h"
 #include "mpls-incoming-label-map.h"
-#include "mpls-next-hop-label-forwarding-entry.h"
+#include "mpls-nhlfe.h"
 #include "mpls-fec-to-nhlfe.h"
-#include "mpls-forwarding-equivalence-class.h"
+#include "mpls-fec.h"
 
 namespace ns3 {
 namespace mpls {
@@ -44,62 +44,62 @@ class ForwardingInformationBase: public SimpleRefCount<ForwardingInformationBase
 {
 public:
   /**
-   * \brief Create empty forwarding base
+   * @brief Create empty forwarding base
    */
   ForwardingInformationBase ();
   /**
-   * \brief Destructor
+   * @brief Destructor
    */
   virtual ~ForwardingInformationBase ();
   /**
-   * \brief Add ILM
-   * \param label
-   * \param nhlfe
+   * @brief Add ILM
+   * @param label
+   * @param nhlfe
    */
-  void AddIlm (Label label, const Ptr<NextHopLabelForwardingEntry> &nhlfe);
+  void AddIlm (Label label, const Nhlfe& nhlfe);
   /**
-   * \brief Get ILM
-   * \param label
-   * \returns ILM associated with label
+   * @brief Get ILM
+   * @param label
+   * @return ILM associated with label
    */
   Ptr<IncomingLabelMap>& GetIlm (Label label) const;
   /**
-   * \brief Remove ILM
-   * \param label
+   * @brief Remove ILM
+   * @param label
    */
   void RemoveIlm (Label label);
   /**
-   * \brief Remove ILM
-   * \param ilm
+   * @brief Remove ILM
+   * @param ilm
    */
   void RemoveIlm (const Ptr<IncomingLabelMap> &ilm);
   /**
-   * \brief Add FTN
-   * \param fec
-   * \param nhlfe
+   * @brief Add FTN
+   * @param fec
+   * @param nhlfe
    */
   void AddFtn (const Ptr<ForwardingEquivalenceClass> &fec, const Ptr<NextHopLabelForwardingEntry> &nhlfe);
   /**
-   * \brief Get FTN
-   * \param fec
-   * \returns FTN associated with FEC
+   * @brief Get FTN
+   * @param fec
+   * @return FTN associated with FEC
    */
   Ptr<FecToNhlfe> GetFtn (const Ptr<ForwardingEquivalenceClass> &fec) const;
   /**
-   * \brief Remove FTN
-   * \param fec
+   * @brief Remove FTN
+   * @param fec
    */
   void RemoveFtn (const Ptr<ForwardingEquivalenceClass> &fec);
   /**
-   * \brief Remove FTN
-   * \param ftn FTN to remove
+   * @brief Remove FTN
+   * @param ftn FTN to remove
    */
   void RemoveFtn (const Ptr<FecToNhlfe> &ftn);
   /**
-   * \brief Get NHLFE for specified Ipv4 packet
-   * \param packet Ipv4 packet
-   * \param header Ipv4 header
-   * \returns NHLFE
+   * @brief Get NHLFE for specified Ipv4 packet
+   * @param packet Ipv4 packet
+   * @param header Ipv4 header
+   * @return NHLFE
    */
   Ptr<NextHopLabelForwardingEntry> GetNhfle (const Ptr<const Packet> &packet, const Ipv4Header &header) const;
   /**
