@@ -63,7 +63,7 @@ public:
   UnaryCompose (const Operation1& x, const Operation2& y): m_fn1(x), m_fn2(y) {}
 
   typename Operation1::result_type
-  operator() (const typename Operation2::argument_type& x) const
+  operator() (typename Operation2::argument_type& x) const
   { 
     return m_fn1 (m_fn2 (x));
   }
@@ -82,7 +82,7 @@ public:
   BinaryCompose(const Operation1& x, const Operation2& y, const Operation3& z): m_fn1(x), m_fn2(y), m_fn3(z) {}
 
   typename Operation1::result_type
-  operator()(const typename Operation2::argument_type& x) const
+  operator()(typename Operation2::argument_type& x) const
   {
     return m_fn1 (m_fn2 (x), m_fn3 (x));
   }
