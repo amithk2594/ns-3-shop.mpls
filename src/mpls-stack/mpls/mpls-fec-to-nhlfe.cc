@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#include <iosteam>
-#include "mpls-ftn.h"
+#include <ostream>
+#include "mpls-fec-to-nhlfe.h"
 
 namespace ns3 {
 namespace mpls {
@@ -30,7 +30,8 @@ Fec* CopyFec (T fec)
   return new T(fec);
 }
 
-FecToNhlfe::FecToNhlfe (const Fec& fec);
+template <class T>
+FecToNhlfe::FecToNhlfe (const T& fec)
   : m_fec (CopyFec (fec))
 {
 }
@@ -46,8 +47,9 @@ FecToNhlfe::GetFec (void) const
   return *m_fec;
 }
 
+template <class T>
 void
-FecToNhlfe::SetFec (const Fec& fec)
+FecToNhlfe::SetFec (const T& fec)
 {
   delete m_fec;
   m_fec = CopyFec (fec);

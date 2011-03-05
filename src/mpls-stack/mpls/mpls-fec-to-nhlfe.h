@@ -47,7 +47,8 @@ public:
   /**
    * @brief Constructor
    */
-  FecToNhlfe (const Fec& fec);
+  template <class T>
+  FecToNhlfe (const T& fec);
   /**
    * @brief Destructor
    */
@@ -56,10 +57,11 @@ public:
    * @brief Returns FEC
    */
   const Fec& GetFec (void) const;
-	/**
+  /**
    * @brief Set new FEC
    */
-  void SetFec (const Fec& fec);
+  template <class T>
+  void SetFec (const T& fec);
   /**
    * @brief Print FTN
    * @param os the stream to print to
