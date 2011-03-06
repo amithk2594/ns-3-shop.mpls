@@ -26,7 +26,6 @@
 #include "mpls-label.h"
 #include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
-#include "mpls-forwarding-information-base.h"
 
 namespace ns3 {
 namespace mpls {
@@ -83,7 +82,6 @@ private:
   Ptr<mpls::Interface> m_interface;
   Label m_label;
 
-  friend class ForwardingInformationBase;
 };
 
 } // namespace mpls

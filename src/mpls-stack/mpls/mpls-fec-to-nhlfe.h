@@ -26,13 +26,11 @@
 
 #include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
-#include "mpls-forwarding-information-base.h"
-#include "mpls-fec.h"
+#include "fec/mpls-fec.h"
 
 namespace ns3 {
 namespace mpls {
 
-class ForwardingInformationBase;
 
 /**
  * \ingroup mpls
@@ -70,7 +68,6 @@ public:
 
 private:
   Fec* m_fec;
-  friend class ForwardingInformationBase;
 };
 
 } // namespace mpls

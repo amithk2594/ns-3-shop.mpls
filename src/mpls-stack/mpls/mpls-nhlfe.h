@@ -23,14 +23,11 @@
 
 #include <ostream>
 
-#include "mpls-generic.h"
 #include "mpls-operations.h"
 #include "mpls-interface.h"
 
 namespace ns3 {
 namespace mpls {
-
-class Interface;
 
 /**
  * \ingroup mpls

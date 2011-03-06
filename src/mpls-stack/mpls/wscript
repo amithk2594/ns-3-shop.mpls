@@ -3,28 +3,32 @@
 def build(bld):
     module = bld.create_ns3_module('mpls', ['node'])
     module.source = [
-#        'fec/mpls-packet-demux.cc',
-#        'fec/mpls-fec.cc',
+        'fec/mpls-packet-demux.cc',
+        'fec/mpls-fec.cc',
         'mpls-label.cc',
         'mpls-label-stack.cc',        
-#        'mpls-interface.cc',
-#        'mpls-operations.cc',
-#    		'mpls-forwarding-information.cc',
-#		    'mpls-nhlfe.cc',
-#    		'mpls-incoming-label-map.cc',
-#		    'mpls-fec-to-nhlfe.cc',
+        'mpls-interface.cc',
+        'mpls-operations.cc',
+        'mpls-nhlfe.cc',
+        'mpls-forwarding-information.cc',
+        'mpls-incoming-label-map.cc',
+        'mpls-fec-to-nhlfe.cc',
+        'mpls-ilm-table.cc',
+        'mpls-ftn-table.cc',
     ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mpls'
     headers.source = [
-#        'fec/mpls-packet-demux.h',
-#        'fec/mpls-fec.h',    
+        'fec/mpls-packet-demux.h',
+        'fec/mpls-fec.h',    
         'mpls-label.h',
         'mpls-label-stack.h',        
-#        'mpls-interface.h',        
-#        'mpls-operations.h',
-#		    'mpls-forwarding-information.h',
-#    		'mpls-nhlfe.h',
-#		    'mpls-incoming-label-map.h',
-#		    'mpls-fec-to-nhlfe.h',
+        'mpls-interface.h',        
+        'mpls-operations.h',
+        'mpls-nhlfe.h',
+        'mpls-forwarding-information.h',
+        'mpls-incoming-label-map.h',
+        'mpls-fec-to-nhlfe.h',
+        'mpls-ilm-table.h',
+        'mpls-ftn-table.h',
     ]

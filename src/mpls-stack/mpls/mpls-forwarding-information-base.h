@@ -126,7 +126,7 @@ private:
 
   FtnList m_ftnTable;
   IlmList m_ilmTable;
-}
+};
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformationBase> &fib);
 

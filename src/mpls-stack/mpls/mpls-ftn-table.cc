@@ -16,53 +16,77 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#include <iostream>
-#include "mpls-incoming-label-map.h"
+#include "mpls-ftn-table.h"
 
 namespace ns3 {
 namespace mpls {
 
-IncomingLabelMap::IncomingLabelMap (const Ptr<mpls::Interface> &interface, Label label)
-  : m_interface (interface),
-    m_label (label)
+
+uint32_t FtnTable::ftnId = 0;
+  
+FtnTable::FtnTable ()
 {
-  // TODO NS_ASSERT_MSG (labelUtils::
 }
 
-IncomingLabelMap::~IncomingLabelMap ()
+FtnTable::~FtnTable ()
 {
-  m_interface = 0;
 }
 
-Label
-IncomingLabelMap::GetLabel (void) const
+template <class T>
+uint32_t
+FtnTable::AddFtn (const T& fec, const Nhlfe& nhlfe)
 {
-  return m_label;
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (fec);
+  ftn->AddNhlfe (nhlfe);
+  
+  return AddFtn (ftn);
 }
 
-const Ptr<mpls::Interface>&
-IncomingLabelMap::GetInterface (void) const
+uint32_t
+FtnTable::AddFtn (const Ptr<FecToNhlfe> &ftn)
 {
-  return m_interface;
+  m_ftnTable[++ftnId] = ftn;
+  
+  return ftnId;
+}
+
+Ptr<FecToNhlfe>
+FtnTable::GetFtnByIndex (const uint32_t index)
+{
+  return m_ftnTable[index];
 }
 
 void
-IncomingLabelMap::SetLabel (Label label)
+FtnTable::RemoveFtnByIndex (const uint32_t index)
 {
-  m_label = label;
+  m_ftnTable.erase (index);
 }
 
 void
-IncomingLabelMap::SetInterface (const Ptr<mpls::Interface>& interface)
+FtnTable::Print (std::ostream &os) const
 {
-  m_interface = interface;
 }
 
-void
-IncomingLabelMap::Print (std::ostream &os) const
+FtnTable::Iterator
+FtnTable::Begin (void ) const
 {
+  return m_ftnTable.begin ();
+}
+
+FtnTable::Iterator
+FtnTable::End (void ) const
+{
+  return m_ftnTable.end ();
+}
+
+std::ostream& operator<< (std::ostream& os, const Ptr<FtnTable> &ftn)
+{
+  ftn->Print (os);
+  
+  return os;
 }
 
 } // namespace mpls

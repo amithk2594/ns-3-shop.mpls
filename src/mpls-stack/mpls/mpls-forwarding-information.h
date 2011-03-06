@@ -72,7 +72,7 @@ protected:
   ForwardingInformation ();
 
 protected:
-  typedef std::vector<Nhfle> NhlfeVector;
+  typedef std::vector<Nhlfe> NhlfeVector;
   NhlfeVector m_nhlfe;
 };
 

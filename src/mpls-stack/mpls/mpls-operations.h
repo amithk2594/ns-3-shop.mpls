@@ -23,8 +23,9 @@
 
 #include <ostream>
 #include <vector>
+#include <stdint.h>
 
-#include "mpls-generic.h"
+#include "mpls-label.h"
 
 namespace ns3 {
 namespace mpls {

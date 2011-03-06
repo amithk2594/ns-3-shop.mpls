@@ -29,7 +29,6 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 
-#include "mpls-generic.h"
 
 namespace ns3 {
 namespace mpls {
