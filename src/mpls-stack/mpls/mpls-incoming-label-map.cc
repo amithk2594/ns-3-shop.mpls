@@ -28,7 +28,6 @@ IncomingLabelMap::IncomingLabelMap (const Ptr<mpls::Interface> &interface, Label
   : m_interface (interface),
     m_label (label)
 {
-  // TODO NS_ASSERT_MSG (labelUtils::
 }
 
 IncomingLabelMap::~IncomingLabelMap ()
