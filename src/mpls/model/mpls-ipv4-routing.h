@@ -18,8 +18,8 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#ifndef IPV4_TO_MPLS_ROUTING_H
-#define IPV4_TO_MPLS_ROUTING_H
+#ifndef MPLS_IPV4_ROUTING_H
+#define MPLS_IPV4_ROUTING_H
 
 #include "ns3/ptr.h"
 #include "ns3/net-device.h"
@@ -32,27 +32,30 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/socket.h"
 
-#include "mpls.h"
+#include "mpls-routing.h"
 
 namespace ns3 {
 namespace mpls {
 
-class Ipv4ToMplsRouting : public Ipv4RoutingProtocol
+/**
+ * \brief
+ * Ipv4-Mpls routing hook
+ */
+class MplsIpv4Routing : public Ipv4RoutingProtocol
 {
 public:
   static TypeId GetTypeId (void);
-
   /**
-   * \brief Consrtuctor
+   * @brief Constructor
    */
-  Ipv4ToMplsRouting ();
+  MplsIpv4Routing ();
   /**
-   * \brief Destructor
+   * @brief Destructor
    */
-  virtual ~Ipv4ToMplsRouting ();
+  virtual ~MplsIpv4Routing ();
 
-  void SetIpv4 (const Ptr<Ipv4> &ipv4);
-  void SetMpls (const Ptr<Mpls> &mpls);
+//  void SetIpv4 (const Ptr<Ipv4> &ipv4);
+//  void SetMpls (const Ptr<Mpls> &mpls);
 
   /**
    * \brief Set underlying Ipv4 routing protocol
@@ -65,15 +68,16 @@ public:
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
 
   // Functions defined in base class Ipv4RoutingProtocol
-  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header,
-                                      Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
-  virtual bool RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev,
-                           UnicastForwardCallback ucb, MulticastForwardCallback mcb,
-                           LocalDeliverCallback lcb, ErrorCallback ecb);
+  virtual Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
+  virtual bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 
+                             UnicastForwardCallback ucb, MulticastForwardCallback mcb, 
+                             LocalDeliverCallback lcb, ErrorCallback ecb);
   virtual void NotifyInterfaceUp (uint32_t interface);
   virtual void NotifyInterfaceDown (uint32_t interface);
   virtual void NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address);
   virtual void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
+  virtual void SetIpv4 (Ptr<Ipv4> ipv4);
+  virtual void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
 protected:
   virtual void DoDispose (void);
@@ -87,4 +91,4 @@ private:
 } // namespace mpls
 } // namespace ns3
 
-#endif /* IPV4_TO_MPLS_ROUTING_H */
+#endif /* MPLS_IPV4_ROUTING_H */

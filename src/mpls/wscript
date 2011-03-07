@@ -1,0 +1,33 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('mpls', ['network'])
+    module.source = [
+        'model/fec/mpls-packet-demux.cc',
+        'model/fec/mpls-fec.cc',
+        'model/mpls-label.cc',
+        'model/mpls-label-stack.cc',        
+        'model/mpls-interface.cc',
+        'model/mpls-operations.cc',
+        'model/mpls-nhlfe.cc',
+        'model/mpls-forwarding-information.cc',
+        'model/mpls-incoming-label-map.cc',
+        'model/mpls-fec-to-nhlfe.cc',
+        'model/mpls-ilm-table.cc',
+        'model/mpls-ftn-table.cc',
+    ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'mpls'
+    headers.source = [
+        'model/fec/mpls-packet-demux.h',
+        'model/fec/mpls-fec.h',    
+        'model/mpls-label.h',
+        'model/mpls-label-stack.h',        
+        'model/mpls-interface.h',        
+        'model/mpls-operations.h',
+        'model/mpls-nhlfe.h',
+        'model/mpls-forwarding-information.h',
+        'model/mpls-incoming-label-map.h',
+        'model/mpls-fec-to-nhlfe.h',
+        'model/mpls-ilm-table.h',
+    ]
