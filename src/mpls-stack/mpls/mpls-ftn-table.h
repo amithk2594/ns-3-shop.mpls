@@ -28,9 +28,9 @@
 
 #include "ns3/simple-ref-count.h"
 
+#include "ns3/mpls-fec.h"
 #include "mpls-nhlfe.h"
 #include "mpls-fec-to-nhlfe.h"
-#include "fec/mpls-fec.h"
 
 namespace ns3 {
 namespace mpls {
