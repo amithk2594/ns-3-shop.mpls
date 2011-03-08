@@ -105,9 +105,10 @@ Swap::Accept (Nhlfe& nhlfe)
 {
   nhlfe.m_opcode = OP_SWAP;
   nhlfe.m_count = m_count;
-  for (int i = 0; i < m_count; ++i) {
-    nhlfe.m_labels[i] = m_labels[i];
-  }
+  for (int i = 0; i < m_count; ++i) 
+    {
+      nhlfe.m_labels[i] = m_labels[i];
+    }
 }
 
 } // namespace mpls
