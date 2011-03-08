@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include "mpls-label.h"
+#include "mpls-nhlfe.h"
 
 namespace ns3 {
 namespace mpls {

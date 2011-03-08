@@ -30,6 +30,8 @@
 namespace ns3 {
 namespace mpls {
 
+class Operation;
+
 /**
  * \ingroup mpls
  * \brief A representation of the "Next Hop Label Forwarding Entry" (NHLFE)
