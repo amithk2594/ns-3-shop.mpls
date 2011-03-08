@@ -56,22 +56,25 @@ MplsProtocol::~MplsProtocol ()
 }
 
 void
-MplsProtocol::SetNode (Ptr<Node> &node)
-{
-  m_node = node;
-}
-
-void
 MplsProtocol::NotifyNewAggregate ()
 {
   if (m_node == 0)
     {
       Ptr<Node> node = this->GetObject<Node> ();
-      // verify that it's a valid node and that
-      // the node has not been set before
+      
       if (node != 0)
         {
-          this->SetNode (node);
+          m_node = node;
+        }
+    }
+    
+  if (m_ipv4 == 0)
+    {
+      Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
+      
+      if (ipv4 != 0)
+        {
+          m_ipv4 = ipv4;
         }
     }
 
@@ -133,6 +136,36 @@ MplsProtocol::GetInterfaceForDevice (Ptr<const NetDevice> &device) const
   return 0;
 }
 
+Ptr<MplsInterface>
+MplsProtocol::GetInterfaceForNextHop (const Address &address) const
+{
+  if (Ipv4Address::IsMatchingType (address))
+    {
+      static Ipv4Header header;
+      Socket::SocketErrno sockerr;
+
+      // XXX: i don't know if we can do this    
+      if (!m_ipv4)
+        {
+          NS_LOG_WARN ("Could not lookup next-hop --- ipv4 is not installed");
+          return 0;
+        }
+        
+      header.SetDestination(Ipv4Address::ConvertFrom (address));
+      Ptr<Ipv4Route> route = m_ipv4->GetRoutingProtocol ()->RouteOutput (0, header, 0, sockerr);
+      if (route && route->GetDestination ().Get () != 0)
+        {
+          return GetInterfaceForDevice (route->GetDevice ());
+        }
+    }
+  else
+    {
+      NS_LOG_WARN ("Could not lookup next-hop --- unknown next-hop address");
+    }
+
+  return 0;
+}
+
 uint32_t 
 MplsProtocol::GetNInterfaces (void) const
 {
@@ -164,7 +197,8 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
     }
 
   Ptr<MplsInterface> mplsInterface = GetInterfaceForDevice (device);
-  if (mplsInterface->IsUp ()) 
+
+  if (!mplsInterface->IsUp ()) 
     {
       //m_rxTrace (...);
     }
@@ -200,6 +234,7 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
           default:
             NS_LOG_WARN ("Skip reserved label -- unknown label");
         }
+
       stack.Pop ();
       
       if (stack.IsEmpty ()) break;
@@ -260,22 +295,16 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
     {
       Ptr<MplsInterface> outInterface;
       uint32_t outIfIndex = (*i)->GetInterface ();
-      if (outIfIndex)
-        {
-          outInterface = GetInterface (outIfIndex); 
-        }
-      else
-        {
-          // find interface for next-hop
-        }
+      outInterface = outIfIndex ? GetInterface (outIfIndex) : GetInterfaceForNextHop ((*i)->GetNextHop ());
 
       if (outInterface->IsUp ())
         {
           MplsForward (packet, outInterface, nhlfe, stack, ttl);
+          return;
         }
     }
 
-  NS_LOG_LOGIC ("Dropping received packet -- there is no enabled outgoing interface");
+  NS_LOG_LOGIC ("Dropping received packet -- no outgoing interface enabled");
   //m_dropTrace (...);
 }
 

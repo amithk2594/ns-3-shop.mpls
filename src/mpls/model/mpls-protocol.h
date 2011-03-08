@@ -57,8 +57,6 @@ public:
 
   MplsProtocol ();
   virtual ~MplsProtocol ();
-
-  void SetNode (const Ptr<Node>& node);
   
   void Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                 const Address &to, NetDevice::PacketType packetType);
@@ -78,6 +76,11 @@ public:
    */
   Ptr<MplsInterface> GetInterfaceForDevice (const Ptr<NetDevice> &device) const;
   /**
+   * @brief Get Mpls interface for next-hop router
+   * @return Mpls interface
+   */
+  Ptr<MplsInterface> GetInterfaceForNextHop (const Address &address) const;
+  /**
    * @brief The number of Mpls interfaces added
    */
   uint32_t GetNInterfaces (void) const;
@@ -90,6 +93,7 @@ private:
   typedef std::vector<Ptr<MplsInterface> > MplsInterfaceList;
   
   Ptr<Node> m_node;
+  Ptr<Ipv4> m_ipv4;
   MplsInterfaceList m_interfaces;
 };
 
