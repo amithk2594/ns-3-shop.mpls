@@ -18,50 +18,63 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  *         Stefano Avallone <stavallo@gmail.com>
  */
- 
-#include <iostream>
-#include "mpls-nhlfe.h"
+
+#include "ns3/simulator.h"
+#include "ns3/test.h"
+#include "ns3/log.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/address.h"
+
+#include "ns3/mpls-nhlfe.h"
 
 namespace ns3 {
 namespace mpls {
 
-Nhlfe::Nhlfe (const Operation& op, uint32_t outInterface)
-  : m_interface (outInterface),
-    m_nextHop ()
+class NhlfeTestCase : public TestCase
 {
-  NS_ASSERT_MSG (outInterface, "Invalid outgoing interface index");
-  op.Accept (*this);
+public:
+  /**
+   * @brief Constructor.
+   */
+  NhlfeTestCase ();
+  /**
+   * @brief Destructor.
+   */
+  virtual ~NhlfeTestCase ();
+  /**
+   * @brief Run unit tests for this class.
+   */
+  virtual void DoRun (void);
+
+};
+
+NhlfeTestCase::NhlfeTestCase () :
+  TestCase ("Verify the NHLFE")
+{
 }
 
-Nhlfe::Nhlfe (const Operation& op, const Address& nextHop)
-  : m_interface (0),
-    m_nextHop (nextHop)
-{
-  NS_ASSERT_MSG (!nextHop.IsInvalid (), "Invalid next-hop address");
-  op.Accept (*this);
-}
-
-Nhlfe::~Nhlfe ()
+NhlfeTestCase::~NhlfeTestCase ()
 {
 }
 
-uint32_t 
-Nhlfe::GetInterface (void) const
+void
+NhlfeTestCase::DoRun (void)
 {
-  return m_interface;
+  Nhlfe nhlfe (Swap (18, 20), Ipv4Address ("10.0.0.2"));
+  NS_TEST_ASSERT_MSG_EQ (Ipv4Address::IsMatchingType (nhlfe.GetNextHop ()), true, "Invalid ipv4 address??");
+  NS_TEST_ASSERT_MSG_EQ (nhlfe.GetInterface (), 0, "Invalid outgoing interface??");
 }
 
-const Address& 
-Nhlfe::GetNextHop (void) const
+static class MplsTestSuite : public TestSuite
 {
-  return m_nextHop;
-}
-
-std::ostream& operator<< (std::ostream& os, const Nhlfe& nhlfe)
-{
-  // TODO:
-  return os;
-}
+public:
+  MplsTestSuite () :
+    TestSuite ("mpls", UNIT)
+  {
+    AddTestCase (new NhlfeTestCase ());
+  }
+} g_mplsTestSuite;
 
 } // namespace mpls
 } // namespace ns3
+

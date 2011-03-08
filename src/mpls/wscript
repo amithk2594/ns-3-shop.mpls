@@ -10,11 +10,12 @@ def build(bld):
         'model/mpls-interface.cc',
         'model/mpls-operations.cc',
         'model/mpls-nhlfe.cc',
-        'model/mpls-forwarding-information.cc',
-        'model/mpls-incoming-label-map.cc',
-        'model/mpls-fec-to-nhlfe.cc',
-        'model/mpls-ilm-table.cc',
-        'model/mpls-ftn-table.cc',
+        #'model/mpls-forwarding-information.cc',
+        #'model/mpls-incoming-label-map.cc',
+        #'model/mpls-fec-to-nhlfe.cc',
+        #'model/mpls-ilm-table.cc',
+        #'model/mpls-ftn-table.cc',
+        'test/mpls-test.cc',
     ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mpls'
@@ -26,8 +27,8 @@ def build(bld):
         'model/mpls-interface.h',        
         'model/mpls-operations.h',
         'model/mpls-nhlfe.h',
-        'model/mpls-forwarding-information.h',
-        'model/mpls-incoming-label-map.h',
-        'model/mpls-fec-to-nhlfe.h',
-        'model/mpls-ilm-table.h',
+        #'model/mpls-forwarding-information.h',
+        #'model/mpls-incoming-label-map.h',
+        #'model/mpls-fec-to-nhlfe.h',
+        #'model/mpls-ilm-table.h',
     ]

@@ -24,6 +24,8 @@
 
 #include <ostream>
 
+#include "ns3/address.h"
+
 #include "mpls-operations.h"
 #include "mpls-interface.h"
 
@@ -43,14 +45,14 @@ class Nhlfe
 public:
   /**
    * @brief construct NHLFE with specified operation and outgoing interface
-   * @param outInterface Outgoing interface index
    * @param op Operation to perform
+   * @param outInterface Outgoing interface index   
    */
   Nhlfe (const Operation& op, uint32_t outInterface);
   /**
    * @brief construct NHLFE with specified operation and next-hop
+   * @param op Operation to perform   
    * @param nextHop next-hop
-   * @param op Operation to perform
    */
   Nhlfe (const Operation& op, const Address& nextHop);
   /**

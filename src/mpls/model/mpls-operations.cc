@@ -38,7 +38,7 @@ Pop::~Pop ()
 }
 
 void
-Pop::Accept (Nhlfe& nhlfe)
+Pop::Accept (Nhlfe& nhlfe) const
 {
   nhlfe.m_opcode = OP_POP;
 }
@@ -101,11 +101,11 @@ Swap::~Swap ()
 }
 
 void
-Swap::Accept (Nhlfe& nhlfe)
+Swap::Accept (Nhlfe& nhlfe) const
 {
   nhlfe.m_opcode = OP_SWAP;
   nhlfe.m_count = m_count;
-  for (int i = 0; i < m_count; ++i) 
+  for (uint32_t i = 0; i < m_count; ++i) 
     {
       nhlfe.m_labels[i] = m_labels[i];
     }

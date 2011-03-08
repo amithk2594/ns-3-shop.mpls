@@ -32,6 +32,7 @@ namespace mpls {
 const uint32_t OP_POP = 0;
 const uint32_t OP_SWAP = 1;
 
+class Nhlfe;
 /**
  * \ingroup mpls
  * \brief Base class for label stack operation
@@ -40,7 +41,7 @@ class Operation
 {
 public:
   virtual ~Operation ();
-  virtual void Accept (Nhlfe& nhlfe) = 0;
+  virtual void Accept (Nhlfe& nhlfe) const = 0;
 };
 
 /**
@@ -52,7 +53,7 @@ class Pop : public Operation
 public:
   Pop ();
   virtual ~Pop ();
-  virtual void Accept (Nhlfe& nhlfe);
+  virtual void Accept (Nhlfe& nhlfe) const;
 };
 
 /**
@@ -69,7 +70,7 @@ public:
   Swap (Label label1, Label label2, Label label3, Label label4, Label label5);
   Swap (Label label1, Label label2, Label label3, Label label4, Label label5, Label label6);
   virtual ~Swap ();
-  virtual void Accept (Nhlfe& nhlfe);
+  virtual void Accept (Nhlfe& nhlfe) const;
 
 private:
   uint32_t m_count;
