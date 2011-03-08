@@ -28,7 +28,7 @@ Nhlfe::Nhlfe ()
 {
 }
 
-Nhlfe::Nhlfe (const Ptr<mpls::Interface>& interface, const OperationVector& op)
+Nhlfe::Nhlfe (const Ptr<MplsInterface>& interface, const OperationVector& op)
   : m_interface (interface),
     m_operations (op)
 {
@@ -52,12 +52,12 @@ Nhlfe::GetOperations (void) const
 }
 
 void
-Nhlfe::SetInterface (const Ptr<mpls::Interface> &interface)
+Nhlfe::SetInterface (const Ptr<MplsInterface> &interface)
 {
   m_interface = interface;
 }
 
-const Ptr<mpls::Interface>&
+const Ptr<MplsInterface>&
 Nhlfe::GetInterface (void) const
 {
   return m_interface;

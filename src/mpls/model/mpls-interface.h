@@ -38,18 +38,18 @@ namespace mpls {
  * \brief
  * Mpls interface
  */
-class Interface : public Object
+class MplsInterface : public Object
 {
 public:
   static TypeId GetTypeId (void);
   /**
    * @brief Create mpls interface
    */
-  Interface ();
+  MplsInterface ();
   /**
    * @brief Destructor
    */
-  virtual ~Interface ();
+  virtual ~MplsInterface ();
   /**
    * @brief Returns true if this interface is enabled  
    */
@@ -99,7 +99,7 @@ private:
   bool m_ifup;
 };
 
-std::ostream& operator<< (std::ostream& os, const Ptr<Interface> &interface);
+std::ostream& operator<< (std::ostream& os, const Ptr<MplsInterface> &interface);
 
 } // namespace mpls
 } // namespace ns3

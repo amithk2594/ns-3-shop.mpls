@@ -61,7 +61,7 @@ public:
    * @param nhlfe
    * @return index of the ILM
    */
-  uint32_t AddIlm (Ptr<mpls::Interface>& interface, Label label, const Nhlfe &nhlfe);
+  uint32_t AddIlm (Ptr<MplsInterface>& interface, Label label, const Nhlfe &nhlfe);
   /**
    * @brief Add interface-independent ILM with a single NHLFE
    * @param label

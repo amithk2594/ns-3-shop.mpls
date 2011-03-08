@@ -47,7 +47,7 @@ public:
    * @param interface
    * @param op
    */
-  Nhlfe (const Ptr<mpls::Interface> &interface, const OperationVector& op);
+  Nhlfe (const Ptr<MplsInterface> &interface, const OperationVector& op);
   /**
    * @brief Destructor
    */
@@ -63,11 +63,11 @@ public:
   /**
    * @brief Set outgoing interface
    */
-  void SetInterface (const Ptr<mpls::Interface> &interface);
+  void SetInterface (const Ptr<MplsInterface> &interface);
   /**
    * @brief Get outgoing interface
    */
-  const Ptr<mpls::Interface>& GetInterface (void) const;
+  const Ptr<MplsInterface>& GetInterface (void) const;
   /**
    * @brief print NHLFE
    * @param os the stream to print to
@@ -75,7 +75,7 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  Ptr<mpls::Interface> m_interface;
+  Ptr<MplsInterface> m_interface;
   OperationVector m_operations;
 };
 

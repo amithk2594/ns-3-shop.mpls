@@ -69,6 +69,10 @@ public:
   /**
    * @brief Retrieves the stack's top entry
    */
+  uint32_t& Peek (void);
+  /**
+   * @brief Retrieves the stack's top entry
+   */
   uint32_t Peek (void) const;
   /**
    * @brief Detects whether the stack is empty

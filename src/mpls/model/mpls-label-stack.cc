@@ -70,6 +70,12 @@ LabelStack::IsEmpty (void) const
   return m_entries.empty ();
 }
 
+uint32_t&
+LabelStack::Peek (void)
+{
+  return m_entries.back ();
+}
+
 uint32_t
 LabelStack::Peek (void) const
 {

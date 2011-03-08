@@ -22,21 +22,21 @@
 #include "ns3/log.h"
 #include "mpls-interface.h"
 
-NS_LOG_COMPONENT_DEFINE ("mpls::Interface");
+NS_LOG_COMPONENT_DEFINE ("MplsInterface");
 
 namespace ns3 {
 namespace mpls {
 
 TypeId
-Interface::GetTypeId (void)
+MplsInterface::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::mpls::Interface")
+  static TypeId tid = TypeId ("ns3::mpls::MplsInterface")
     .SetParent<Object> ()
     ;
   return tid;
 }
 
-Interface::Interface ()
+MplsInterface::MplsInterface ()
   : m_node (0),
     m_device (0),
     m_ifup (true)
@@ -44,13 +44,13 @@ Interface::Interface ()
   NS_LOG_FUNCTION (this);
 }
 
-Interface::~Interface ()
+MplsInterface::~MplsInterface ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
-Interface::DoDispose (void)
+MplsInterface::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
@@ -59,58 +59,58 @@ Interface::DoDispose (void)
 }
 
 void
-Interface::SetNode (const Ptr<Node> &node)
+MplsInterface::SetNode (const Ptr<Node> &node)
 {
   m_node = node;
 }
 
 void
-Interface::SetDevice (const Ptr<NetDevice> &device)
+MplsInterface::SetDevice (const Ptr<NetDevice> &device)
 {
   m_device = device;
 }
 
 Ptr<NetDevice>&
-Interface::GetDevice (void)
+MplsInterface::GetDevice (void)
 {
   return m_device;
 }
 
 bool
-Interface::IsUp () const
+MplsInterface::IsUp () const
 {
   return m_ifup;
 }
 
 bool
-Interface::IsDown () const
+MplsInterface::IsDown () const
 {
   return !m_ifup;
 }
 
 void
-Interface::SetUp ()
+MplsInterface::SetUp ()
 {
   m_ifup = true;
 }
 
 void
-Interface::SetDown ()
+MplsInterface::SetDown ()
 {
   m_ifup = false;
 }
 
 void
-Interface::Send (Ptr<Packet>& packet)
+MplsInterface::Send (Ptr<Packet>& packet)
 {
 }
   
 void
-Interface::Print (std::ostream &os) const
+MplsInterface::Print (std::ostream &os) const
 {
 }
 
-std::ostream& operator<< (std::ostream& os, const Ptr<Interface> &interface)
+std::ostream& operator<< (std::ostream& os, const Ptr<MplsInterface> &interface)
 {
   interface->Print (os);
   return os;

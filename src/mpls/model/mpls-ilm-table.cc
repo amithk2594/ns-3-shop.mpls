@@ -36,7 +36,7 @@ IlmTable::~IlmTable ()
 }
 
 uint32_t
-IlmTable::AddIlm (Ptr<mpls::Interface>& interface, Label label, const Nhlfe& nhlfe)
+IlmTable::AddIlm (Ptr<MplsInterface>& interface, Label label, const Nhlfe& nhlfe)
 {
   Ptr<IncomingLabelMap> ilm = Create<IncomingLabelMap> (interface, label);
   ilm->AddNhlfe (nhlfe);
@@ -47,7 +47,7 @@ IlmTable::AddIlm (Ptr<mpls::Interface>& interface, Label label, const Nhlfe& nhl
 uint32_t
 IlmTable::AddIlm (Label label, const Nhlfe& nhlfe)
 {
-  Ptr<mpls::Interface> interface = 0;
+  Ptr<MplsInterface> interface = 0;
   
   return AddIlm (interface, label, nhlfe);
 }

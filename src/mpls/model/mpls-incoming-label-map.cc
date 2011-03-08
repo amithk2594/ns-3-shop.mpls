@@ -24,7 +24,7 @@
 namespace ns3 {
 namespace mpls {
 
-IncomingLabelMap::IncomingLabelMap (const Ptr<mpls::Interface> &interface, Label label)
+IncomingLabelMap::IncomingLabelMap (const Ptr<MplsInterface> &interface, Label label)
   : m_interface (interface),
     m_label (label)
 {
@@ -41,7 +41,7 @@ IncomingLabelMap::GetLabel (void) const
   return m_label;
 }
 
-const Ptr<mpls::Interface>&
+const Ptr<MplsInterface>&
 IncomingLabelMap::GetInterface (void) const
 {
   return m_interface;
@@ -54,7 +54,7 @@ IncomingLabelMap::SetLabel (Label label)
 }
 
 void
-IncomingLabelMap::SetInterface (const Ptr<mpls::Interface>& interface)
+IncomingLabelMap::SetInterface (const Ptr<MplsInterface>& interface)
 {
   m_interface = interface;
 }

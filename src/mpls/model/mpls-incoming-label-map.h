@@ -48,7 +48,7 @@ public:
    * @param interface incoming interface
    * @param label incoming label
    */
-  IncomingLabelMap (const Ptr<mpls::Interface>& interface, Label label);
+  IncomingLabelMap (const Ptr<MplsInterface>& interface, Label label);
   /**
    * @brief Destuctor
    */
@@ -60,7 +60,7 @@ public:
   /**
    * @brief Get incoming interface
    */
-  const Ptr<mpls::Interface>& GetInterface (void) const;
+  const Ptr<MplsInterface>& GetInterface (void) const;
   /**
    * @brief Set incoming label
    */
@@ -68,7 +68,7 @@ public:
   /**
    * @brief Set incoming interface
    */
-  void SetInterface (const Ptr<mpls::Interface>& interface);
+  void SetInterface (const Ptr<MplsInterface>& interface);
   /**
    * @brief Print ILM
    * @param os the stream to print to
@@ -79,7 +79,7 @@ private:
   IncomingLabelMap ();
 
 private:
-  Ptr<mpls::Interface> m_interface;
+  Ptr<MplsInterface> m_interface;
   Label m_label;
 
 };
