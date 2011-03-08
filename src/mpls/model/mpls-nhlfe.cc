@@ -23,57 +23,41 @@
 namespace ns3 {
 namespace mpls {
 
-Nhlfe::Nhlfe ()
-  : m_interface (0)
+Nhlfe::Nhlfe (const Operation& op, uint32_t outInterface)
+  : m_interface (outInterface),
+    m_nextHop ()
 {
+  NS_ASSERT_MSG (outInterface, "Invalid outgoing interface index");
+  op.Accept (*this);
 }
 
-Nhlfe::Nhlfe (const Ptr<MplsInterface>& interface, const OperationVector& op)
-  : m_interface (interface),
-    m_operations (op)
+Nhlfe::Nhlfe (const Operation& op, const Address& nextHop)
+  : m_interface (0),
+    m_nextHop (nextHop)
 {
+  NS_ASSERT_MSG (!nextHop.IsInvalid (), "Invalid next-hop address");
+  op.Accept (*this);
 }
 
 Nhlfe::~Nhlfe ()
 {
-  m_interface = 0;
 }
 
-void
-Nhlfe::SetOperations (const OperationVector& op)
-{
-  m_operations = op;
-}
-
-const OperationVector&
-Nhlfe::GetOperations (void) const
-{
-  return m_operations;
-}
-
-void
-Nhlfe::SetInterface (const Ptr<MplsInterface> &interface)
-{
-  m_interface = interface;
-}
-
-const Ptr<MplsInterface>&
+uint32_t 
 Nhlfe::GetInterface (void) const
 {
   return m_interface;
 }
 
-void
-Nhlfe::Print (std::ostream &os) const
+const Address& 
+Nhlfe::GetNextHop (void) const
 {
-//  os << m_interface
-//     << "operations: " << m_operations << std::endl
-//    ;
+  return m_address;
 }
 
 std::ostream& operator<< (std::ostream& os, const Nhlfe& nhlfe)
 {
-  nhlfe.Print (os);
+  // TODO:
   return os;
 }
 
