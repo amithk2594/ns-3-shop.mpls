@@ -71,7 +71,7 @@ public:
   virtual void Accept (Nhlfe& nhlfe);
 
 private:
-  int32_t m_count;
+  uint32_t m_count;
   uint32_t m_labels[6];
 };
 
