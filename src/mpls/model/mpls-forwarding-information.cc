@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
 
 #include "mpls-forwarding-information.h"
@@ -43,8 +44,7 @@ ForwardingInformation::AddNhlfe (const Nhlfe& nhlfe)
 void
 ForwardingInformation::RemoveNhlfe (uint32_t index)
 {
-	NS_ASSERT_MSG (index < m_nhlfe.size (), 
-									"ForwardingInformation::RemoveNhlfe (): invalid NHLFE index");
+	NS_ASSERT_MSG (index < m_nhlfe.size (), "Invalid NHLFE index");
   m_nhlfe.erase (m_nhlfe.begin () + index);
 }
 
@@ -52,6 +52,18 @@ uint32_t
 ForwardingInformation::GetNNhlfe (void) const
 {
   return m_nhlfe.size ();
+}
+
+ForwardingInformation::Iterator 
+ForwardingInformation::Begin (void) const
+{
+  return m_nhlfe.begin ();
+}
+
+ForwardingInformation::Iterator
+ForwardingInformation::End (void) const
+{
+  return m_nhlfe.end ();
 }
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info)

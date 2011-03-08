@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,23 +16,31 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
-
+ 
 #include <iostream>
 #include "mpls-incoming-label-map.h"
 
 namespace ns3 {
 namespace mpls {
 
-IncomingLabelMap::IncomingLabelMap (const Ptr<MplsInterface> &interface, Label label)
+IncomingLabelMap::IncomingLabelMap (Label label, const Nhlfe &nhlfe)
+  : m_interface (0),
+    m_label (label)
+{
+  AddNhlfe (nhlfe);
+}
+
+IncomingLabelMap::IncomingLabelMap (uint32_t interface, Label label, const Nhlfe &nhlfe)
   : m_interface (interface),
     m_label (label)
 {
+  AddNhlfe (nhlfe);
 }
 
 IncomingLabelMap::~IncomingLabelMap ()
 {
-  m_interface = 0;
 }
 
 Label
@@ -41,7 +49,7 @@ IncomingLabelMap::GetLabel (void) const
   return m_label;
 }
 
-const Ptr<MplsInterface>&
+uint32_t
 IncomingLabelMap::GetInterface (void) const
 {
   return m_interface;
@@ -54,7 +62,7 @@ IncomingLabelMap::SetLabel (Label label)
 }
 
 void
-IncomingLabelMap::SetInterface (const Ptr<MplsInterface>& interface)
+IncomingLabelMap::SetInterface (uint32_t interface)
 {
   m_interface = interface;
 }

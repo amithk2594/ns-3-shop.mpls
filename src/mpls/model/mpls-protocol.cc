@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
 
 #include "ns3/log.h"
@@ -180,10 +181,31 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
   
   uint32_t sh = stack.Peek ();
   uint8_t ttl = shim::GetTtl (sh);
-  
-  if (!ProcessReservedLabel (stack))
+  uint32_t label = shim::GetLabel (sh);
+
+  // remove illegal reserved labels from the stack top
+  while (label < 0x10)
     {
-      return;
+      switch (label) 
+        {
+          case Label::IPV4_EXPLICIT_NULL:
+            NS_LOG_WARN ("Illegal Ipv4 explicit null label position");
+            break;
+          case Label::IPV6_EXPLICIT_NULL:
+            NS_LOG_WARN ("Illegal Ipv6 explicit null label position");
+            break;
+          case Label::ROUTE_ALERT:
+            NS_LOG_WARN ("Route alert label not supported");
+            break;
+          default:
+            NS_LOG_WARN ("Skip reserved label -- unknown label");
+        }
+      stack.Pop ();
+      
+      if (stack.IsEmpty ()) break;
+      
+      sh = stack.Peek ();
+      label = shim::GetLabel (sh);
     }
 
   if (stack.IsEmpty ()) {
@@ -198,14 +220,67 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
       //m_dropTrace (...);
       return;
     }
+  
+  // find Ilm for incoming label
+  IlmTable::Iterator begin = m_ilmTable->Begin ();
+  IlmTable::Iterator end = m_ilmTable->End ();
+  uint32_t interface = mplsInterface->GetIndex ();
+  Label label (shim::GetLabel (sh));
+  Ptr<IncomingLabelMap> ilm = 0;
 
-  // lookup nhlfe
+  for (IlmTable::Iterator i = begin; i != end; ++i)
+    {
+      if ((*i)->GetLabel () == label && (*i)->GetInterface () == interface)
+        {
+          ilm = *i;
+          break;
+        }
+    }
 
-  MplsForward (packet, nhlfe, stack, ttl);
+  if (ilm == 0)
+    {
+      for (IlmTable::Iterator i = begin; i != end; ++i)
+        {
+          if ((*i)->GetLabel () == label && (*i)->GetInterface () == 0)
+            {
+              ilm = *i;
+              break;
+            }
+        }
+    }
+  
+  if (ilm == 0)
+    {
+      NS_LOG_LOGIC ("Dropping received packet -- ILM not found");
+      //m_dropTrace (...);
+      return;
+    }
+  
+  for (ForwardingInformation::Iterator i = ilm->Begin (); i != ilm->End (); ++i)
+    {
+      Ptr<MplsInterface> outInterface;
+      uint32_t outIfIndex = (*i)->GetInterface ();
+      if (outIfIndex)
+        {
+          outInterface = GetInterface (outIfIndex); 
+        }
+      else
+        {
+          // find interface for next-hop
+        }
+
+      if (outInterface->IsUp ())
+        {
+          MplsForward (packet, outInterface, nhlfe, stack, ttl);
+        }
+    }
+
+  NS_LOG_LOGIC ("Dropping received packet -- there is no enabled outgoing interface");
+  //m_dropTrace (...);
 }
 
 bool
-MplsProtocol::ProcessReservedLabel (LabelStack& stack)
+MplsProtocol::ProcessReservedLabel (LabelStack& stack, uint8_t ttl)
 {
   while (!stack.IsEmpty ())
     {
@@ -221,6 +296,7 @@ MplsProtocol::ProcessReservedLabel (LabelStack& stack)
                 {
                   NS_LOG_WARN ("Illegal Ipv4 explicit null label position");
                 }
+              NS_LOG_LOGIC ("Force Ipv4 forwarding");
               // Ipv4 forward
             }
           else if (label == Label::IPV6_EXPLICIT_NULL)
@@ -247,84 +323,65 @@ MplsProtocol::ProcessReservedLabel (LabelStack& stack)
 }
 
 void
-MplsProtocol::MplsForward (Ptr<Packet> &packet, MplsLabelStack &stack, const Nhlfe& nhlfe, int8_t ttl)
+MplsProtocol::MplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInterface, 
+    MplsLabelStack &stack, const Nhlfe* nhlfe, int8_t ttl)
 {
   NS_LOG_FUNCTION (this);
+  
+  switch (nhlfe->m_opcode)
+    {  
+      case OP_POP:
+        if (stack.IsEmpty ()) 
+          {
+            NS_LOG_WARN ("Dropping received packet -- POP over an empty stack");
+            //m_dropTrace (...);
+            return;
+          }
 
-  OperationIterator iterator (nhlfe.GetOperations ());
-  
-  Ptr<MplsInterface> outInterface = nhlfe.GetInterface ();  
-  
-  if (outInterface == 0)
-    {
-      NS_LOG_LOGIC ("Dropping received packet -- bad outgoing interface");
-      //m_dropTrace (...);
-    }
-    
-  while (iterator.HasNext ()) 
-    {
-      if (stack.IsEmpty ())
-        {
-          NS_LOG_WARN ("Operations has been performed partly");
-          break;
-        }
+        stack.Pop ();
+            
+        // XXX: we really need process reserved labels here?
+        if (!ProcessReservedLabel (stack, ttl))
+          {
+            return;
+          }
+        break;
         
-      uint32_t opcode = iterator.Get ();
+      case OP_SWAP:
+        uint32_t label = nhlfe->m_labels[0];
+        if (label == Label::IMPLICIT_NULL)
+          {
+            // Penultimate Hop Popping
+            NS_LOG_LOGIC ("Penultimate Hop Popping");
+            return;
+          }
+        
+        stack.IsEmpty () ? stack.Push (label) : stack.Swap (label);
       
-      if (opcode == OP_PUSH)
-        {
-          uint32_t label = iterator.Get ();
-          if (label == Label::IMPLICIT_NULL)
-            {
-              NS_LOG_LOGIC ("Penultimate Hop Popping");
-              // Penultimate Hop Popping
-              
-              return;
-            }
-
-          stack.Push (label);
-        }
-      else if (opcode == OP_POP)
-        {
-          if (stack.IsEmpty ()) 
-            {
-              NS_LOG_WARN ("Dropping received packet -- POP over an empty stack");
-              //m_dropTrace (...);
-              return;
-            }
-
-          stack.Pop ();
-          
-          if (!ProcessReservedLabel ())
-            {
-              return;
-            }
-        }
-      else if (opcode == OP_SWAP)
-        {
-          uint32_t label = iterator.Get ();
-          if (label == Label::IMPLICIT_NULL)
-            {
-              // Penultimate Hop Popping
-              return;
-            }
-
-          stack.Swap (label);
-        }
-      else
-        {
-          NS_ASSERT_MSG (0, "Invalid operation code");
-        }
+        uint32_t i = 1, count = nhlfe.m_count;
+        while (i < count) 
+          {
+            label = nhlfe->m_labels[i];
+            if (label == Label::IMPLICIT_NULL)
+              {
+                // Penultimate Hop Popping
+                NS_LOG_LOGIC ("Penultimate Hop Popping");
+                return;
+              }
+            stack.Push (label);
+          }
+        break;
+        
+      default:
+        NS_ASSERT_MSG (0, "Invalid operation code");
     }
 
   ttl--;
   
   if (!stack.IsEmpty ())
     {
-
       shim::SetTtl (stack.Peek (), ttl);
       packet->AddHeader (stack);
-      // XXX: if interface is down? Possible nhlfe should not be selected if outgoing interface is down?
       outInterface->Send (packet);
     }
   else
@@ -367,41 +424,6 @@ MplsProtocol::IpForward (Ptr<Packet> &packet, Ptr<NetDevice> outDev, uint8_t ttl
 }
 
 void
-MplsProtocol::Ip6Forward (Ptr<Packet> packet, Ptr<NetDevice> outDev, uint8_t ttl) const
-{
-  NS_LOG_FUNCTION (this << packet);
-
-  NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::Ip6Forward (): "
-                "leaving mpls, send packet using Ipv6");
-
-  Ptr<Ipv6L3Protocol> ipv6 = m_node->GetObject<Ipv6L3Protocol> ();
-
-  if (ipv6 == 0)
-    {
-      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::Ip6Forward (): "
-                    "dropping received packet -- no Ipv6 Protocol");
-      return;
-    }
-
-  if (ipv6->GetRoutingProtocol () == 0)
-    {
-      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::Ip6Forward (): "
-                    "dropping received packet -- no Ipv6 Routing Protocol");
-    }
-
-  Ipv6Header header;
-  packet->RemoveHeader (header);
-  header.SetHopLimit (ttl);
-  Ipv6Address daddr = header.GetDestinationAddress ();
-  Ipv6Address saddr = header.GetSourceAddress ();
-  uint8_t nextHeader = header.GetNextHeader ();
-  Socket::SocketErrno errno_;
-
-  Ptr<Ipv6Route> route = ipv6->GetRoutingProtocol ()->RouteOutput (packet, header, outDev, errno_);
-  ipv6->Send (packet, saddr, daddr, nextHeader, route);
-}
-
-void
 MplsProtocol::MplsForward (Ptr<Packet> packet, const MplsLabelStack &stack, const Header* ipHeader,
                                   Ptr<NetDevice> outDev) const
 {
@@ -433,146 +455,6 @@ MplsProtocol::MplsForward (Ptr<Packet> packet, const MplsLabelStack &stack, cons
   outDev->Send (packet, outDev->GetBroadcast (), PROT_NUMBER);
 }
 
-void
-MplsProtocol::AddLibEntry (Ptr<const MplsLibEntry> entry)
-{
-  m_entries.push_back (entry);
-}
-
-void
-MplsProtocol::RemoveLibEntry (Ptr<const MplsLibEntry> entry)
-{
-  m_entries.remove (entry);
-}
-
-//void
-//MplsProtocol::RemoveLibEntry (int32_t ifIndex, uint32_t label)
-//{
-//  MplsLibEntryList::iterator i = m_entries.begin ();
-//  while (i != m_entries.end ())
-//    {
-//      if ((*i)->GetInIfIndex () == ifIndex && (*i)->GetLabel () == label)
-//        {
-//          i = m_entries.erase (i);
-//        }
-//      else
-//        {
-//          ++i;
-//        }
-//    }
-//}
-
-//void
-//MplsProtocol::RemoveLibEntry (const ForwardEquivalenceClass &fec)
-//{
-//  MplsLibEntryList::iterator i = m_entries.begin ();
-//  while (i != m_entries.end ())
-//    {
-//      if (*((*i)->GetFec ()) == fec)
-//        {
-//          i = m_entries.erase (i);
-//        }
-//      else
-//        {
-//          ++i;
-//        }
-//    }
-//}
-
-//void
-//MplsProtocol::RemoveLibEntry (int32_t ifIndex)
-//{
-//  MplsLibEntryList::iterator i = m_entries.begin ();
-//  while (i != m_entries.end ())
-//    {
-//      if ((*i)->GetInIfIndex () == ifIndex)
-//        {
-//          i = m_entries.erase (i);
-//        }
-//      else
-//        {
-//          ++i;
-//        }
-//    }
-//}
-
-Ptr<const MplsLibEntry>
-MplsProtocol::GetLibEntry (int32_t ifIndex, uint32_t label) const
-{
-  NS_LOG_FUNCTION (this);
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      if ((*it)->GetInIfIndex () == ifIndex && (*it)->GetInLabel () == label)
-        {
-          return *it;
-        }
-    }
-
-  return 0;
-}
-
-Ptr<const MplsLibEntry>
-MplsProtocol::GetLibEntry (int32_t ifIndex, Ptr<const Packet> p, const Ipv4Header &header) const
-{
-  NS_LOG_FUNCTION (this);
-
-  uint32_t match = -1;
-  Ptr<const MplsLibEntry> entry = 0;
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      const ForwardingEquivalenceClass *fec = (*it)->GetFec ();
-      if (fec != 0)
-        {
-          uint32_t t = fec->GetMatch (p, header);
-          if (t < match)
-            {
-              match = t;
-              entry = *it;
-            }
-        }
-    }
-
-  return entry;
-}
-
-Ptr<const MplsLibEntry>
-MplsProtocol::GetLibEntry (int32_t ifIndex, Ptr<const Packet> p, const Ipv6Header &header) const
-{
-  NS_LOG_FUNCTION (this);
-
-  uint32_t match = -1;
-  Ptr<const MplsLibEntry> entry = 0;
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      const ForwardingEquivalenceClass *fec = (*it)->GetFec ();
-      if (fec != 0)
-        {
-          uint32_t t = fec->GetMatch (p, header);
-          if (t < match)
-            {
-              match = t;
-              entry = *it;
-            }
-        }
-    }
-
-  return entry;
-}
-
-void
-MplsProtocol::PrintLibEntries (std::ostream &os) const
-{
-  NS_LOG_FUNCTION (this);
-
-  for (MplsLibEntryList::const_iterator it = m_entries.begin (); it != m_entries.end (); ++it)
-    {
-      (*it)->Print (os);
-      os << std::endl;
-    }
-}
 
 } // namespace mpls
 } // namespace ns3

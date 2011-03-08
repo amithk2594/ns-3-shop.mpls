@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,22 +16,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
-
+ 
 #ifndef MPLS_INCOMING_LABEL_MAP_H
 #define MPLS_INCOMING_LABEL_MAP_H
 
 #include <ostream>
 
 #include "mpls-label.h"
-#include "mpls-interface.h"
 #include "mpls-forwarding-information.h"
 
 namespace ns3 {
 namespace mpls {
 
-class ForwardingInformationBase;
-class Interface;
+class ForwardingInformation;
 
 /**
  * \ingroup mpls
@@ -44,11 +43,18 @@ class IncomingLabelMap : public ForwardingInformation
 {
 public:
   /**
-   * @brief Construct ILM with specified label and interface
+   * @brief Construct ILM for specified incoming interface and label
    * @param interface incoming interface
    * @param label incoming label
+   * @param nhlfe NHLFE (at least one NHLFE should be set)
    */
-  IncomingLabelMap (const Ptr<MplsInterface>& interface, Label label);
+  IncomingLabelMap (uint32_t interface, Label label, const Nhlfe &nhlfe);
+  /**
+   * @brief Construct ILM for specified incoming label
+   * @param label incoming label
+   * @param nhlfe NHLFE (at least one NHLFE should be set)
+   */
+  IncomingLabelMap (Label label, const Nhlfe &nhlfe);
   /**
    * @brief Destuctor
    */
@@ -60,7 +66,7 @@ public:
   /**
    * @brief Get incoming interface
    */
-  const Ptr<MplsInterface>& GetInterface (void) const;
+  uint32_t GetInterface (void) const;
   /**
    * @brief Set incoming label
    */
@@ -68,7 +74,7 @@ public:
   /**
    * @brief Set incoming interface
    */
-  void SetInterface (const Ptr<MplsInterface>& interface);
+  void SetInterface (uint32_t interface);
   /**
    * @brief Print ILM
    * @param os the stream to print to
@@ -79,9 +85,8 @@ private:
   IncomingLabelMap ();
 
 private:
-  Ptr<MplsInterface> m_interface;
+  uint32_t m_interface;
   Label m_label;
-
 };
 
 } // namespace mpls

@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -36,20 +36,16 @@ IlmTable::~IlmTable ()
 }
 
 uint32_t
-IlmTable::AddIlm (Ptr<MplsInterface>& interface, Label label, const Nhlfe& nhlfe)
+IlmTable::AddIlm (uint32_t interface, Label label, const Nhlfe& nhlfe)
 {
-  Ptr<IncomingLabelMap> ilm = Create<IncomingLabelMap> (interface, label);
-  ilm->AddNhlfe (nhlfe);
-  
+  Ptr<IncomingLabelMap> ilm = Create<IncomingLabelMap> (interface, label, nhlfe);
   return AddIlm (ilm);
 }
 
 uint32_t
 IlmTable::AddIlm (Label label, const Nhlfe& nhlfe)
-{
-  Ptr<MplsInterface> interface = 0;
-  
-  return AddIlm (interface, label, nhlfe);
+{ 
+  return AddIlm (0, label, nhlfe);
 }
 
 uint32_t
@@ -61,13 +57,13 @@ IlmTable::AddIlm (const Ptr<IncomingLabelMap>& ilm)
 }
 
 Ptr<IncomingLabelMap>
-IlmTable::GetIlmByIndex (const uint32_t index)
+IlmTable::GetIlm (const uint32_t index)
 {
   return m_ilmTable[index];
 }
 
 void
-IlmTable::RemoveIlmByIndex (const uint32_t index)
+IlmTable::RemoveIlm (const uint32_t index)
 {
   m_ilmTable.erase (index);
 }

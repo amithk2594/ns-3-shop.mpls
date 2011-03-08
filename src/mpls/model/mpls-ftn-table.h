@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,8 +19,8 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#ifndef MPLS_FORWARDING_INFORMATION_BASE_H
-#define MPLS_FORWARDING_INFORMATION_BASE_H
+#ifndef MPLS_FTN_TABLE_H
+#define MPLS_FTN_TABLE_H
 
 #include <ostream>
 #include <map>
@@ -63,6 +63,10 @@ public:
    */
   template <class T>
   uint32_t AddFtn (const T &fec, const Nhlfe &nhlfe);
+  
+  template <class T>
+  uint32_t AddFtn (uint32_t interface, const T &fec, const Nhlfe &nhlfe);
+  
   /**
    * @brief Add FTN with (possibly) multiple NHLFEs
    * @param ftn
@@ -74,12 +78,12 @@ public:
    * @param index
    * @return FTN identified by index
    */
-  Ptr<FecToNhlfe> GetFtnByIndex (const uint32_t index);
+  Ptr<FecToNhlfe> GetFtn (const uint32_t index);
   /**
    * @brief Remove FTN by index
    * @param index
    */
-  void RemoveFtnByIndex (const uint32_t index);
+  void RemoveFtn (const uint32_t index);
   /**
    * \brief Print forwarding information
    * \param os the stream to print to
@@ -104,4 +108,4 @@ std::ostream& operator<< (std::ostream& os, const Ptr<FtnTable> &ftn);
 } // namespace mpls
 } // namespace ns3
 
-#endif /* MPLS_FORWARDING_INFORMATION_BASE_H */
+#endif /* MPLS_FTN_TABLE_H */

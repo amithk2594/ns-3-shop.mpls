@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,8 +19,8 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#ifndef MPLS_FORWARDING_INFORMATION_BASE_H
-#define MPLS_FORWARDING_INFORMATION_BASE_H
+#ifndef MPLS_ILM_TABLE_H
+#define MPLS_ILM_TABLE_H
 
 #include <ostream>
 #include <map>
@@ -56,14 +56,14 @@ public:
   virtual ~IlmTable ();
   /**
    * @brief Add ILM with a single NHLFE
-   * @param interface
-   * @param label
-   * @param nhlfe
+   * @param interface Incoming interface
+   * @param label Incoming label
+   * @param nhlfe NHLFE
    * @return index of the ILM
    */
-  uint32_t AddIlm (Ptr<MplsInterface>& interface, Label label, const Nhlfe &nhlfe);
+  uint32_t AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe);
   /**
-   * @brief Add interface-independent ILM with a single NHLFE
+   * @brief Add ILM with a single NHLFE (per-system label space)
    * @param label
    * @param nhlfe
    * @return index of the ILM
@@ -80,12 +80,12 @@ public:
    * @param index
    * @return ILM identified by index
    */
-  Ptr<IncomingLabelMap> GetIlmByIndex (const uint32_t index);
+  Ptr<IncomingLabelMap> GetIlm (const uint32_t index);
   /**
    * @brief Remove ILM by index
    * @param index
    */
-  void RemoveIlmByIndex (const uint32_t index);
+  void RemoveIlm (const uint32_t index);
   /**
    * \brief Print forwarding information
    * \param os the stream to print to

@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -37,12 +37,19 @@ FtnTable::~FtnTable ()
 
 template <class T>
 uint32_t
-FtnTable::AddFtn (const T& fec, const Nhlfe& nhlfe)
+FtnTable::AddFtn (uint32_t interface, const T& fec, const Nhlfe& nhlfe)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (fec);
-  ftn->AddNhlfe (nhlfe);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (interface, fec, nhlfe);
   
   return AddFtn (ftn);
+}
+
+
+template <class T>
+uint32_t
+FtnTable::AddFtn (const T& fec, const Nhlfe& nhlfe)
+{
+  return AddFtn (0, fec, nhlfe);
 }
 
 uint32_t
@@ -54,13 +61,13 @@ FtnTable::AddFtn (const Ptr<FecToNhlfe> &ftn)
 }
 
 Ptr<FecToNhlfe>
-FtnTable::GetFtnByIndex (const uint32_t index)
+FtnTable::GetFtn (const uint32_t index)
 {
   return m_ftnTable[index];
 }
 
 void
-FtnTable::RemoveFtnByIndex (const uint32_t index)
+FtnTable::RemoveFtn (const uint32_t index)
 {
   m_ftnTable.erase (index);
 }

@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,8 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
-
+ 
 #include <ostream>
 #include "mpls-fec-to-nhlfe.h"
 
@@ -32,10 +33,17 @@ Fec* CopyFec (T fec)
 
 template <class T>
 FecToNhlfe::FecToNhlfe (const T& fec)
-  : m_fec (CopyFec (fec))
+  : FecToNhlfe (0, fec)
 {
 }
 
+template <class T>
+FecToNhlfe::FecToNhlfe (uint32_t interface, const T& fec)
+  : m_fec (CopyFec (fec)),
+    m_interface (interface)
+{
+}
+  
 FecToNhlfe::~FecToNhlfe ()
 {
   delete m_fec;
@@ -53,6 +61,12 @@ FecToNhlfe::SetFec (const T& fec)
 {
   delete m_fec;
   m_fec = CopyFec (fec);
+}
+
+uint32_t 
+FecToNhlfe::GetInterface (void) const
+{
+  return m_interface;
 }
 
 void
