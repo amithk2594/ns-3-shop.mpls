@@ -39,35 +39,29 @@ class Nhlfe
 {
 public:
   /**
-   * @brief construct empty NHLFE
+   * @brief construct NHLFE with specified operation and outgoing interface
+   * @param outInterface Outgoing interface index
+   * @param op Operation to perform
    */
-  Nhlfe ();
+  Nhlfe (const Operation& op, uint32_t outInterface);
   /**
-   * @brief construct NHLFE with specified operation vector and interface
-   * @param interface
-   * @param op
+   * @brief construct NHLFE with specified operation and next-hop
+   * @param nextHop next-hop
+   * @param op Operation to perform
    */
-  Nhlfe (const Ptr<MplsInterface> &interface, const OperationVector& op);
+  Nhlfe (const Operation& op, const Address& nextHop);
   /**
    * @brief Destructor
    */
   virtual ~Nhlfe ();
   /**
-   * @brief Set operation vector
-   */
-  void SetOperations (const OperationVector& op);
-  /**
-   * @brief Returns operation vector
-   */
-  const OperationVector& GetOperations (void) const;
-  /**
-   * @brief Set outgoing interface
-   */
-  void SetInterface (const Ptr<MplsInterface> &interface);
-  /**
    * @brief Get outgoing interface
    */
-  const Ptr<MplsInterface>& GetInterface (void) const;
+  uint32_t GetInterface (void) const;
+  /**
+   * @brief Get next-hop
+   */
+  const Address* GetNextHop (void) const;
   /**
    * @brief print NHLFE
    * @param os the stream to print to
@@ -75,8 +69,14 @@ public:
   virtual void Print (std::ostream &os) const;
 
 private:
-  Ptr<MplsInterface> m_interface;
-  OperationVector m_operations;
+  uint32_t m_interface;
+  Address m_nextHop;
+  uint32_t m_opcode;
+  uint32_t m_count;
+  uint32_t m_labels[6];
+  
+  friend class Swap;
+  friend class Pop;
 };
 
 /**

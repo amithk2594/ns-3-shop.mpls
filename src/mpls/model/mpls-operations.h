@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,70 +16,63 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
 
 #ifndef MPLS_OPERATIONS_H
 #define MPLS_OPERATIONS_H
 
-#include <ostream>
-#include <vector>
 #include <stdint.h>
-
 #include "mpls-label.h"
 
 namespace ns3 {
 namespace mpls {
 
-typedef std::vector<int32_t> OperationVector;
-
-const uint32_t OP_PUSH = 0;
-const uint32_t OP_POP  = 1;
-const uint32_t OP_SWAP = 2;
+const uint32_t OP_POP = 0;
+const uint32_t OP_SWAP = 1;
 
 /**
  * \ingroup mpls
- * \brief Mpls label forwarding operation vector
- *
- * This class is used for creating operation sequence
+ * \brief Base class for label stack operation
  */
-class OperationBuilder
+class Operation
 {
 public:
-  OperationBuilder ();
-  ~OperationBuilder ();
-
-  /**
-   * @brief Push operation
-   */
-  OperationBuilder& Push (Label label);
-  /**
-   * @brief Pop operation.
-   */
-  OperationBuilder& Pop (void);
-  /**
-   * @brief Swap operation.
-   */
-  OperationBuilder& Swap (Label label);
-	/**
-	 * @brief Returns operations
-	 */
-	const OperationVector& GetOperations (void) const;
-private:
-  OperationVector m_operations;  
+  virtual ~Operation ();
+  virtual void Accept (Nhlfe& nhlfe) = 0;
 };
 
-
-class OperationIterator
+/**
+ * \ingroup mpls
+ * \brief Pop operation
+ */
+class Pop : public Operation
 {
 public:
-  OperationIterator (const OperationVector& op);
-  ~OperationIterator ();
-  bool HasNext () const;
-  uint32_t Get ();
-  
+  Pop ();
+  virtual ~Pop ();
+  virtual void Accept (Nhlfe& nhlfe);
+};
+
+/**
+ * \ingroup mpls
+ * \brief Swap operation
+ */
+class Swap : public Operation
+{
+public:
+  Swap (Label label1);
+  Swap (Label label1, Label label2);
+  Swap (Label label1, Label label2, Label label3);
+  Swap (Label label1, Label label2, Label label3, Label label4);
+  Swap (Label label1, Label label2, Label label3, Label label4, Label label5);
+  Swap (Label label1, Label label2, Label label3, Label label4, Label label5, Label label6);
+  virtual ~Swap ();
+  virtual void Accept (Nhlfe& nhlfe);
+
 private:
-  OperationVector::const_iterator m_start;
-  OperationVector::const_iterator m_end;
+  int32_t m_count;
+  uint32_t m_labels[6];
 };
 
 } // namespace mpls
