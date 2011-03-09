@@ -67,6 +67,10 @@ public:
    */
   void Push (uint32_t s);
   /**
+   * @brief Swap an entry on the stack's top
+   */
+  void Swap (uint32_t s);
+  /**
    * @brief Retrieves the stack's top entry
    */
   uint32_t& Peek (void);

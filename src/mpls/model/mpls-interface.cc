@@ -100,9 +100,17 @@ MplsInterface::SetDown ()
   m_ifup = false;
 }
 
-void
+bool
 MplsInterface::Send (Ptr<Packet>& packet)
 {
+  if (packet->GetSize () > outDev->GetMtu ())
+    {
+      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::MplsForward (): "
+                    "dropping received packet -- MTU size exceeded");
+      // XXX: need MTU Path Discover algoritm
+      return false;
+    }
+  return true;
 }
   
 void

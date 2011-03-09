@@ -59,6 +59,12 @@ LabelStack::Push (uint32_t s)
 }
 
 void
+LabelStack::Swap (uint32_t s)
+{
+  m_entries.empty () ? m_entries.push_back (s) : m_entries.back () = s;
+}
+
+void
 LabelStack::Pop (void)
 {
   m_entries.pop_back ();
@@ -141,23 +147,7 @@ LabelStack::Deserialize (Buffer::Iterator start)
 void
 LabelStack::Print (std::ostream &os) const
 {
-//  for (Stack::const_iterator i = m_entries.end (); i != m_entries.begin (); --i)
-//    {
-//      os << shimUtils::AsString (*i) << " ";
-//    }
 }
 
-//std::string 
-//AsString (Shim shim)
-//{
-//  std::ostringstream os (std::ostringstream::out);
-//  
-//  os << GetLabel (shim) << " "
-//     << "(exp=" << (uint32_t)GetExperimentalUse (shim) << " "
-//     << "bos=" << (uint32_t)IsBottomOfStack (shim) << " "
-//     << "ttl=" << (uint32_t)GetTimeToLive (shim) << ")"
-//  ;
-//  return os.str();
-//}
 } // namespace mpls
 } // namespace ns3
