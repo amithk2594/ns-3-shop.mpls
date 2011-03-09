@@ -22,8 +22,8 @@
 #ifndef MPLS_PROTOCOL_H
 #define MPLS_PROTOCOL_H
 
-#include <list>
 #include <ostream>
+#include <vector>
 
 #include "ns3/object.h"
 #include "ns3/ptr.h"
@@ -34,13 +34,11 @@
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-route.h"
-#include "ns3/ipv6-header.h"
-#include "ns3/ipv6-routing-protocol.h"
-#include "ns3/ipv6-route.h"
 #include "ns3/traced-callback.h"
 
-#include "mpls-lib-entry.h"
 #include "mpls-label-stack.h"
+#include "mpls-ipv4.h"
+
 
 namespace ns3 {
 namespace mpls {
@@ -107,7 +105,7 @@ private:
   void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route);
   
   Ptr<Node> m_node;
-  Ptr<Ipv4> m_ipv4;
+  Ptr<MplsIpv4> m_ipv4;
   MplsInterfaceList m_interfaces;
 };
 
