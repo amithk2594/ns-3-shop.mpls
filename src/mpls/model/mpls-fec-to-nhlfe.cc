@@ -32,16 +32,17 @@ Fec* CopyFec (T fec)
 }
 
 template <class T>
-FecToNhlfe::FecToNhlfe (const T& fec)
-  : FecToNhlfe (0, fec)
+FecToNhlfe::FecToNhlfe (const T& fec, const Nhlfe &nhlfe)
+  : FecToNhlfe (0, fec, nhlfe)
 {
 }
 
 template <class T>
-FecToNhlfe::FecToNhlfe (uint32_t interface, const T& fec)
+FecToNhlfe::FecToNhlfe (uint32_t interface, const T& fec, const Nhlfe &nhlfe)
   : m_fec (CopyFec (fec)),
     m_interface (interface)
 {
+  AddNhlfe (nhlfe);
 }
   
 FecToNhlfe::~FecToNhlfe ()
@@ -67,6 +68,12 @@ uint32_t
 FecToNhlfe::GetInterface (void) const
 {
   return m_interface;
+}
+
+void
+FecToNhlfe::SetInterface(uint32_t interface)
+{
+  m_interface = interface;
 }
 
 void

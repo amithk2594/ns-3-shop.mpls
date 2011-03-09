@@ -42,14 +42,20 @@ class FecToNhlfe : public ForwardingInformation
 {
 public:
   /**
-   * @brief Constructor
+   * @brief Construct FTN for specified incoming interface and fec
+   * @param interface incoming interface
+   * @param fec forwarding equivalence class
+   * @param nhlfe NHLFE (at least one NHLFE should be set)
    */
   template <class T>
-  FecToNhlfe (const T& fec);
-  
+  FecToNhlfe (uint32_t interface, const T& fec, const Nhlfe &nhlfe);
+  /**
+   * @brief Construct FTN for specified fec
+   * @param fec forwarding equivalence class
+   * @param nhlfe NHLFE (at least one NHLFE should be set)
+   */
   template <class T>
-  FecToNhlfe (uint32_t interface, const T& fec);
-
+  FecToNhlfe (const T& fec, const Nhlfe &nhlfe);
   /**
    * @brief Destructor
    */
@@ -67,6 +73,10 @@ public:
    * @brief Get incoming interface
    */
   uint32_t GetInterface (void) const;
+  /**
+   * @brief Set incoming interface
+   */
+  void SetInterface (uint32_t interface);
   /**
    * @brief Print FTN
    * @param os the stream to print to
