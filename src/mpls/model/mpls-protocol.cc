@@ -30,7 +30,7 @@ NS_LOG_COMPONENT_DEFINE ("MplsProtocol");
 namespace ns3 {
 namespace mpls {
 
-NS_OBJECT_ENSURE_REGISTERED (MplsProtocol);
+  
 
 const uint16_t MplsProtocol::PROT_NUMBER = 0x8847;
 
@@ -45,7 +45,8 @@ MplsProtocol::GetTypeId (void)
 }
 
 MplsProtocol::MplsProtocol ()
-  : m_node (0)
+  : m_node (0),
+    m_ipv4 (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -71,7 +72,8 @@ MplsProtocol::NotifyNewAggregate ()
   if (m_ipv4 == 0)
     {
       Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
-      
+      NS_ASSERT_MSG (DynamicCast<MplsIpv4> (ipv4), 
+                        "Use MplsIpv4 instead of default Ipv4");
       if (ipv4 != 0)
         {
           m_ipv4 = ipv4;
@@ -215,24 +217,49 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
   
   uint32_t sh = stack.Peek ();
   uint8_t ttl = shim::GetTtl (sh);
+  
+  if (ttl <= 1)
+    {
+      NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
+      //m_dropTrace (...);
+      return;
+    }
+    
   uint32_t label = shim::GetLabel (sh);
 
-  // remove illegal reserved labels from the stack top
+  // process reserved labels
   while (label < 0x10)
     {
       switch (label) 
         {
           case Label::IPV4_EXPLICIT_NULL:
-            NS_LOG_WARN ("Illegal Ipv4 explicit null label position");
+            if (!shim::IsBos (label))
+              {
+                NS_LOG_WARN ("Dropping received packet -- illegal Ipv4 explicit null label");
+                // m_dropTrace 
+                return;
+              }
+            NS_LOG_LOGIC ("Force Ipv4 forwarding");
+            // Ipv4 forward
             break;
+
           case Label::IPV6_EXPLICIT_NULL:
-            NS_LOG_WARN ("Illegal Ipv6 explicit null label position");
+            if (!shim::IsBos (label))
+              {
+                NS_LOG_WARN ("Dropping received packet -- illegal Ipv6 explicit null label");
+              }
+            // for future research
+            NS_LOG_LOGIC ("Dropping received packet -- ipv6 is not supported"); 
+            //m_dropTrace (...);
             break;
+            
           case Label::ROUTE_ALERT:
-            NS_LOG_WARN ("Route alert label not supported");
+            NS_LOG_WARN ("Skip label -- route alert label not supported");
             break;
+            
           default:
-            NS_LOG_WARN ("Skip reserved label -- unknown label");
+            NS_LOG_WARN ("Skip label -- unknown reserved label");
+            break;
         }
 
       stack.Pop ();
@@ -248,13 +275,6 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
     //m_dropTrace (...);
     return false;
   }
-  
-  if (ttl <= 1)
-    {
-      NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
-      //m_dropTrace (...);
-      return;
-    }
   
   // find Ilm for incoming label
   IlmTable::Iterator begin = m_ilmTable->Begin ();
@@ -299,56 +319,13 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
 
       if (outInterface->IsUp ())
         {
-          MplsForward (packet, outInterface, nhlfe, stack, ttl);
+          MplsForward (packet, outInterface, stack, nhlfe, ttl);
           return;
         }
     }
 
   NS_LOG_LOGIC ("Dropping received packet -- no outgoing interface enabled");
   //m_dropTrace (...);
-}
-
-bool
-MplsProtocol::ProcessReservedLabel (LabelStack& stack, uint8_t ttl)
-{
-  while (!stack.IsEmpty ())
-    {
-      sh = stack.Peek ();
-      uint32_t label = shim::GetLabel (sh);
-
-      if (label < 0x10)
-        {
-          stack.Pop ();
-          if (label == Label::IPV4_EXPLICIT_NULL)
-            {
-              if (!shim::IsBos (label))
-                {
-                  NS_LOG_WARN ("Illegal Ipv4 explicit null label position");
-                }
-              NS_LOG_LOGIC ("Force Ipv4 forwarding");
-              // Ipv4 forward
-            }
-          else if (label == Label::IPV6_EXPLICIT_NULL)
-            {
-              // Ipv6 forward
-              NS_LOG_LOGIC ("Dropping received packet -- ipv6 is not supported"); 
-              //m_dropTrace (...);
-              return false;
-            }
-          else
-            {
-              NS_LOG_WARN ("Skip reserved label -- unknown label");
-              return false;
-              // Invalid label, skip
-            }
-        }
-      else 
-        {
-          break;
-        }
-    }
-
-  return true;
 }
 
 void
@@ -368,12 +345,6 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInterface
           }
 
         stack.Pop ();
-            
-        // XXX: we really need process reserved labels here?
-        if (!ProcessReservedLabel (stack, ttl))
-          {
-            return;
-          }
         break;
         
       case OP_SWAP:
