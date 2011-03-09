@@ -99,7 +99,7 @@ MplsProtocol::DoDispose (void)
 }
 
 uint32_t
-MplsProtocol::AddInterface (Ptr<NetDevice> &device)
+MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 {
   NS_LOG_FUNCTION (this << &device);
   
@@ -125,7 +125,7 @@ MplsProtocol::GetInterface (uint32_t index) const
 }
 
 Ptr<MplsInterface>
-MplsProtocol::GetInterfaceForDevice (Ptr<const NetDevice> &device) const
+MplsProtocol::GetInterfaceForDevice (const Ptr<NetDevice> &device) const
 {
   for (MplsInterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
@@ -143,18 +143,20 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
 {
   if (Ipv4Address::IsMatchingType (address))
     {
-      static Ipv4Header header;
-      Socket::SocketErrno sockerr;
-
-      // XXX: i don't know if we can do this    
       if (!m_ipv4)
         {
           NS_LOG_WARN ("Could not lookup next-hop --- ipv4 is not installed");
           return 0;
         }
-        
+
+      static Ipv4Header header;
+      Socket::SocketErrno sockerr;
+
       header.SetDestination(Ipv4Address::ConvertFrom (address));
+      
+      // XXX: i don't know if we can do this    
       Ptr<Ipv4Route> route = m_ipv4->GetRoutingProtocol ()->RouteOutput (0, header, 0, sockerr);
+
       if (route && route->GetDestination ().Get () != 0)
         {
           return route;
@@ -320,8 +322,9 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
 
       if (outInterface && outInterface->IsUp ())
         {
-          if (!RealMplsForward (packet, stack, nhlfe, ttl, outInterface, route))
+          if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface))
             {
+              IpForward (packet, ttl, outInterface->GetDevice (), route);
             }
           return;
         }
@@ -367,12 +370,12 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInterface
 }
 
 bool
-MplsProtocol::RealMplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInterface, LabelStack &stack, 
-    const Nhlfe* nhlfe, int8_t ttl)
+MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl, 
+    Ptr<MplsInterface> &outInterface)
 {
   NS_LOG_FUNCTION (this);
   
-  switch (nhlfe->m_opcode)
+  switch (nhlfe.m_opcode)
     {  
       case OP_POP:
         NS_ASSERT_MSG (!stack.IsEmpty (), "POP operation on the empty stack");
@@ -382,7 +385,7 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInter
       case OP_SWAP:
         for (uint32_t i = 0, count = nhlfe.m_count; i < count; ++i)
           {
-            label = nhlfe->m_labels[i];
+            label = nhlfe.m_labels[i];
             if (label == Label::IMPLICIT_NULL)
               {
                 // Penultimate Hop Popping
@@ -410,8 +413,7 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInter
 }
 
 void
-MplsProtocol::IpForward (Ptr<Packet> &packet, Ptr<NetDevice> &outDev, 
-    const Ptr<Ipv4Route> &route, uint8_t ttl)
+MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route)
 {
   if (ipv4 == 0)
     {
@@ -448,39 +450,6 @@ MplsProtocol::IpForward (Ptr<Packet> &packet, Ptr<NetDevice> &outDev,
   Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, outDev, errno_);
   ipv4->Send (packet, saddr, daddr, protocol, route);
 }
-
-void
-MplsProtocol::MplsForward (Ptr<Packet> packet, const MplsLabelStack &stack, const Header* ipHeader,
-                                  Ptr<NetDevice> outDev) const
-{
-  NS_LOG_FUNCTION (this << packet << stack << &outDev);
-
-  NS_ASSERT_MSG (stack.GetNEntries (), "MplsProtocol::MplsForward (): "
-                 "Fatal error, stack is empty");
-  NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::MplsForward (): "
-                "send packet through interface " << outDev->GetIfIndex ());
-
-  /* restore IpHeader */
-  if (ipHeader != 0)
-    {
-      packet->AddHeader (*ipHeader);
-    }
-
-  /* place MPLS shim */
-  packet->AddHeader (stack);
-
-  if (packet->GetSize () > outDev->GetMtu ())
-    {
-      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::MplsForward (): "
-                    "dropping received packet -- MTU size exceeded");
-      // XXX: need MTU Path Discover algoritm
-      return;
-    }
-
-  // XXX: now only PointToPoint devices supported
-  outDev->Send (packet, outDev->GetBroadcast (), PROT_NUMBER);
-}
-
 
 } // namespace mpls
 } // namespace ns3

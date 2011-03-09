@@ -76,21 +76,35 @@ public:
    */
   Ptr<MplsInterface> GetInterfaceForDevice (const Ptr<NetDevice> &device) const;
   /**
-   * @brief Get Mpls interface for next-hop router
-   * @return Mpls interface
+   * @brief Get route for the next-hop
+   * @return Ipv4 route
    */
-  Ptr<MplsInterface> GetInterfaceForNextHop (const Address &address) const;
+  Ptr<Ipv4Route> GetNextHopRoute (const Address &address) const;
   /**
    * @brief The number of Mpls interfaces added
    */
   uint32_t GetNInterfaces (void) const;
-
+  /**
+   * Lower layer calls this method after calling L3Demux::Lookup
+   */
+  void Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                    const Address &to, NetDevice::PacketType packetType);
+  /**
+   * Mpls Ipv4 routing calls this method after FTN lookup 
+   */
+  void MplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInterface, const Nhlfe* nhlfe, int8_t ttl);
+  
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
 
 private:
   typedef std::vector<Ptr<MplsInterface> > MplsInterfaceList;
+  
+  Ptr<IncomingLabelMap> LookupIlm (Label label, uint32_t interface);
+  bool RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl, 
+                          Ptr<MplsInterface> &outInterface);
+  void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route);
   
   Ptr<Node> m_node;
   Ptr<Ipv4> m_ipv4;

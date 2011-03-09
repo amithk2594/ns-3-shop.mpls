@@ -103,14 +103,25 @@ MplsInterface::SetDown ()
 bool
 MplsInterface::Send (Ptr<Packet>& packet)
 {
+ /* restore IpHeader */
+  if (ipHeader != 0)
+    {
+      packet->AddHeader (*ipHeader);
+    }
+
+  /* place MPLS shim */
+  packet->AddHeader (stack);
+
   if (packet->GetSize () > outDev->GetMtu ())
     {
       NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::MplsForward (): "
                     "dropping received packet -- MTU size exceeded");
       // XXX: need MTU Path Discover algoritm
-      return false;
+      return;
     }
-  return true;
+
+  // XXX: now only PointToPoint devices supported
+  outDev->Send (packet, outDev->GetBroadcast (), PROT_NUMBER);
 }
   
 void
