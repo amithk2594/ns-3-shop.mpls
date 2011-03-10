@@ -102,6 +102,12 @@ MplsProtocol::DoDispose (void)
   Object::DoDispose ();
 }
 
+void
+MplsProtocol::SetIlmTable (const Ptr<Ilmable> &ilmTable)
+{
+  m_ilmTable = ilmTable;
+}
+
 uint32_t
 MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 {
@@ -185,6 +191,8 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
 {
   NS_LOG_FUNCTION (this << &device << p << protocol << from);
 
+  NS_ASSERT_MSG (m_ilmTable != 0, "IlmTable is not installed");
+  
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << m_node->GetId ());
     
   switch (packetType)
