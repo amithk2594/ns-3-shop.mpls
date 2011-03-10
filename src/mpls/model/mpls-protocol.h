@@ -72,6 +72,10 @@ public:
    };
     
   /**
+   * @brief Set new ILM table
+   */
+  void SetIlmTable (const Ptr<IlmTable> &ilmTable);
+  /**
    * @param device device to add to the list of Mpls interfaces
    * @return interface index of the Mpls interface added
    */
@@ -119,6 +123,8 @@ private:
   
   Ptr<Node> m_node;
   Ptr<MplsIpv4> m_ipv4;
+  Ptr<IlmTable> m_ilmTable;
+  
   MplsInterfaceList m_interfaces;
   
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
