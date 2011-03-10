@@ -445,6 +445,17 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
       return false;
     }
 
+  // A labeled IP datagram whose size exceeds the Conventional Maximum
+  // Frame Payload Size of the data link over which it is to be forwarded
+  // MAY be considered to be "too big".
+
+  // A labeled IP datagram whose size exceeds the True Maximum Frame
+  // Payload Size of the data link over which it is to be forwarded MUST
+  // be considered to be "too big".
+
+  // A labeled IP datagram which is not "too big" MUST be transmitted
+  // without fragmentation.
+   
   shim::SetTtl (stack.Peek (), ttl);
   packet->AddHeader (stack);
 
