@@ -40,7 +40,7 @@
 #include "mpls-label-stack.h"
 #include "mpls-incoming-label-map.h"
 #include "mpls-nhlfe.h"
-#include "mpls-ipv4.h"
+#include "mpls-ipv4-protocol.h"
 
 
 namespace ns3 {
@@ -75,6 +75,18 @@ public:
    * @brief Set new ILM table
    */
   void SetIlmTable (const Ptr<IlmTable> &ilmTable);
+  /**
+   * @brief Get ILM table
+   */
+  Ptr<IlmTable> GetIlmTable (viod) const;
+  /**
+   * @brief Set new FTN table
+   */
+  void SetFtnTable (const Ptr<FtnTable> &ftnTable);
+  /**
+   * @brief Get Ftn table
+   */
+  Ptr<FtnTable> GetFtnTable (viod) const;
   /**
    * @param device device to add to the list of Mpls interfaces
    * @return interface index of the Mpls interface added
@@ -122,7 +134,7 @@ private:
   void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, Ptr<Ipv4Route> route);
   
   Ptr<Node> m_node;
-  Ptr<MplsIpv4> m_ipv4;
+  Ptr<MplsIpv4Protocol> m_ipv4;
   Ptr<IlmTable> m_ilmTable;
   
   MplsInterfaceList m_interfaces;

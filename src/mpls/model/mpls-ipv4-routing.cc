@@ -76,7 +76,17 @@ MplsIpv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
 {
   NS_ASSERT_MSG (m_mpls, "Mpls protocol should be specified");
 
-  // XXX: where FtnTable should be placed?
+  // check if we should process ipv4 packet
+  Ptr<MplsInterface> iface = m_mpls->GetInterfaceForDevice (idev);
+  if (iface == 0 || iface->???)
+    {
+      return m_routingProtocol->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
+    }
+    
+  ftnTable = m_mpls->GetFtnTable ();
+  
+  NS_ASSERT_MSG (ftnTable != 0, "FtnTable is not installed");
+  
   // XXX: search ftn
   // if there is no ftn
   ecb (p, header, Socket::ERROR_NOROUTETOHOST); //return false

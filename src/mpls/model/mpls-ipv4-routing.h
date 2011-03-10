@@ -62,7 +62,7 @@ public:
    * @brief Get underlying Ipv4 routing protocol
    */
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
-
+  
   // Functions defined in base class Ipv4RoutingProtocol
   Ptr<Ipv4Route> RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr);
   bool RouteInput  (Ptr<const Packet> p, const Ipv4Header &header, Ptr<const NetDevice> idev, 

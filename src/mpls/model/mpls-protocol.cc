@@ -50,7 +50,8 @@ MplsProtocol::GetTypeId (void)
 
 MplsProtocol::MplsProtocol ()
   : m_node (0),
-    m_ipv4 (0)
+    m_ipv4 (0),
+    m_ilmTable (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -76,11 +77,10 @@ MplsProtocol::NotifyNewAggregate ()
   if (m_ipv4 == 0)
     {
       Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
-      NS_ASSERT_MSG (DynamicCast<MplsIpv4> (ipv4), 
-                        "Use MplsIpv4 instead of default Ipv4");
       if (ipv4 != 0)
         {
-          m_ipv4 = ipv4;
+          m_ipv4 = DynamicCast<MplsIpv4Protocol> (ipv4);
+          NS_ASSERT_MSG (m_ipv4, "Use MplsIpv4Protocol instead of default Ipv4");
         }
     }
 
@@ -98,14 +98,34 @@ MplsProtocol::DoDispose (void)
     }
   m_interfaces.clear ();
   m_node = 0;
+  m_ipv4 = 0;
+  m_ilmTable = 0;
 
   Object::DoDispose ();
 }
 
 void
-MplsProtocol::SetIlmTable (const Ptr<Ilmable> &ilmTable)
+MplsProtocol::SetIlmTable (const Ptr<IlmTable> &ilmTable)
 {
   m_ilmTable = ilmTable;
+}
+
+Ptr<IlmTable>
+MplsProtocol::GetIlmTable (void) const
+{
+  return m_ilmTable;
+}
+
+void
+MplsProtocol::SetFtnTable (const Ptr<FtnTable> &ftnTable)
+{
+  m_ftnTable = ftnTable;
+}
+
+Ptr<FtnTable>
+MplsProtocol::GetFtnTable (void) const
+{
+  return m_ftnTable;
 }
 
 uint32_t
