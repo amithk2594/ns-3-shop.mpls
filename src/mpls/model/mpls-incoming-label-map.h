@@ -48,7 +48,7 @@ public:
    * @param label incoming label
    * @param nhlfe NHLFE (at least one NHLFE should be set)
    */
-  IncomingLabelMap (uint32_t interface, Label label, const Nhlfe &nhlfe);
+  IncomingLabelMap (int32_t interface, Label label, const Nhlfe &nhlfe);
   /**
    * @brief Construct ILM for specified incoming label
    * @param label incoming label
@@ -66,7 +66,7 @@ public:
   /**
    * @brief Get incoming interface
    */
-  uint32_t GetInterface (void) const;
+  int32_t GetInterface (void) const;
   /**
    * @brief Set incoming label
    */
@@ -74,7 +74,7 @@ public:
   /**
    * @brief Set incoming interface
    */
-  void SetInterface (uint32_t interface);
+  void SetInterface (int32_t interface);
   /**
    * @brief Print ILM
    * @param os the stream to print to
@@ -85,7 +85,7 @@ private:
   IncomingLabelMap ();
 
 private:
-  uint32_t m_interface;
+  int32_t m_interface;
   Label m_label;
 };
 

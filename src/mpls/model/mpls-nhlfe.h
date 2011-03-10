@@ -48,7 +48,7 @@ public:
    * @param op Operation to perform
    * @param outInterface Outgoing interface index   
    */
-  Nhlfe (const Operation& op, uint32_t outInterface);
+  Nhlfe (const Operation& op, int32_t outInterface);
   /**
    * @brief construct NHLFE with specified operation and next-hop
    * @param op Operation to perform   
@@ -62,14 +62,14 @@ public:
   /**
    * @brief Get outgoing interface
    */
-  uint32_t GetInterface (void) const;
+  int32_t GetInterface (void) const;
   /**
    * @brief Get next-hop
    */
   const Address& GetNextHop (void) const;
 
 private:
-  uint32_t m_interface;
+  int32_t m_interface;
   Address m_nextHop;
   uint32_t m_opcode;
   uint32_t m_count;

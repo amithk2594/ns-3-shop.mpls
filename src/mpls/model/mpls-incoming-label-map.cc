@@ -26,13 +26,13 @@ namespace ns3 {
 namespace mpls {
 
 IncomingLabelMap::IncomingLabelMap (Label label, const Nhlfe &nhlfe)
-  : m_interface (0),
+  : m_interface (-1),
     m_label (label)
 {
   AddNhlfe (nhlfe);
 }
 
-IncomingLabelMap::IncomingLabelMap (uint32_t interface, Label label, const Nhlfe &nhlfe)
+IncomingLabelMap::IncomingLabelMap (int32_t interface, Label label, const Nhlfe &nhlfe)
   : m_interface (interface),
     m_label (label)
 {
@@ -49,7 +49,7 @@ IncomingLabelMap::GetLabel (void) const
   return m_label;
 }
 
-uint32_t
+int32_t
 IncomingLabelMap::GetInterface (void) const
 {
   return m_interface;
@@ -62,7 +62,7 @@ IncomingLabelMap::SetLabel (Label label)
 }
 
 void
-IncomingLabelMap::SetInterface (uint32_t interface)
+IncomingLabelMap::SetInterface (int32_t interface)
 {
   m_interface = interface;
 }

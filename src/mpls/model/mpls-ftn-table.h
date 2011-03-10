@@ -65,7 +65,7 @@ public:
   uint32_t AddFtn (const T &fec, const Nhlfe &nhlfe);
   
   template <class T>
-  uint32_t AddFtn (uint32_t interface, const T &fec, const Nhlfe &nhlfe);
+  uint32_t AddFtn (int32_t deviceIndex, const T &fec, const Nhlfe &nhlfe);
   
   /**
    * @brief Add FTN with (possibly) multiple NHLFEs

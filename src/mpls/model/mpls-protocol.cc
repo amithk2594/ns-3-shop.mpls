@@ -128,7 +128,7 @@ MplsProtocol::GetFtnTable (void) const
   return m_ftnTable;
 }
 
-uint32_t
+int32_t
 MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 {
   NS_LOG_FUNCTION (this << &device);
@@ -139,15 +139,15 @@ MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
   interface->SetNode (m_node);
   interface->SetDevice (device);
 
-  uint32_t index = m_interfaces.size ();
+  int32_t index = m_interfaces.size ();
   m_interfaces.push_back (interface);
   return index;
 }
 
 Ptr<MplsInterface>
-MplsProtocol::GetInterface (uint32_t index) const
+MplsProtocol::GetInterface (int32_t index) const
 {
-  if (index < m_interfaces.size ())
+  if (index >= 0 && index < m_interfaces.size ())
     {
       return m_interfaces[index];
     }
@@ -199,7 +199,7 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
   return 0;
 }
 
-uint32_t 
+int32_t 
 MplsProtocol::GetNInterfaces (void) const
 {
   return m_interfaces.size ();
@@ -211,8 +211,6 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
 {
   NS_LOG_FUNCTION (this << &device << p << protocol << from);
 
-  NS_ASSERT_MSG (m_ilmTable != 0, "IlmTable is not installed");
-  
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << m_node->GetId ());
     
   switch (packetType)
@@ -334,9 +332,9 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation>
   for (ForwardingInformation::Iterator i = fwd->Begin (); i != fwd->End (); ++i)
     {
       const Nhlfe& nhlfe = *i;
-      uint32_t outIfIndex = nhlfe.GetInterface ();
+      int32_t outIfIndex = nhlfe.GetInterface ();
       
-      if (outIfIndex)
+      if (outIfIndex >= 0)
         {
           route = 0;
           outInterface = GetInterface (outIfIndex);
@@ -378,10 +376,21 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation>
 Ptr<IncomingLabelMap>
 MplsProtocol::LookupIlm (Label label, uint32_t interface)
 {
+  NS_ASSERT_MSG (ilmTable != 0, "IlmTable is not installed");
+
   IlmTable::Iterator begin = m_ilmTable->Begin ();
   IlmTable::Iterator end = m_ilmTable->End ();
   Ptr<IncomingLabelMap> ilm;
-  
+
+  for (IlmTable::Iterator i = begin; i != end; ++i)
+    {
+      ilm = (*i)->second;
+      if (ilm->GetLabel () == label && ilm->GetInterface () == 0)
+        {
+          return ilm;
+        }
+    }
+
   for (IlmTable::Iterator i = begin; i != end; ++i)
     {
       ilm = (*i)->second;
@@ -391,12 +400,33 @@ MplsProtocol::LookupIlm (Label label, uint32_t interface)
         }
     }
 
-  for (IlmTable::Iterator i = begin; i != end; ++i)
+  return 0;
+}
+
+Ptr<FecToNhlfe>
+MplsProtocol::LookupFtn ()
+{
+  NS_ASSERT_MSG (ftnTable != 0, "FtnTable is not installed");
+
+  FtnTable::Iterator begin = m_ftnTable->Begin ();
+  FtnTable::Iterator end = m_ftnTable->End ();
+  Ptr<FecToNhlfe> ftn;
+  
+  for (FtnTable::Iterator i = begin; i != end; ++i)
     {
-      ilm = (*i)->second;
-      if (ilm->GetLabel () == label && ilm->GetInterface () == 0)
+      ftn = (*i)->second;
+      if ()
         {
-          return ilm;
+          return ftn;
+        }
+    }
+
+  for (FtnTable::Iterator i = begin; i != end; ++i)
+    {
+      ftn = (*i)->second;
+      if ()
+        {
+          return ftn;
         }
     }
 

@@ -91,12 +91,12 @@ public:
    * @param device device to add to the list of Mpls interfaces
    * @return interface index of the Mpls interface added
    */
-  uint32_t AddInterface (const Ptr<NetDevice> &device);
+  int32_t AddInterface (const Ptr<NetDevice> &device);
   /**
    * @brief Get Mpls interface by index
    * @param index Mpls interface index
    */
-  Ptr<MplsInterface> GetInterface (uint32_t index) const;
+  Ptr<MplsInterface> GetInterface (int32_t index) const;
   /**
    * @brief Get Mpls interface for specified device
    * @return Mpls interface

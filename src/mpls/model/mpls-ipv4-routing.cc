@@ -84,11 +84,7 @@ MplsIpv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
       return m_routingProtocol->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
     }
     
-  ftnTable = m_mpls->GetFtnTable ();
-  
-  NS_ASSERT_MSG (ftnTable != 0, "FtnTable is not installed");
-  
-  Ptr<FecToNhlfe> ftn = LookupFtn (...);
+  Ptr<FecToNhlfe> ftn = m_mpls->LookupFtn (...);
   
   if (ftn == 0)
     {

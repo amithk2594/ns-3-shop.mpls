@@ -33,14 +33,14 @@ Fec* CopyFec (T fec)
 
 template <class T>
 FecToNhlfe::FecToNhlfe (const T& fec, const Nhlfe &nhlfe)
-  : FecToNhlfe (0, fec, nhlfe)
+  : FecToNhlfe (-1, fec, nhlfe)
 {
 }
 
 template <class T>
-FecToNhlfe::FecToNhlfe (uint32_t interface, const T& fec, const Nhlfe &nhlfe)
+FecToNhlfe::FecToNhlfe (int32_t deviceIndex, const T& fec, const Nhlfe &nhlfe)
   : m_fec (CopyFec (fec)),
-    m_interface (interface)
+    m_deviceIndex (deviceIndex)
 {
   AddNhlfe (nhlfe);
 }
@@ -64,16 +64,16 @@ FecToNhlfe::SetFec (const T& fec)
   m_fec = CopyFec (fec);
 }
 
-uint32_t 
-FecToNhlfe::GetInterface (void) const
+int32_t 
+FecToNhlfe::GetDeviceIndex (void) const
 {
-  return m_interface;
+  return m_deviceIndex;
 }
 
 void
-FecToNhlfe::SetInterface(uint32_t interface)
+FecToNhlfe::SetDeviceIndex(int32_t deviceIndex)
 {
-  m_interface = interface;
+  m_deviceIndex = deviceIndex;
 }
 
 void

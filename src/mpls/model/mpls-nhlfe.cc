@@ -25,7 +25,7 @@
 namespace ns3 {
 namespace mpls {
 
-Nhlfe::Nhlfe (const Operation& op, uint32_t outInterface)
+Nhlfe::Nhlfe (const Operation& op, int32_t outInterface)
   : m_interface (outInterface),
     m_nextHop ()
 {
@@ -34,7 +34,7 @@ Nhlfe::Nhlfe (const Operation& op, uint32_t outInterface)
 }
 
 Nhlfe::Nhlfe (const Operation& op, const Address& nextHop)
-  : m_interface (0),
+  : m_interface (-1),
     m_nextHop (nextHop)
 {
   NS_ASSERT_MSG (!nextHop.IsInvalid (), "Invalid next-hop address");
@@ -45,7 +45,7 @@ Nhlfe::~Nhlfe ()
 {
 }
 
-uint32_t 
+int32_t
 Nhlfe::GetInterface (void) const
 {
   return m_interface;
