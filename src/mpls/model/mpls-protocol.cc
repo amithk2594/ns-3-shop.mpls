@@ -30,8 +30,6 @@ NS_LOG_COMPONENT_DEFINE ("MplsProtocol");
 namespace ns3 {
 namespace mpls {
 
-  
-
 const uint16_t MplsProtocol::PROT_NUMBER = 0x8847;
 
 TypeId
@@ -40,6 +38,12 @@ MplsProtocol::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::mpls::MplsProtocol")
     .SetParent<Object> ()
     .AddConstructor<MplsProtocol> ()
+    .AddTraceSource ("Tx", "Send packet to outgoing interface.",
+                        MakeTraceSourceAccessor (&MplsProtocol::m_txTrace))
+    .AddTraceSource ("Rx", "Receive packet from incoming interface.",
+                        MakeTraceSourceAccessor (&MplsProtocol::m_rxTrace))
+    .AddTraceSource ("Drop", "Drop packet",
+                        MakeTraceSourceAccessor (&MplsProtocol::m_dropTrace))
   ;
   return tid;
 }
@@ -154,8 +158,11 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
 
       header.SetDestination(Ipv4Address::ConvertFrom (address));
       
-      // XXX: i don't know if we can do this    
-      Ptr<Ipv4Route> route = m_ipv4->GetRoutingProtocol ()->RouteOutput (0, header, 0, sockerr);
+      Ptr<Ipv4RoutingProtocol> routing = m_ipv4->GetRoutingProtocol ();
+      NS_ASSERT_MSG (routing, "Need a ipv4 routing protocol object");
+      
+      // XXX: i don't know if we can do this
+      Ptr<Ipv4Route> route = routing->RouteOutput (0, header, 0, sockerr);
 
       if (route && route->GetDestination ().Get () != 0)
         {
@@ -363,10 +370,14 @@ MplsProtocol::LookupIlm (Label label, uint32_t interface)
 }
 
 void
-MplsProtocol::MplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInterface, const Nhlfe* nhlfe, int8_t ttl)
+MplsProtocol::MplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, int8_t ttl, Ptr<MplsInterface> &outInterface)
 {
   LabelStack stack;
-  RealMplsForward (packet, outInterface, stack, nhlfe, ttl);
+  if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface))
+    {
+      // really no makes sense
+      IpForward (packet, ttl, 0, 0);
+    }
 }
 
 bool
@@ -408,14 +419,17 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
 
   shim::SetTtl (stack.Peek (), ttl);
   packet->AddHeader (stack);
+
   outInterface->Send (packet);
+  //m_txTrace;
+  
   return true;
 }
 
 void
-MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route)
+MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, Ptr<Ipv4Route> route)
 {
-  if (ipv4 == 0)
+  if (m_ipv4 == 0)
     {
       NS_LOG_WARN ("Dropping received packet -- ipv4 is not installed");
       // m_dropTrace
@@ -424,31 +438,19 @@ MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDe
 
   Ipv4Header header;
   packet->RemoveHeader (header);
+  header.SetTtl (ttl);
   
-  // 
+  // if there is no route
   if (route == 0)
     {
+      Socket::SocketErrno sockerr;
+
+      Ptr<Ipv4RoutingProtocol> routing = m_ipv4->GetRoutingProtocol ();
+      NS_ASSERT_MSG (routing, "Need a ipv4 routing protocol object");
+      route = routing->RouteOutput (packet, header, outDev, sockerr);
     }
     
-  ipv4->SendRealOut (route, packet, header);
-  
-  if (ipv4->GetRoutingProtocol () == 0)
-    {
-      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::IpForward (): "
-                    "dropping received packet -- no Ipv4 Routing Protocol");
-      return;
-    }
-
-  Ipv4Header header;
-  packet->RemoveHeader (header);
-  header.SetTtl (ttl);
-  Ipv4Address daddr = header.GetDestination ();
-  Ipv4Address saddr = header.GetSource ();
-  uint8_t protocol = header.GetProtocol ();
-  Socket::SocketErrno errno_;
-
-  Ptr<Ipv4Route> route = ipv4->GetRoutingProtocol ()->RouteOutput (packet, header, outDev, errno_);
-  ipv4->Send (packet, saddr, daddr, protocol, route);
+  m_ipv4->SendWithHeader (packet, header, route);
 }
 
 } // namespace mpls

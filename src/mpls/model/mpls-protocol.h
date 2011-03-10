@@ -36,7 +36,10 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/traced-callback.h"
 
+#include "mpls-interface.h"
 #include "mpls-label-stack.h"
+#include "mpls-incoming-label-map.h"
+#include "mpls-nhlfe.h"
 #include "mpls-ipv4.h"
 
 
@@ -56,8 +59,18 @@ public:
   MplsProtocol ();
   virtual ~MplsProtocol ();
   
-  void Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
-                const Address &to, NetDevice::PacketType packetType);
+  /**
+   * @enum DropReason
+   * @brief Reason why a packet has been dropped.
+   */
+  enum DropReason 
+   {
+     DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
+     DROP_NO_ROUTE, /**< No route to host */
+     DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
+     DROP_ROUTE_ERROR, /**< Route error */
+   };
+    
   /**
    * @param device device to add to the list of Mpls interfaces
    * @return interface index of the Mpls interface added
@@ -90,7 +103,7 @@ public:
   /**
    * Mpls Ipv4 routing calls this method after FTN lookup 
    */
-  void MplsForward (Ptr<Packet> &packet, Ptr<MplsInterface> &outInterface, const Nhlfe* nhlfe, int8_t ttl);
+  void MplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, int8_t ttl, Ptr<MplsInterface> &outInterface);
   
 protected:
   virtual void DoDispose (void);
@@ -102,11 +115,15 @@ private:
   Ptr<IncomingLabelMap> LookupIlm (Label label, uint32_t interface);
   bool RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl, 
                           Ptr<MplsInterface> &outInterface);
-  void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route);
+  void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, Ptr<Ipv4Route> route);
   
   Ptr<Node> m_node;
   Ptr<MplsIpv4> m_ipv4;
   MplsInterfaceList m_interfaces;
+  
+  TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
+  TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
+  TracedCallback<Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
 };
 
 } // namespace mpls

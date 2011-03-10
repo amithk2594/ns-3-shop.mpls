@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
 
 #include "ns3/log.h"
@@ -31,10 +32,10 @@ namespace mpls {
 NS_OBJECT_ENSURE_REGISTERED (MplsIpv4Routing);
 
 MplsIpv4Routing::MplsIpv4Routing ()
-  : m_ipv4 (0),
-    m_mpls (0)
+  : m_mpls (0)
 {
   NS_LOG_FUNCTION (this);
+  m_ftnTable = Create<FtnTable> ();
 }
 
 MplsIpv4Routing::~MplsIpv4Routing ()
@@ -55,9 +56,8 @@ MplsIpv4Routing::GetTypeId (void)
 void
 MplsIpv4Routing::DoDispose (void)
 {
-  m_ipv4 = 0;
   m_mpls = 0;
-  m_routing = 0;
+  m_routingProtocol = 0;
   Ipv4RoutingProtocol::DoDispose ();
 }
 
@@ -65,10 +65,8 @@ Ptr<Ipv4Route>
 MplsIpv4Routing::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << &oif << p << header);
-  
-  NS_ASSERT_MSG (m_routing != 0, "Ipv4 routing is not specified");
-
-  return m_routing->RouteOutput (p, header, oif, sockerr);
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object to process packet");
+  return m_routingProtocol->RouteOutput (p, header, oif, sockerr);
 }
 
 bool
@@ -76,39 +74,19 @@ MplsIpv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
                                        UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                        LocalDeliverCallback lcb, ErrorCallback ecb)
 {
-  NS_ASSERT_MSG (m_mpls, "Mpls routing is not specified");
+  NS_ASSERT_MSG (m_mpls, "Mpls protocol should be specified");
 
-  MplsRouting::ForwardingStatus status = m_mpls->RouteInput (p, header, idev);
-
-  switch (status)
-  {
-    case Mpls::IP_FORWARD:
-      NS_ASSERT_MSG (m_routing != 0, "Ipv4 routing is not specified");
-      return m_routing->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
-
-    case Mpls::DROP_PACKET:
-      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
-      break;
-
-    case Mpls::MPLS_FORWARDED:
-      break;
-  }
-
+  // XXX: where FtnTable should be placed?
+  // XXX: search ftn
+  // if there is no ftn
+  ecb (p, header, Socket::ERROR_NOROUTETOHOST); //return false
   return true;
 }
 
 void
-MplsIpv4Routing::SetIpv4 (Ptr<Ipv4> ipv4)
+MplsIpv4Routing::SetMpls (Ptr<MplsProtocol> mpls)
 {
-  NS_ASSERT_MSG (m_ipv4 == 0, "Ipv4 routing is specified already");
-  NS_ASSERT (ipv4 != 0);
-  m_ipv4 = ipv4;
-}
-
-void
-MplsIpv4Routing::SetMpls (Ptr<MplsRouting> mpls)
-{
-  NS_ASSERT_MSG (m_mpls == 0, "Mpls routing already specified");
+  NS_ASSERT_MSG (m_mpls == 0, "Mpls protocol object already set");
   NS_ASSERT (mpls != 0);
   m_mpls = mpls;
 }
@@ -116,42 +94,48 @@ MplsIpv4Routing::SetMpls (Ptr<MplsRouting> mpls)
 void
 MplsIpv4Routing::NotifyInterfaceUp (uint32_t interface)
 {
-  NS_ASSERT_MSG (m_routing != 0, "Ipv4 routing is not specified");
-  m_routing->NotifyInterfaceUp (interface);
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
+  m_routingProtocol->NotifyInterfaceUp (interface);
 }
 
 void
 MplsIpv4Routing::NotifyInterfaceDown (uint32_t interface)
 {
-  NS_ASSERT_MSG (m_routing != 0, "Ipv4 routing is not specified");
-  m_routing->NotifyInterfaceDown (interface);
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
+  m_routingProtocol->NotifyInterfaceDown (interface);
 }
 
 void
 MplsIpv4Routing::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  NS_ASSERT_MSG (m_routing != 0, "Ipv4 routing is not specified");
-  m_routing->NotifyAddAddress (interface, address);
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
+  m_routingProtocol->NotifyAddAddress (interface, address);
 }
 
 void
 MplsIpv4Routing::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
-  NS_ASSERT_MSG (m_routing != 0, "Ipv4 routing is not specified");
-  m_routing->NotifyRemoveAddress (interface, address);
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
+  m_routingProtocol->NotifyRemoveAddress (interface, address);
 }
 
 void
-MplsIpv4Routing::SetRouting (const Ptr<Ipv4RoutingProtocol> &routing)
+MplsIpv4Routing::SetRoutingProtocol (const Ptr<Ipv4RoutingProtocol> &routingProtocol)
 {
-  m_routing = routing;
-  m_routing->SetIpv4 (m_ipv4);
+  m_routingProtocol = routingProtocol;
 }
 
 Ptr<Ipv4RoutingProtocol>
-MplsIpv4Routing::GetRouting (void) const
+MplsIpv4Routing::GetRoutingProtocol (void) const
 {
-  return m_routing;
+  return m_routingProtocol;
+}
+
+void
+MplsIpv4Routing::PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const
+{
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
+  m_routingProtocol->PrintRoutingTable (stream);
 }
 
 } // namespace mpls
