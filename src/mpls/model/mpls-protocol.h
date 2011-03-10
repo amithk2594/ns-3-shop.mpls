@@ -117,9 +117,9 @@ public:
   void Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                     const Address &to, NetDevice::PacketType packetType);
   /**
-   * Mpls Ipv4 routing calls this method after FTN lookup 
+   * Forward packet according to forwarding information
    */
-  void MplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, int8_t ttl, Ptr<MplsInterface> &outInterface);
+  void MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl);
   
 protected:
   virtual void DoDispose (void);
@@ -142,6 +142,8 @@ private:
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
   TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
   TracedCallback<Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
+  
+  friend class MplsIpv4Routing;
 };
 
 } // namespace mpls

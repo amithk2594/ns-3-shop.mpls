@@ -322,13 +322,19 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
       return;
     }
 
+  MplsForward (packet, ilm, stack, ttl);
+}
+
+void 
+MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl)
+{
   Ptr<MplsInterface> outInterface;
   Ptr<Ipv4Route> route;
-  
-  for (ForwardingInformation::Iterator i = ilm->Begin (); i != ilm->End (); ++i)
+
+  for (ForwardingInformation::Iterator i = fwd->Begin (); i != fwd->End (); ++i)
     {
-      
-      uint32_t outIfIndex = (*i)->GetInterface ();
+      const Nhlfe& nhlfe = *i;
+      uint32_t outIfIndex = nhlfe.GetInterface ();
       
       if (outIfIndex)
         {
@@ -395,17 +401,6 @@ MplsProtocol::LookupIlm (Label label, uint32_t interface)
     }
 
   return 0;
-}
-
-void
-MplsProtocol::MplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, int8_t ttl, Ptr<MplsInterface> &outInterface)
-{
-  LabelStack stack;
-  if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface))
-    {
-      // really no makes sense
-      IpForward (packet, ttl, 0, 0);
-    }
 }
 
 bool

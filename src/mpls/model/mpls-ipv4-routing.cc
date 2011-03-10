@@ -76,9 +76,10 @@ MplsIpv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
 {
   NS_ASSERT_MSG (m_mpls, "Mpls protocol should be specified");
 
-  // check if we should process ipv4 packet
+  // check if can process ipv4 packet
   Ptr<MplsInterface> iface = m_mpls->GetInterfaceForDevice (idev);
-  if (iface == 0 || iface->???)
+
+  if (iface == 0 || iface->IsUp ())
     {
       return m_routingProtocol->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
     }
@@ -87,9 +88,19 @@ MplsIpv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
   
   NS_ASSERT_MSG (ftnTable != 0, "FtnTable is not installed");
   
-  // XXX: search ftn
-  // if there is no ftn
-  ecb (p, header, Socket::ERROR_NOROUTETOHOST); //return false
+  Ptr<FecToNhlfe> ftn = LookupFtn (...);
+  
+  if (ftn == 0)
+    {
+      NS_LOG_LOGIC ("Dropping received packet -- FTN not found");
+      //m_mpls->m_dropTrace (...)
+      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      return false;
+    }
+
+  LabelStack stack;
+  m_mpls->MplsForward (packet, ftn, stack, header.GetTtl ()));
+
   return true;
 }
 
