@@ -18,7 +18,6 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  *         Stefano Avallone <stavallo@gmail.com>
  */
- 
 
 #ifndef MPLS_FORWARDING_INFORMATION_H
 #define MPLS_FORWARDING_INFORMATION_H
@@ -31,6 +30,8 @@
 
 namespace ns3 {
 namespace mpls {
+
+class Nhlfe;
 
 /**
  * \ingroup mpls

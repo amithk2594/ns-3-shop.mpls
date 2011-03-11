@@ -19,7 +19,7 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
  
-#include <iostream>
+#include "ns3/assert.h"
 #include "mpls-nhlfe.h"
 
 namespace ns3 {

@@ -1,34 +1,43 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    module = bld.create_ns3_module('mpls', ['network'])
+    module = bld.create_ns3_module('mpls', ['network', 'internet'])
     module.source = [
-        'model/fec/mpls-packet-demux.cc',
-        'model/fec/mpls-fec.cc',
+        'model/mpls-protocol.cc',    
+        'model/mpls-packet-demux.cc',
+        'model/mpls-fec.cc',
         'model/mpls-label.cc',
         'model/mpls-label-stack.cc',        
         'model/mpls-interface.cc',
         'model/mpls-operations.cc',
         'model/mpls-nhlfe.cc',
-        #'model/mpls-forwarding-information.cc',
-        #'model/mpls-incoming-label-map.cc',
-        #'model/mpls-fec-to-nhlfe.cc',
-        #'model/mpls-ilm-table.cc',
-        #'model/mpls-ftn-table.cc',
+        'model/mpls-forwarding-information.cc',
+        'model/mpls-incoming-label-map.cc',
+        'model/mpls-fec-to-nhlfe.cc',
+        'model/mpls-ftn-table.cc',
+        'model/mpls-ilm-table.cc',
+        'model/mpls-ipv4-protocol.cc',
+        'model/mpls-ipv4-routing.cc',
         'test/mpls-test.cc',
     ]
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mpls'
     headers.source = [
-        'model/fec/mpls-packet-demux.h',
-        'model/fec/mpls-fec.h',    
+        'model/mpls-protocol.h',    
+        'model/mpls-packet-demux.h',
+        'model/mpls-fec.h',    
         'model/mpls-label.h',
         'model/mpls-label-stack.h',        
         'model/mpls-interface.h',        
         'model/mpls-operations.h',
         'model/mpls-nhlfe.h',
-        #'model/mpls-forwarding-information.h',
-        #'model/mpls-incoming-label-map.h',
-        #'model/mpls-fec-to-nhlfe.h',
-        #'model/mpls-ilm-table.h',
+        'model/mpls-forwarding-information.h',
+        'model/mpls-incoming-label-map.h',
+        'model/mpls-fec-to-nhlfe.h',
+        'model/mpls-ftn-table.h',
+        'model/mpls-ilm-table.h',
+        'model/mpls-ipv4-protocol.h',
+        'model/mpls-ipv4-routing.h',
+        #'mpls-switcher.h'
     ]
+

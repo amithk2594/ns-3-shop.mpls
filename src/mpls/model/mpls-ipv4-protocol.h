@@ -22,12 +22,15 @@
 #ifndef MPLS_IPV4_PROTOCOL_H
 #define MPLS_IPV4_PROTOCOL_H
 
-#include "ns3/ptr.h"
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4-routing-protocol.h"
 
+#include "mpls-ipv4-routing.h"
+
 namespace ns3 {
 namespace mpls {
+
+class MplsIpv4Routing;
  
 /**
  * \brief Ipv4 layer for Mpls
@@ -47,7 +50,7 @@ protected:
   void NotifyNewAggregate ();
 
 private:
-  Ptr<Ipv4RoutingProtocol> m_routingProtocol;
+  Ptr<MplsIpv4Routing> m_routingProtocol;
 };
 
 } // namespace mpls

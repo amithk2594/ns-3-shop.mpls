@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010 Andrey Churin
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,19 +16,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
  */
 
 #ifndef MPLS_INTERFACE_H
 #define MPLS_INTERFACE_H
 
 #include <ostream>
-#include <list>
 #include <stdint.h>
 
 #include "ns3/object.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
-
+#include "ns3/packet.h"
 
 namespace ns3 {
 namespace mpls {
@@ -45,7 +45,7 @@ public:
   /**
    * @brief Create mpls interface
    */
-  MplsInterface ();
+  MplsInterface (int32_t ifIndex);
   /**
    * @brief Destructor
    */
@@ -83,6 +83,10 @@ public:
    */
   Ptr<NetDevice>& GetDevice (void);
   /**
+   * @brief Returns interface index
+   */
+  int32_t GetIfIndex (void);  
+  /**
    * @brief Print interface information
    * @param os the stream to print to
    */
@@ -97,6 +101,7 @@ private:
   Ptr<Node> m_node;
   Ptr<NetDevice> m_device;
   bool m_ifup;
+  int32_t m_ifIndex;  
 };
 
 std::ostream& operator<< (std::ostream& os, const Ptr<MplsInterface> &interface);

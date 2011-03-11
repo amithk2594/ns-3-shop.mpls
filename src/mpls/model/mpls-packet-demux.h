@@ -24,7 +24,6 @@
 #include <ostream>
 
 #include "ns3/packet.h"
-#include "ns3/node.h"
 #include "ns3/header.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv6-header.h"
@@ -34,16 +33,17 @@
 namespace ns3 {
 namespace mpls {
 
-class HeaderHolderBase
+class HeaderHolder
 {
 public:
-  HeaderHolderBase ();
-  virtual ~HeaderHolderBase ();
-  virtual Header* Get () const;
-  virtual void UnSet (void);
-  virtual void Reset (void);
-  virtual bool IsReset (void) const;
-
+  HeaderHolder (Header* header);
+  ~HeaderHolder ();
+  Header* Get () const;
+  void UnSet (void);
+  void Reset (void);
+  bool IsReset (void) const;
+  Header* SetFromPacket (const Ptr<Packet>& packet);  
+  
 protected:
   enum State {
     RESET = 0,
@@ -56,22 +56,6 @@ protected:
   Header* m_header;
 };
 
-class FlyweightHeaderHolder: public HeaderHolderBase
-{
-public:
-  FlyweightHeaderHolder ();
-  virtual ~FlyweightHeaderHolder ();
-  virtual void Set (Header* header);
-};
-
-class HeaderHolder: public HeaderHolderBase
-{
-public:
-  HeaderHolder (Header* header);
-  ~HeaderHolder ();
-  Header* SetFromPacket (const Ptr<Packet>& packet);
-};
-
 /**
  * \ingroup Mpls
  * \brief
@@ -80,17 +64,17 @@ public:
 class PacketDemux
 {
 public:
-  PacketDemux (const Ptr<Node>& node);
+  PacketDemux ();
   ~PacketDemux ();
   
   /**
    * @brief Assign new packet and Ipv4 header.
    */
-  void Assign (const Ptr<const Packet> &packet, Ipv4Header &header);
+  void Assign (const Ptr<const Packet> &packet, const Ipv4Header &header);
   /**
    * @brief Assign new packet and Ipv6 header.
    */
-  void Assign (const Ptr<const Packet> &packet, Ipv6Header &header);  
+  void Assign (const Ptr<const Packet> &packet, const Ipv6Header &header);  
   /**
    * \return Ipv4 header if exists
    */
@@ -107,15 +91,14 @@ public:
    * \return Tcp header if exists
    */
   const TcpHeader* GetTcpHeader (void);
-
+  
 private:
   Header* GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder);
   void ResetHolders (void);  
 
-  Ptr<Node> m_node;
   Ptr<Packet> m_packet;
-  FlyweightHeaderHolder m_ipv4Holder;
-  FlyweightHeaderHolder m_ipv6Holder;  
+  const Ipv4Header* m_ipv4Header;
+  const Ipv4Header* m_ipv6Header;  
   HeaderHolder m_tcpHolder;
   HeaderHolder m_udpHolder;
 };

@@ -19,8 +19,10 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
  
+#include "ns3/assert.h"
+#include "ns3/log.h"
+
 #include "mpls-ipv4-protocol.h"
-#include "mpls-ipv4-routing.h"
 
 NS_LOG_COMPONENT_DEFINE ("MplsIpv4Protocol");
 
@@ -72,14 +74,14 @@ MplsIpv4Protocol::NotifyNewAggregate ()
 void 
 MplsIpv4Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
-  NS_ASSERT_MSG (m_routingProtocol, "Mpls protocol should be installed first");
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Mpls protocol should be installed first");
   m_routingProtocol->SetRoutingProtocol (routingProtocol);
 }
 
 Ptr<Ipv4RoutingProtocol> 
 MplsIpv4Protocol::GetRoutingProtocol (void) const
 {
-  NS_ASSERT_MSG (m_routingProtocol, "Mpls protocol should be installed first");
+  NS_ASSERT_MSG (m_routingProtocol != 0, "Mpls protocol should be installed first");
   return m_routingProtocol->GetRoutingProtocol ();
 }
 

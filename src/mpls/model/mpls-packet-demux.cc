@@ -18,65 +18,18 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  */
 
-#include <iomanip>
+#include "ns3/log.h"
 #include "ns3/assert.h"
+
 #include "mpls-packet-demux.h"
 
 namespace ns3 {
 namespace mpls {
 
-HeaderHolderBase::HeaderHolderBase ()
-  : m_state (RESET),
-    m_header (0)
-{
-}
-
-HeaderHolderBase::~HeaderHolderBase ()
-{
-}
-
-Header*
-HeaderHolderBase::Get (void) const
-{
-  return m_state == SET ? m_header : NULL;
-}
-
-void
-HeaderHolderBase::UnSet (void)
-{
-  m_state = UNSET;
-}
-
-void
-HeaderHolderBase::Reset (void)
-{
-  m_state = RESET;
-}
-
-bool
-HeaderHolderBase::IsReset (void) const
-{
-  return m_state == RESET;
-}
-
-FlyweightHeaderHolder::FlyweightHeaderHolder ()
-{
-}
-
-FlyweightHeaderHolder::~FlyweightHeaderHolder ()
-{
-}
-
-void
-FlyweightHeaderHolder::Set (Header* header)
-{
-  m_header = header;
-  m_state = SET;
-}
-
 HeaderHolder::HeaderHolder (Header* header)
+  : m_state (RESET),
+    m_header (header)
 {
-  m_header = header;
 }
 
 HeaderHolder::~HeaderHolder ()
@@ -92,10 +45,35 @@ HeaderHolder::SetFromPacket (const Ptr<Packet>& packet)
   return m_header;
 }
 
-PacketDemux::PacketDemux (const Ptr<Node>& node)
-  : m_node (node),
-    m_packet (0),
-    m_ipv4Holder (),
+
+Header*
+HeaderHolder::Get (void) const
+{
+  return m_state == SET ? m_header : NULL;
+}
+
+void
+HeaderHolder::UnSet (void)
+{
+  m_state = UNSET;
+}
+
+void
+HeaderHolder::Reset (void)
+{
+  m_state = RESET;
+}
+
+bool
+HeaderHolder::IsReset (void) const
+{
+  return m_state == RESET;
+}
+
+PacketDemux::PacketDemux ()
+  : m_packet (0),
+    m_ipv4Header (0),
+    m_ipv6Header (0),
     m_tcpHolder (new TcpHeader),
     m_udpHolder (new UdpHeader)
 {
@@ -106,15 +84,15 @@ PacketDemux::~PacketDemux ()
 }
 
 void
-PacketDemux::Assign (const Ptr<const Packet> &packet, Ipv4Header &header)
+PacketDemux::Assign (const Ptr<const Packet> &packet, const Ipv4Header &header)
 {
   ResetHolders ();
-  m_ipv4Holder.Set (&header);
+  m_ipv4Header = &header;
   m_packet = packet->Copy ();
 }
 
 void
-PacketDemux::Assign (const Ptr<const Packet> &packet, Ipv6Header &header)
+PacketDemux::Assign (const Ptr<const Packet> &packet, const Ipv6Header &header)
 {
   NS_ASSERT_MSG (0, "PacketDemux for Ipv6 not implemented");
 }
@@ -122,7 +100,8 @@ PacketDemux::Assign (const Ptr<const Packet> &packet, Ipv6Header &header)
 void
 PacketDemux::ResetHolders (void)
 {
-  m_ipv4Holder.Reset ();
+  m_ipv4Header = 0;
+  m_ipv6Header = 0;
   m_tcpHolder.Reset ();
   m_udpHolder.Reset ();
 }
@@ -132,8 +111,7 @@ PacketDemux::GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder)
 {
   if (holder.IsReset ()) 
     {
-      const Ipv4Header* ipv4 = GetIpv4Header ();
-      if (ipv4 && ipv4->GetProtocol() == protocol)
+      if (m_ipv4Header && m_ipv4Header->GetProtocol() == protocol)
         {
           return holder.SetFromPacket (m_packet);
         }
@@ -155,7 +133,7 @@ PacketDemux::GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder)
 const Ipv4Header*
 PacketDemux::GetIpv4Header ()
 {
-  return (Ipv4Header*)m_ipv4Holder.Get ();
+  return m_ipv4Header;
 }
 
 const Ipv6Header*

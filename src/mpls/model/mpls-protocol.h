@@ -36,15 +36,24 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/traced-callback.h"
 
+#include "mpls-label.h"
 #include "mpls-interface.h"
 #include "mpls-label-stack.h"
+#include "mpls-forwarding-information.h"
 #include "mpls-incoming-label-map.h"
+#include "mpls-fec-to-nhlfe.h"
 #include "mpls-nhlfe.h"
+#include "mpls-ilm-table.h"
+#include "mpls-ftn-table.h"
 #include "mpls-ipv4-protocol.h"
-
+#include "mpls-ipv4-routing.h"
 
 namespace ns3 {
 namespace mpls {
+
+class Nhlfe;
+class ForwardingInformation;
+class MplsIpv4Protocol;
 
 /**
  * \ingroup mpls
@@ -78,7 +87,7 @@ public:
   /**
    * @brief Get ILM table
    */
-  Ptr<IlmTable> GetIlmTable (viod) const;
+  Ptr<IlmTable> GetIlmTable (void) const;
   /**
    * @brief Set new FTN table
    */
@@ -86,7 +95,7 @@ public:
   /**
    * @brief Get Ftn table
    */
-  Ptr<FtnTable> GetFtnTable (viod) const;
+  Ptr<FtnTable> GetFtnTable (void) const;
   /**
    * @param device device to add to the list of Mpls interfaces
    * @return interface index of the Mpls interface added
@@ -101,7 +110,7 @@ public:
    * @brief Get Mpls interface for specified device
    * @return Mpls interface
    */
-  Ptr<MplsInterface> GetInterfaceForDevice (const Ptr<NetDevice> &device) const;
+  Ptr<MplsInterface> GetInterfaceForDevice (const Ptr<const NetDevice> &device) const;
   /**
    * @brief Get route for the next-hop
    * @return Ipv4 route
@@ -112,14 +121,22 @@ public:
    */
   uint32_t GetNInterfaces (void) const;
   /**
-   * Lower layer calls this method after calling L3Demux::Lookup
+   * @brief Lower layer calls this method after calling L3Demux::Lookup
    */
   void Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                     const Address &to, NetDevice::PacketType packetType);
   /**
-   * Forward packet according to forwarding information
+   * @brief Forward packet according to forwarding information
    */
   void MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl);
+  /**
+   * @brief Lookup ILM by label and interface
+   */
+  Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface);
+  /**
+   * @brief Lookup FTN using PacketDemux
+   */
+  Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
   
 protected:
   virtual void DoDispose (void);
@@ -128,14 +145,14 @@ protected:
 private:
   typedef std::vector<Ptr<MplsInterface> > MplsInterfaceList;
   
-  Ptr<IncomingLabelMap> LookupIlm (Label label, uint32_t interface);
   bool RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl, 
                           Ptr<MplsInterface> &outInterface);
-  void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, Ptr<Ipv4Route> route);
+  void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev, Ptr<Ipv4Route> route);
   
   Ptr<Node> m_node;
   Ptr<MplsIpv4Protocol> m_ipv4;
   Ptr<IlmTable> m_ilmTable;
+  Ptr<FtnTable> m_ftnTable;  
   
   MplsInterfaceList m_interfaces;
   

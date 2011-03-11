@@ -22,8 +22,10 @@
 #include "ns3/log.h"
 #include "ns3/assert.h"
 #include "ns3/callback.h"
+#include "ns3/trace-source-accessor.h"
 
 #include "mpls-protocol.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("MplsProtocol");
 
@@ -135,19 +137,20 @@ MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
   
   m_node->RegisterProtocolHandler (MakeCallback (&MplsProtocol::Receive, this), PROT_NUMBER, device);
   
-  Ptr<MplsInterface> interface = CreateObject<MplsInterface> ();
+  int32_t index = m_interfaces.size ();
+  Ptr<MplsInterface> interface = CreateObject<MplsInterface> (index);
   interface->SetNode (m_node);
   interface->SetDevice (device);
 
-  int32_t index = m_interfaces.size ();
   m_interfaces.push_back (interface);
+  
   return index;
 }
 
 Ptr<MplsInterface>
 MplsProtocol::GetInterface (int32_t index) const
 {
-  if (index >= 0 && index < m_interfaces.size ())
+  if (index >= 0 && index < (int)m_interfaces.size ())
     {
       return m_interfaces[index];
     }
@@ -155,7 +158,7 @@ MplsProtocol::GetInterface (int32_t index) const
 }
 
 Ptr<MplsInterface>
-MplsProtocol::GetInterfaceForDevice (const Ptr<NetDevice> &device) const
+MplsProtocol::GetInterfaceForDevice (const Ptr<const NetDevice> &device) const
 {
   for (MplsInterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
@@ -173,7 +176,7 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
 {
   if (Ipv4Address::IsMatchingType (address))
     {
-      if (!m_ipv4)
+      if (m_ipv4 == 0)
         {
           NS_LOG_WARN ("Could not lookup next-hop --- ipv4 is not installed");
           return 0;
@@ -190,7 +193,7 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
       // XXX: i don't know if we can do this
       Ptr<Ipv4Route> route = routing->RouteOutput (0, header, 0, sockerr);
 
-      if (route && route->GetDestination ().Get () != 0)
+      if (route != 0 && route->GetDestination ().Get () != 0)
         {
           return route;
         }
@@ -199,7 +202,7 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
   return 0;
 }
 
-int32_t 
+uint32_t 
 MplsProtocol::GetNInterfaces (void) const
 {
   return m_interfaces.size ();
@@ -263,38 +266,38 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
   // process reserved labels
   while (label < 0x10)
     {
-      switch (label) 
+      if (label == Label::IPV4_EXPLICIT_NULL)
         {
-          case Label::IPV4_EXPLICIT_NULL:
-            if (!shim::IsBos (label))
-              {
-                NS_LOG_WARN ("Dropping received packet -- illegal Ipv4 explicit null label");
-                // m_dropTrace 
-                return;
-              }
-            NS_LOG_LOGIC ("Force Ipv4 forwarding");
-            IpForward ();
-            break;
-
-          case Label::IPV6_EXPLICIT_NULL:
-            if (!shim::IsBos (label))
-              {
-                NS_LOG_WARN ("Dropping received packet -- illegal Ipv6 explicit null label");
-                // m_dropTrace 
-                return;
-              }
-            // for future research
-            NS_LOG_LOGIC ("Dropping received packet -- ipv6 is not supported"); 
-            //m_dropTrace (...);
-            return;
-            
-          case Label::ROUTE_ALERT:
-            NS_LOG_WARN ("Skip label -- route alert label not supported");
-            break;
-
-          default:
-            NS_LOG_WARN ("Skip label -- unknown reserved label");
-            break;
+          if (!shim::IsBos (label))
+            {
+              NS_LOG_WARN ("Dropping received packet -- illegal Ipv4 explicit null label");
+              // m_dropTrace 
+              return;
+            }
+          NS_LOG_LOGIC ("Force Ipv4 forwarding");
+          IpForward (packet, ttl, 0, 0);
+          return;
+        }
+      else if (label == Label::IPV6_EXPLICIT_NULL)
+        {
+          if (!shim::IsBos (label))
+            {
+              NS_LOG_WARN ("Dropping received packet -- illegal Ipv6 explicit null label");
+              // m_dropTrace 
+              return;
+            }
+          // for future research
+          NS_LOG_LOGIC ("Dropping received packet -- ipv6 is not supported"); 
+          //m_dropTrace (...);
+          return;
+        }
+      else if (label == Label::ROUTE_ALERT)
+        {
+          NS_LOG_WARN ("Skip label -- route alert label not supported");
+        }
+      else 
+        {
+          NS_LOG_WARN ("Skip label -- unknown reserved label");
         }
 
       stack.Pop ();
@@ -311,7 +314,7 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
     return;
   }
   
-  Ptr<IncomingLabelMap> ilm = LookupIlm (label, mplsInterface->GetIndex ());
+  Ptr<IncomingLabelMap> ilm = LookupIlm (label, mplsInterface->GetIfIndex ());
   
   if (ilm == 0)
     {
@@ -338,7 +341,7 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation>
         {
           route = 0;
           outInterface = GetInterface (outIfIndex);
-          if (!outInterface)
+          if (outInterface == 0)
             {
               NS_LOG_WARN ("Invalid outgoing interface index " << outIfIndex);
             }
@@ -346,20 +349,20 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation>
       else
         {
           outInterface = 0;
-          const Address &nextHop = (*i)->GetNextHop ();
+          const Address &nextHop = nhlfe.GetNextHop ();
           route = GetNextHopRoute (nextHop);
-          if (route)
+          if (route != 0)
             {
-              outInterface = GetInterfaceForDevice (route->GetDevice ());
+              outInterface = GetInterfaceForDevice (route->GetOutputDevice ());
             }
 
-          if (!outInterface)
+          if (outInterface == 0)
             {
               NS_LOG_WARN ("Invalid invalid next-hop address " << nextHop);
             }
         }
 
-      if (outInterface && outInterface->IsUp ())
+      if (outInterface != 0 && outInterface->IsUp ())
         {
           if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface))
             {
@@ -374,27 +377,29 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation>
 }
 
 Ptr<IncomingLabelMap>
-MplsProtocol::LookupIlm (Label label, uint32_t interface)
+MplsProtocol::LookupIlm (Label label, int32_t interface)
 {
-  NS_ASSERT_MSG (ilmTable != 0, "IlmTable is not installed");
+  NS_ASSERT_MSG (m_ilmTable != 0, "IlmTable is not installed");
 
   IlmTable::Iterator begin = m_ilmTable->Begin ();
   IlmTable::Iterator end = m_ilmTable->End ();
   Ptr<IncomingLabelMap> ilm;
 
+  // TODO: Different search for both label spaces
+
   for (IlmTable::Iterator i = begin; i != end; ++i)
     {
-      ilm = (*i)->second;
-      if (ilm->GetLabel () == label && ilm->GetInterface () == 0)
+      ilm = (*i).second;
+      if (ilm->GetLabel () == label && ilm->GetInterface () == interface)
         {
           return ilm;
         }
     }
-
+    
   for (IlmTable::Iterator i = begin; i != end; ++i)
     {
-      ilm = (*i)->second;
-      if (ilm->GetLabel () == label && ilm->GetInterface () == interface)
+      ilm = (*i).second;
+      if (ilm->GetLabel () == label && ilm->GetInterface () == 0)
         {
           return ilm;
         }
@@ -404,27 +409,17 @@ MplsProtocol::LookupIlm (Label label, uint32_t interface)
 }
 
 Ptr<FecToNhlfe>
-MplsProtocol::LookupFtn ()
+MplsProtocol::LookupFtn (PacketDemux &demux)
 {
-  NS_ASSERT_MSG (ftnTable != 0, "FtnTable is not installed");
+  NS_ASSERT_MSG (m_ftnTable != 0, "FtnTable is not installed");
 
   FtnTable::Iterator begin = m_ftnTable->Begin ();
   FtnTable::Iterator end = m_ftnTable->End ();
-  Ptr<FecToNhlfe> ftn;
   
   for (FtnTable::Iterator i = begin; i != end; ++i)
     {
-      ftn = (*i)->second;
-      if ()
-        {
-          return ftn;
-        }
-    }
-
-  for (FtnTable::Iterator i = begin; i != end; ++i)
-    {
-      ftn = (*i)->second;
-      if ()
+      const Ptr<FecToNhlfe> &ftn = (*i).second;
+      if ((ftn->GetFec ()) (demux))
         {
           return ftn;
         }
@@ -449,7 +444,7 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
       case OP_SWAP:
         for (uint32_t i = 0, count = nhlfe.m_count; i < count; ++i)
           {
-            label = nhlfe.m_labels[i];
+            Label label = nhlfe.m_labels[i];
             if (label == Label::IMPLICIT_NULL)
               {
                 // Penultimate Hop Popping
@@ -491,7 +486,7 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
 }
 
 void
-MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> &outDev, Ptr<Ipv4Route> route)
+MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev, Ptr<Ipv4Route> route)
 {
   if (m_ipv4 == 0)
     {

@@ -22,7 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/assert.h"
 
-#include "ipv4-to-mpls-routing.h"
+#include "mpls-ipv4-routing.h"
 
 NS_LOG_COMPONENT_DEFINE ("MplsIpv4Routing");
 
@@ -74,28 +74,33 @@ MplsIpv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<
                                        UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                        LocalDeliverCallback lcb, ErrorCallback ecb)
 {
-  NS_ASSERT_MSG (m_mpls, "Mpls protocol should be specified");
+  NS_ASSERT_MSG (m_mpls != 0, "Mpls protocol should be specified");
 
   // check if can process ipv4 packet
   Ptr<MplsInterface> iface = m_mpls->GetInterfaceForDevice (idev);
 
-  if (iface == 0 || iface->IsUp ())
+  // use underlying ipv4 routing if mpls interface is enabled for the device
+  if (iface != 0 && iface->IsUp ())
     {
       return m_routingProtocol->RouteInput (p, header, idev, ucb, mcb, lcb, ecb);
     }
-    
-  Ptr<FecToNhlfe> ftn = m_mpls->LookupFtn (...);
+
+  Ptr<Packet> packet = p->Copy ();
+  
+  m_demux.Assign (p, header);
+  
+  Ptr<FecToNhlfe> ftn = m_mpls->LookupFtn (m_demux);
   
   if (ftn == 0)
     {
       NS_LOG_LOGIC ("Dropping received packet -- FTN not found");
       //m_mpls->m_dropTrace (...)
-      ecb (p, header, Socket::ERROR_NOROUTETOHOST);
+      ecb (packet, header, Socket::ERROR_NOROUTETOHOST);
       return false;
     }
 
   LabelStack stack;
-  m_mpls->MplsForward (packet, ftn, stack, header.GetTtl ()));
+  m_mpls->MplsForward (packet, ftn, stack, header.GetTtl ());
 
   return true;
 }
@@ -106,6 +111,11 @@ MplsIpv4Routing::SetMpls (Ptr<MplsProtocol> mpls)
   NS_ASSERT_MSG (m_mpls == 0, "Mpls protocol object already set");
   NS_ASSERT (mpls != 0);
   m_mpls = mpls;
+}
+
+void
+MplsIpv4Routing::SetIpv4 (Ptr<Ipv4> ipv4)
+{
 }
 
 void

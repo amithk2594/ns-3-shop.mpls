@@ -23,10 +23,10 @@
 #define MPLS_FEC_TO_NHLFE_H
 
 #include <ostream>
-#include <stdint.h>
 
+#include "mpls-fec.h"
 #include "mpls-forwarding-information.h"
-#include "ns3/mpls-fec.h"
+#include "mpls-nhlfe.h"
 
 namespace ns3 {
 namespace mpls {
@@ -41,14 +41,6 @@ namespace mpls {
 class FecToNhlfe : public ForwardingInformation
 {
 public:
-  /**
-   * @brief Construct FTN for specified device and fec
-   * @param deviceIndex index of device
-   * @param fec forwarding equivalence class
-   * @param nhlfe NHLFE (at least one NHLFE should be set)
-   */
-  template <class T>
-  FecToNhlfe (int32_t deviceIndex, const T& fec, const Nhlfe &nhlfe);
   /**
    * @brief Construct FTN for specified fec
    * @param fec forwarding equivalence class
@@ -70,14 +62,6 @@ public:
   template <class T>
   void SetFec (const T& fec);
   /**
-   * @brief Get device index
-   */
-  int32_t GetDeviceIndex (void) const;
-  /**
-   * @brief Set device index
-   */
-  void SetDeviceIndex (int32_t deviceIndex);
-  /**
    * @brief Print FTN
    * @param os the stream to print to
    */
@@ -85,7 +69,6 @@ public:
 
 private:
   Fec* m_fec;
-  int32_t m_deviceIndex;
 };
 
 } // namespace mpls

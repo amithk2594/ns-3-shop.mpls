@@ -19,7 +19,6 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
  
-#include <iostream>
 #include "mpls-incoming-label-map.h"
 
 namespace ns3 {

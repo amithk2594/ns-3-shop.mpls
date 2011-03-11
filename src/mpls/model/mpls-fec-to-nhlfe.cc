@@ -19,7 +19,6 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
  
-#include <ostream>
 #include "mpls-fec-to-nhlfe.h"
 
 namespace ns3 {
@@ -33,14 +32,7 @@ Fec* CopyFec (T fec)
 
 template <class T>
 FecToNhlfe::FecToNhlfe (const T& fec, const Nhlfe &nhlfe)
-  : FecToNhlfe (-1, fec, nhlfe)
-{
-}
-
-template <class T>
-FecToNhlfe::FecToNhlfe (int32_t deviceIndex, const T& fec, const Nhlfe &nhlfe)
-  : m_fec (CopyFec (fec)),
-    m_deviceIndex (deviceIndex)
+  : m_fec (CopyFec (fec))
 {
   AddNhlfe (nhlfe);
 }
@@ -62,18 +54,6 @@ FecToNhlfe::SetFec (const T& fec)
 {
   delete m_fec;
   m_fec = CopyFec (fec);
-}
-
-int32_t 
-FecToNhlfe::GetDeviceIndex (void) const
-{
-  return m_deviceIndex;
-}
-
-void
-FecToNhlfe::SetDeviceIndex(int32_t deviceIndex)
-{
-  m_deviceIndex = deviceIndex;
 }
 
 void

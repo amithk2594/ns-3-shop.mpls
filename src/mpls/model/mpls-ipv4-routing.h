@@ -33,10 +33,14 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/socket.h"
 
-#include "mpls-routing.h"
+#include "mpls-packet-demux.h"
+#include "mpls-protocol.h"
 
 namespace ns3 {
 namespace mpls {
+
+class PacketDemux;
+class MplsProtocol;
 
 /**
  * \brief
@@ -75,6 +79,7 @@ public:
   void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
   void SetMpls (Ptr<MplsProtocol> mpls);
+  void SetIpv4 (Ptr<Ipv4> ipv4);
     
 protected:
   void DoDispose (void);
@@ -83,6 +88,7 @@ private:
   Ptr<MplsProtocol> m_mpls;
   Ptr<FtnTable> m_ftnTable;
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
+  PacketDemux m_demux;  
 };
 
 } // namespace mpls

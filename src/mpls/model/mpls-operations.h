@@ -23,6 +23,7 @@
 #define MPLS_OPERATIONS_H
 
 #include <stdint.h>
+
 #include "mpls-label.h"
 #include "mpls-nhlfe.h"
 
@@ -72,7 +73,7 @@ public:
   virtual ~Swap ();
   virtual void Accept (Nhlfe& nhlfe) const;
 
-private:
+protected:
   uint32_t m_count;
   uint32_t m_labels[6];
 };

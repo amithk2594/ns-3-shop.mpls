@@ -25,12 +25,11 @@
 #include <ostream>
 
 #include "mpls-label.h"
+#include "mpls-nhlfe.h"
 #include "mpls-forwarding-information.h"
 
 namespace ns3 {
 namespace mpls {
-
-class ForwardingInformation;
 
 /**
  * \ingroup mpls

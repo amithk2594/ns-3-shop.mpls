@@ -37,19 +37,10 @@ FtnTable::~FtnTable ()
 
 template <class T>
 uint32_t
-FtnTable::AddFtn (int32_t deviceIndex, const T& fec, const Nhlfe& nhlfe)
-{
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (deviceIndex, fec, nhlfe);
-  
-  return AddFtn (ftn);
-}
-
-
-template <class T>
-uint32_t
 FtnTable::AddFtn (const T& fec, const Nhlfe& nhlfe)
 {
-  return AddFtn (-1, fec, nhlfe);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (fec, nhlfe);
+  return AddFtn (ftn);
 }
 
 uint32_t

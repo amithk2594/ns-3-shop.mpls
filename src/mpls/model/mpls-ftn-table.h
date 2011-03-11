@@ -28,7 +28,7 @@
 
 #include "ns3/simple-ref-count.h"
 
-#include "ns3/mpls-fec.h"
+#include "mpls-fec.h"
 #include "mpls-nhlfe.h"
 #include "mpls-fec-to-nhlfe.h"
 
@@ -63,9 +63,6 @@ public:
    */
   template <class T>
   uint32_t AddFtn (const T &fec, const Nhlfe &nhlfe);
-  
-  template <class T>
-  uint32_t AddFtn (int32_t deviceIndex, const T &fec, const Nhlfe &nhlfe);
   
   /**
    * @brief Add FTN with (possibly) multiple NHLFEs

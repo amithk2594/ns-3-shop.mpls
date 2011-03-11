@@ -27,7 +27,6 @@
 #include "ns3/address.h"
 
 #include "mpls-operations.h"
-#include "mpls-interface.h"
 
 namespace ns3 {
 namespace mpls {

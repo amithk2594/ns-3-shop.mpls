@@ -21,6 +21,9 @@
 
 #include "mpls-forwarding-information.h"
 
+#include "ns3/log.h"
+#include "ns3/assert.h"
+
 namespace ns3 {
 namespace mpls {
 

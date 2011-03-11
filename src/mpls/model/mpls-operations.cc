@@ -19,8 +19,9 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#include "mpls-operations.h"
 #include "ns3/assert.h"
+
+#include "mpls-operations.h"
 
 namespace ns3 {
 namespace mpls {

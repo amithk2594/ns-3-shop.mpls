@@ -32,6 +32,8 @@
 namespace ns3 {
 namespace mpls {
 
+class PacketDemux;
+
 /**
  * \ingroup Mpls
  * \brief
