@@ -86,11 +86,6 @@ public:
    * @brief Returns interface index
    */
   int32_t GetIfIndex (void);  
-  /**
-   * @brief Print interface information
-   * @param os the stream to print to
-   */
-  void Print (std::ostream &os) const;
 
 protected:
   virtual void DoDispose (void);
@@ -103,8 +98,6 @@ private:
   bool m_ifup;
   int32_t m_ifIndex;  
 };
-
-std::ostream& operator<< (std::ostream& os, const Ptr<Interface> &interface);
 
 } // namespace mpls
 } // namespace ns3

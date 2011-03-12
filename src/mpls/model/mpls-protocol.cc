@@ -40,7 +40,7 @@ TypeId
 MplsProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::mpls::MplsProtocol")
-    .SetParent<Object> ()
+    .SetParent<Mpls> ()
     .AddConstructor<MplsProtocol> ()
     .AddTraceSource ("Tx", "Send packet to outgoing interface.",
                         MakeTraceSourceAccessor (&MplsProtocol::m_txTrace))
@@ -89,6 +89,17 @@ MplsProtocol::NotifyNewAggregate ()
     }
 
   Object::NotifyNewAggregate ();
+}
+
+void
+MplsProtocol::NotifyNewInterface (const Ptr<NetDevice> &device)
+{
+  NS_LOG_FUNCTION (this << &device);
+
+  if (GetInterfaceForDevice (device) == 0)
+    {
+      AddInterface (device);
+    }
 }
 
 void

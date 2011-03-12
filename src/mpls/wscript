@@ -19,9 +19,13 @@ def build(bld):
         'model/mpls-ilm-table.cc',
         'model/mpls-ipv4-protocol.cc',
         'model/mpls-ipv4-routing.cc',
-        'helpers/mpls-node-helper.cc',
+        'helpers/mpls-enum-helper.cc',        
         'helpers/mpls-interface-helper.cc',
-        'helpers/mpls-helper.cc',
+        'helpers/mpls-installer.cc',
+        'helpers/mpls-node-helper.cc',        
+        'helpers/mpls-ftn-helper.cc',
+        'helpers/mpls-ilm-helper.cc',
+        'helpers/mpls-switch.cc',
         'test/mpls-test.cc',
     ]
     headers = bld.new_task_gen('ns3header')
@@ -43,8 +47,12 @@ def build(bld):
         'model/mpls-ilm-table.h',
         'model/mpls-ipv4-protocol.h',
         'model/mpls-ipv4-routing.h',
-        'helpers/mpls-node-helper.h',
+        'helpers/mpls-enum-helper.h',        
         'helpers/mpls-interface-helper.h',
-        'helpers/mpls-helper.h',
+        'helpers/mpls-installer.h',
+        'helpers/mpls-node-helper.h',        
+        'helpers/mpls-ftn-helper.h',
+        'helpers/mpls-ilm-helper.h',
+        'helpers/mpls-switch.h',        
     ]
 

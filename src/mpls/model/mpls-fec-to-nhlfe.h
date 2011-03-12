@@ -46,8 +46,7 @@ public:
    * @param fec forwarding equivalence class
    * @param nhlfe NHLFE (at least one NHLFE should be set)
    */
-  template <class T>
-  FecToNhlfe (const T& fec, const Nhlfe &nhlfe);
+  FecToNhlfe (Fec *fec, const Nhlfe &nhlfe);
   /**
    * @brief Destructor
    */
@@ -59,8 +58,7 @@ public:
   /**
    * @brief Set new FEC
    */
-  template <class T>
-  void SetFec (const T& fec);
+  void SetFec (Fec* fec);
   /**
    * @brief Print FTN
    * @param os the stream to print to

@@ -55,6 +55,13 @@ public:
   virtual ~Mpls ();
 
   /**
+   * @brief Enable/disable new interface notify (default disabled)
+   */
+  void EnableNewInterfaceNotification (bool enabled);
+  bool IsNewInterfaceNotificationEnabled (void) const;
+  virtual void NotifyNewInterface (const Ptr<NetDevice> &device) = 0;
+
+  /**
    * @brief Set new ILM table
    */
   virtual void SetIlmTable (const Ptr<IlmTable> &ilmTable) = 0;
@@ -101,6 +108,9 @@ public:
    * @brief Lookup FTN using PacketDemux
    */
   virtual Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux) = 0;
+
+private:
+  bool m_newInterfaceNotification;
 };
 
 } // namespace ns3

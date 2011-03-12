@@ -19,55 +19,25 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#ifndef MPLS_NODE_HELPER_H
-#define MPLS_NODE_HELPER_H
+#ifndef MPLS_ENUM_HELPER_H
+#define MPLS_ENUM_HELPER_H
 
 #include "ns3/string.h"
-#include "ns3/ptr.h"
+#include "ns3/callback.h"
+#include "ns3/node-container.h"
 #include "ns3/node.h"
-#include "ns3/mpls.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
-/**
- * \brief Mpls switch configurator
- */
-class _MplsNodeHelper
-{
-public:
-  /**
-   * @brief Create a new MplsSwitch object
-   */
-  _MplsNodeHelper();
-  /**
-   * @brief Create a new MplsSwitch object
-   */  
-  _MplsNodeHelper(const std::string &node);   
-  /**
-   * @brief Create a new MplsSwitch object
-   */
-  _MplsNodeHelper(const Ptr<Node> &node);
-  /**
-   * @brief Destroy the MplsSwitch
-   */
-  virtual ~_MplsNodeHelper();
-  /**
-   * @brief Assign node
-   */
-  void SetNode (const Ptr<Node> &node);
-  /**
-   * @brief Assign node
-   */
-  void SetNode (const std::string &node);  
+class Node;
 
-protected:
-  Ptr<Mpls> GetMpls (void) const;
-  Ptr<Node> GetNode (void) const;
-  
-private:
-  Ptr<Node> m_node;
-};
+typedef Callback<void, Ptr<Node> > ForEachNodeCallback;
+
+void ForEachNode (std::string nodeName, const ForEachNodeCallback& cb);
+void ForEachNode (Ptr<Node> node, const ForEachNodeCallback& cb);
+void ForEachNode (const NodeContainer& c, const ForEachNodeCallback& cb);
 
 } // namespace ns3
 
-#endif /* MPLS_SWITCH_H */
+#endif /* MPLS_ENUM_HELPER_H */

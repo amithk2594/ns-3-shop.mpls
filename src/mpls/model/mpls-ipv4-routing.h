@@ -40,7 +40,6 @@ namespace ns3 {
 namespace mpls {
 
 class PacketDemux;
-class Mpls;
 
 /**
  * \brief

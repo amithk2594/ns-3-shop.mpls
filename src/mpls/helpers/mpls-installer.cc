@@ -38,14 +38,15 @@
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/ipv6-list-routing-helper.h"
 #include "ns3/ipv6-static-routing-helper.h"
+#include "ns3/mpls-protocol.h"
 
-#include "mpls-helper.h"
+#include "mpls-installer.h"
 
-NS_LOG_COMPONENT_DEFINE ("MplsHelper");
+NS_LOG_COMPONENT_DEFINE ("MplsInstaller");
 
 namespace ns3 {
 
-MplsHelper::MplsHelper ()
+MplsInstaller::MplsInstaller ()
   : m_routing (0)
 {
   Initialize ();
@@ -53,7 +54,7 @@ MplsHelper::MplsHelper ()
 
 // private method called by both constructor and Reset ()
 void
-MplsHelper::Initialize ()
+MplsInstaller::Initialize ()
 {
   SetTcp ("ns3::TcpL4Protocol");
   Ipv4StaticRoutingHelper staticRouting;
@@ -64,19 +65,19 @@ MplsHelper::Initialize ()
   SetRoutingHelper (listRouting);
 }
 
-MplsHelper::~MplsHelper ()
+MplsInstaller::~MplsInstaller ()
 {
   delete m_routing;
 }
 
-MplsHelper::MplsHelper (const MplsHelper &o)
+MplsInstaller::MplsInstaller (const MplsInstaller &o)
 {
   m_routing = o.m_routing->Copy ();
   m_tcpFactory = o.m_tcpFactory;
 }
 
-MplsHelper &
-MplsHelper::operator = (const MplsHelper &o)
+MplsInstaller &
+MplsInstaller::operator = (const MplsInstaller &o)
 {
   if (this == &o)
     {
@@ -87,28 +88,28 @@ MplsHelper::operator = (const MplsHelper &o)
 }
 
 void
-MplsHelper::Reset (void)
+MplsInstaller::Reset (void)
 {
   delete m_routing;
   m_routing = 0;
   Initialize ();
 }
 
-void 
-MplsHelper::SetRoutingHelper (const Ipv4RoutingHelper &routing)
+void
+MplsInstaller::SetRoutingHelper (const Ipv4RoutingHelper &routing)
 {
   delete m_routing;
   m_routing = routing.Copy ();
 }
 
 void
-MplsHelper::SetTcp (const std::string tid)
+MplsInstaller::SetTcp (const std::string tid)
 {
   m_tcpFactory.SetTypeId (tid);
 }
 
 void
-MplsHelper::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
+MplsInstaller::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
 {
   ObjectFactory factory;
   factory.SetTypeId (typeId);
@@ -116,50 +117,28 @@ MplsHelper::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::strin
   node->AggregateObject (protocol);
 }
 
-void 
-MplsHelper::Install (NodeContainer c) const
-{
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      Install (*i);
-    }
-}
-
 void
-MplsHelper::Install (Ptr<Node> node) const
+MplsInstaller::InstallInternal (Ptr<Node> node) const
 {
   if (node->GetObject<mpls::MplsProtocol> () != 0)
     {
-      NS_FATAL_ERROR ("MplsHelper::Install (): Aggregating " 
+      NS_FATAL_ERROR ("MplsInstaller::Install (): Aggregating "
                       "an Mpls to a node with an existing Mpls object");
       return;
     }
 
-  CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
-  CreateAndAggregateObjectFromTypeId (node, "ns3::mpls::Ipv4Protocol");
   CreateAndAggregateObjectFromTypeId (node, "ns3::mpls::MplsProtocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::mpls::Ipv4Protocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
   CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
   CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
   node->AggregateObject (m_tcpFactory.Create<Object> ());
   Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
   node->AggregateObject (factory);
-  // Set routing
+
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
   ipv4->SetRoutingProtocol (ipv4Routing);
-}
-
-void
-MplsHelper::Install (std::string nodeName) const
-{
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  Install (node);
-}
-
-void 
-MplsHelper::InstallAll (void) const
-{
-  Install (NodeContainer::GetGlobal ());
 }
 
 } // namespace ns3

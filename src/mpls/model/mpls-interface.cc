@@ -132,17 +132,6 @@ Interface::Send (Ptr<Packet>& packet)
 //  // XXX: now only PointToPoint devices supported
 //  outDev->Send (packet, outDev->GetBroadcast (), PROT_NUMBER);
 }
-  
-void
-Interface::Print (std::ostream &os) const
-{
-}
-
-std::ostream& operator<< (std::ostream& os, const Ptr<Interface> &interface)
-{
-  interface->Print (os);
-  return os;
-}
 
 } // namespace mpls
 } // namespace ns3

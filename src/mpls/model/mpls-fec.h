@@ -48,6 +48,9 @@ public:
    * \param pc Packet Context
    */
   virtual bool operator() (PacketDemux &pd) const = 0;
+
+  template <class T>
+  static Fec* Build (const T &fec) { return new T(fec); }
 };
 
 //std::ostream& operator<< (std::ostream& os, const Fec& fec);

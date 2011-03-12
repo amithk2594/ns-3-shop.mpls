@@ -55,21 +55,6 @@ public:
    */
   virtual ~IlmTable ();
   /**
-   * @brief Add ILM with a single NHLFE
-   * @param interface Incoming interface
-   * @param label Incoming label
-   * @param nhlfe NHLFE
-   * @return index of the ILM
-   */
-  uint32_t AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe);
-  /**
-   * @brief Add ILM with a single NHLFE (per-system label space)
-   * @param label
-   * @param nhlfe
-   * @return index of the ILM
-   */
-  uint32_t AddIlm (Label label, const Nhlfe &nhlfe);
-  /**
    * @brief Add ILM with (possibly) multiple NHLFEs
    * @param ilm
    * @return index of the ILM
@@ -86,6 +71,10 @@ public:
    * @param index
    */
   void RemoveIlm (const uint32_t index);
+  /**
+   * @brief Clear table
+   */
+  void Clear (void);
   /**
    * \brief Print forwarding information
    * \param os the stream to print to
@@ -110,4 +99,4 @@ std::ostream& operator<< (std::ostream& os, const Ptr<IlmTable> &ilm);
 } // namespace mpls
 } // namespace ns3
 
-#endif /* MPLS_FORWARDING_INFORMATION_BASE_H */
+#endif /* MPLS_ILM_TABLE_H */

@@ -19,53 +19,56 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#ifndef MPLS_NODE_HELPER_H
-#define MPLS_NODE_HELPER_H
+#ifndef MPLS_SWITCH_H
+#define MPLS_SWITCH_H
 
-#include "ns3/string.h"
 #include "ns3/ptr.h"
 #include "ns3/node.h"
 #include "ns3/mpls.h"
+#include "mpls-ftn-helper.h"
+#include "mpls-ilm-helper.h"
 
 namespace ns3 {
 
 /**
  * \brief Mpls switch configurator
  */
-class _MplsNodeHelper
+class MplsSwitch : public MplsFtnHelper, public MplsIlmHelper
 {
 public:
   /**
    * @brief Create a new MplsSwitch object
    */
-  _MplsNodeHelper();
-  /**
-   * @brief Create a new MplsSwitch object
-   */  
-  _MplsNodeHelper(const std::string &node);   
+  MplsSwitch();
   /**
    * @brief Create a new MplsSwitch object
    */
-  _MplsNodeHelper(const Ptr<Node> &node);
+  MplsSwitch(const Ptr<Node> &node);
+  /**
+   * @brief Create a new MplsSwitch object
+   */
+  MplsSwitch(const std::string &name);  
   /**
    * @brief Destroy the MplsSwitch
    */
-  virtual ~_MplsNodeHelper();
+  virtual ~MplsSwitch();
   /**
-   * @brief Assign node
+   * @brief Add mpls interface for specified device
+   * @param devIfIndex Device index
    */
-  void SetNode (const Ptr<Node> &node);
+  void AddInterface (uint32_t devIfIndex);
   /**
-   * @brief Assign node
+   * @brief Return true if interface is enabled
    */
-  void SetNode (const std::string &node);  
-
-protected:
-  Ptr<Mpls> GetMpls (void) const;
-  Ptr<Node> GetNode (void) const;
-  
-private:
-  Ptr<Node> m_node;
+  bool IsUp (uint32_t i) const;
+  /**
+   * @brief Enable interface
+   */  
+  void 	SetUp (uint32_t i);
+  /**
+   * @brief Disable interface
+   */    
+  void 	SetDown (uint32_t i);
 };
 
 } // namespace ns3

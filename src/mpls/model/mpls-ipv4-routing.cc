@@ -65,6 +65,7 @@ Ptr<Ipv4Route>
 Ipv4Routing::RouteOutput (Ptr<Packet> p, const Ipv4Header &header, Ptr<NetDevice> oif, Socket::SocketErrno &sockerr)
 {
   NS_LOG_FUNCTION (this << &oif << p << header);
+
   NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object to process packet");
   return m_routingProtocol->RouteOutput (p, header, oif, sockerr);
 }
@@ -74,6 +75,8 @@ Ipv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<cons
                                        UnicastForwardCallback ucb, MulticastForwardCallback mcb,
                                        LocalDeliverCallback lcb, ErrorCallback ecb)
 {
+  NS_LOG_FUNCTION (this << &idev << p << header);
+
   NS_ASSERT_MSG (m_mpls != 0, "Mpls protocol should be specified");
 
   // check if can process ipv4 packet
@@ -86,11 +89,11 @@ Ipv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<cons
     }
 
   Ptr<Packet> packet = p->Copy ();
-  
+
   m_demux.Assign (p, header);
-  
+
   Ptr<FecToNhlfe> ftn = m_mpls->LookupFtn (m_demux);
-  
+
   if (ftn == 0)
     {
       NS_LOG_LOGIC ("Dropping received packet -- FTN not found");
@@ -106,16 +109,18 @@ Ipv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<cons
 }
 
 void
-Ipv4Routing::SetMpls (Ptr<MplsProtocol> mpls)
+Ipv4Routing::SetMpls (Ptr<Mpls> mpls)
 {
-  NS_ASSERT_MSG (m_mpls == 0, "Mpls protocol object already set");
-  NS_ASSERT (mpls != 0);
+  NS_LOG_FUNCTION (this << mpls);
+  
   m_mpls = mpls;
 }
 
 void
 Ipv4Routing::SetIpv4 (Ptr<Ipv4> ipv4)
 {
+  NS_LOG_FUNCTION (this << ipv4);
+  
   m_ipv4 = ipv4;
 }
 
@@ -123,9 +128,11 @@ void
 Ipv4Routing::NotifyInterfaceUp (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
-  
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
-  m_routingProtocol->NotifyInterfaceUp (interface);
+
+  if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyInterfaceUp (interface);
+    }
 }
 
 void
@@ -133,31 +140,39 @@ Ipv4Routing::NotifyInterfaceDown (uint32_t interface)
 {
   NS_LOG_FUNCTION (this << interface);
 
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
-  m_routingProtocol->NotifyInterfaceDown (interface);
+  if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyInterfaceDown (interface);
+    }
 }
 
 void
 Ipv4Routing::NotifyAddAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
-  
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
-  m_routingProtocol->NotifyAddAddress (interface, address);
+
+  if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyAddAddress (interface, address);
+    }
 }
 
 void
 Ipv4Routing::NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address)
 {
   NS_LOG_FUNCTION (this << interface << address);
-  
-  NS_ASSERT_MSG (m_routingProtocol != 0, "Need Ipv4 routing object");
-  m_routingProtocol->NotifyRemoveAddress (interface, address);
+
+  if (m_routingProtocol != 0)
+    {
+      m_routingProtocol->NotifyRemoveAddress (interface, address);
+    }
 }
 
 void
 Ipv4Routing::SetRoutingProtocol (const Ptr<Ipv4RoutingProtocol> &routingProtocol)
 {
+  NS_LOG_FUNCTION (this << routingProtocol);
+
   m_routingProtocol = routingProtocol;
   routingProtocol->SetIpv4 (m_ipv4);
 }

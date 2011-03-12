@@ -32,6 +32,8 @@
 #include "ns3/ipv4.h"
 #include "ns3/ipv6.h"
 
+#include "mpls-enum-helper.h"
+
 namespace ns3 {
 /**
  * \brief Mpls interface helper

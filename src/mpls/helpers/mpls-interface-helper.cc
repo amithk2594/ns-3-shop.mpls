@@ -66,7 +66,7 @@ MplsInterfaceHelper::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->EnableInterfaceAutoInstall ();
+  mpls->EnableNewInterfaceNotification (true);
 }
 
 void
@@ -74,7 +74,7 @@ MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->DisableInterfaceAutoInstall ();
+  mpls->EnableNewInterfaceNotification (false);
 }
 
 void
@@ -85,7 +85,7 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
 
-  os << "Node " << node->GetSystemId () << "-" << node->GetId () << " interfaces:" << std::endl;
+  os << "Node " << node->GetId () << " interfaces:" << std::endl;
   os << std::setiosflags(std::ios::left);
 
   for (uint32_t i = 0, c = node->GetNDevices (); i < c; ++i)
@@ -106,16 +106,20 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
         {
           os << hwaddr;
         }
+        
+      os << std::endl;
 
-      //Ptr<mpls::Interface> iface = mpls->GetInterface (i);
-      //Ptr<NetDevice> dev = iface->GetDevice ();
+      if (mpls)
+        {
+          PrintMplsInfo (os, dev, mpls);
+        }
 
-      //if (ipv4)
-      //  {
-      //    PrintIpv4Information (os, ipv4, device, 23);
-      //  }
-      //PrintDeviceInformation (os, device, 23);
-
+      if (ipv4)
+        { 
+          PrintIpv4Info (os, dev, ipv4);
+        }
+        
+      PrintDeviceInfo (os, dev);
       os << std::endl;
     }
 }
@@ -123,22 +127,37 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
 void
 MplsInterfaceHelper::PrintMplsInfo (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Mpls> &mpls) const
 {
+  Ptr<mpls::Interface> iface = mpls->GetInterfaceForDevice (dev);
+  if (iface != 0) 
+    {
+      os << std::setw (9) << " " 
+         << "mpls:" << (iface->IsUp () ? "enabled" : "disabled") << "  "
+         << "Interface: " << iface->GetIfIndex ()
+         << std::endl;
+    }  
 }
 
 void
 MplsInterfaceHelper::PrintIpv4Info (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Ipv4> &ipv4) const
 {
   int32_t ifIndex = ipv4->GetInterfaceForDevice (dev);
-  if (ifIndex < 0) return;
+  if (ifIndex >= 0)
+    {
+      for (uint32_t i = 0, c = ipv4->GetNAddresses (ifIndex); i < c; ++i)
+        {
+          Ipv4InterfaceAddress addr = ipv4->GetAddress (ifIndex, i);
+          os << std::setw (9) << " " 
+             << "inet addr:" << addr.GetLocal () << "  "
+             << "Bcast:" << addr.GetBroadcast () << "  "
+             << "Mask:" << addr.GetMask ();
 
-//  os << std::setw (indent) << " ";
-
-//  for (uint32_t i = 0, c = ipv4->GetNAddresses (ifIndex); i < c; ++i)
-//    {
-//      Ipv4InterfaceAddress addr = ipv4->GetAddress (ifIndex, i);
-//      Ipv4Address local = addr.GetLocal ();
-//      Ipv4Mask mask = addr.GetMask ();
-//    }
+          if (addr.IsSecondary ())
+            {
+              os << "  (secondary)";
+            }
+          os << std::endl;
+        }
+    }
 }
 
 void
@@ -149,7 +168,8 @@ MplsInterfaceHelper::PrintIpv6Info (std::ostream &os, const Ptr<NetDevice> &dev,
 void
 MplsInterfaceHelper::PrintDeviceInfo (std::ostream &os, const Ptr<NetDevice> &dev) const
 {
-  os << (dev->IsLinkUp () ? "UP" : "DOWN");
+  os << std::setw (9) << " " 
+     << (dev->IsLinkUp () ? "UP" : "DOWN");
 
   if (dev->IsPointToPoint ())
     {
@@ -169,6 +189,11 @@ MplsInterfaceHelper::PrintDeviceInfo (std::ostream &os, const Ptr<NetDevice> &de
   if (dev->IsBroadcast ())
     {
       os << " BROADCAST";
+    }
+    
+  if (dev->NeedsArp ())
+    {
+      os << " ARP";
     }
 
   os << "  MTU:" << dev->GetMtu ();

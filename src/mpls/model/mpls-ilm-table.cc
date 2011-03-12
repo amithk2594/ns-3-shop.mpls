@@ -36,19 +36,6 @@ IlmTable::~IlmTable ()
 }
 
 uint32_t
-IlmTable::AddIlm (uint32_t interface, Label label, const Nhlfe& nhlfe)
-{
-  Ptr<IncomingLabelMap> ilm = Create<IncomingLabelMap> (interface, label, nhlfe);
-  return AddIlm (ilm);
-}
-
-uint32_t
-IlmTable::AddIlm (Label label, const Nhlfe& nhlfe)
-{ 
-  return AddIlm (0, label, nhlfe);
-}
-
-uint32_t
 IlmTable::AddIlm (const Ptr<IncomingLabelMap>& ilm)
 {
   m_ilmTable[++ilmId] = ilm;
@@ -68,6 +55,12 @@ IlmTable::RemoveIlm (const uint32_t index)
   m_ilmTable.erase (index);
 }
 
+void
+IlmTable::Clear (void)
+{
+  m_ilmTable.clear ();
+}
+  
 void
 IlmTable::Print (std::ostream& os) const
 {

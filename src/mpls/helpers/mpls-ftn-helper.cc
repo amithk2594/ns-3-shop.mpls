@@ -18,43 +18,64 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  *         Stefano Avallone <stavallo@gmail.com>
  */
- 
-#include "mpls-fec-to-nhlfe.h"
+
+#include "ns3/assert.h"
+#include "ns3/log.h"
+#include "ns3/object.h"
+
+#include "mpls-ftn-helper.h"
+
+NS_LOG_COMPONENT_DEFINE ("MplsFtnHelper");
 
 namespace ns3 {
-namespace mpls {
 
-FecToNhlfe::FecToNhlfe (Fec* fec, const Nhlfe &nhlfe)
-  : m_fec (fec)
+MplsFtnHelper::MplsFtnHelper ()
 {
-  NS_ASSERT (fec != 0);
-
-  AddNhlfe (nhlfe);
-}
-  
-FecToNhlfe::~FecToNhlfe ()
-{
-  delete m_fec;
 }
 
-const Fec&
-FecToNhlfe::GetFec (void) const
+MplsFtnHelper::MplsFtnHelper (const Ptr<Node> &node)
+  : _MplsNodeHelper (node)
 {
-  return *m_fec;
+}
+
+MplsFtnHelper::MplsFtnHelper (const std::string &node)
+  : _MplsNodeHelper (node)
+{
+}
+
+MplsFtnHelper::~MplsFtnHelper()
+{
+}
+
+Ptr<mpls::FtnTable>
+MplsFtnHelper::GetFtnTable (void) const
+{
+  return GetMpls ()->GetFtnTable ();
+}
+
+void 
+MplsFtnHelper::SetFtnTable (const Ptr<mpls::FtnTable> &table)
+{
+  NS_ASSERT (table != 0);
+  GetMpls ()->SetFtnTable (table);  
+}
+
+Ptr<mpls::FecToNhlfe> 
+MplsFtnHelper::GetFtn (const uint32_t index) const
+{
+  return GetFtnTable ()->GetFtn (index);
 }
 
 void
-FecToNhlfe::SetFec (Fec* fec)
+MplsFtnHelper::RemoveFtn (const uint32_t index)
 {
-  NS_ASSERT (fec != 0);
-  delete m_fec;
-  m_fec = fec;
+  GetFtnTable ()->RemoveFtn (index);
 }
 
-void
-FecToNhlfe::Print (std::ostream &os) const
+void 
+MplsFtnHelper::ClearFtnTable ()
 {
+  GetFtnTable ()->Clear ();
 }
 
 } // namespace mpls
-} // namespace ns3

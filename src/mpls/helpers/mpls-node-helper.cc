@@ -19,32 +19,61 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
+#include "ns3/assert.h"
+#include "ns3/object.h"
 #include "ns3/names.h"
 
 #include "mpls-node-helper.h"
 
 namespace ns3 {
 
-void
-ForEachNode (std::string nodeName, const ForEachNodeCallback& cb)
+_MplsNodeHelper::_MplsNodeHelper ()
+  : m_node (0)
 {
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  cb (node);
+}
+
+_MplsNodeHelper::_MplsNodeHelper (const Ptr<Node> &node)
+{
+  SetNode (node);
+}
+
+_MplsNodeHelper::_MplsNodeHelper (const std::string &node)
+{
+  SetNode (node);
+}
+
+_MplsNodeHelper::~_MplsNodeHelper()
+{
+  m_node = 0;
 }
 
 void
-ForEachNode (Ptr<Node> node, const ForEachNodeCallback& cb)
+_MplsNodeHelper::SetNode (const Ptr<Node> &node)
 {
-  cb (node);
+  NS_ASSERT (node != 0);
+
+  NS_ASSERT_MSG (node->GetObject<Mpls> () != 0, "There is no mpls installed on specified node");
+  
+  m_node = node;
 }
 
 void
-ForEachNode (const NodeContainer& c, const ForEachNodeCallback& cb)
+_MplsNodeHelper::SetNode (const std::string &nodeName)
 {
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      cb (*i);
-    }
+  SetNode (Names::Find<Node> (nodeName));
+}
+
+Ptr<Mpls>
+_MplsNodeHelper::GetMpls (void) const
+{
+  NS_ASSERT_MSG (m_node != 0, "Node is not specified");
+  return m_node->GetObject<Mpls> ();
+}
+
+Ptr<Node>
+_MplsNodeHelper::GetNode (void) const
+{
+  return m_node;
 }
 
 } // namespace ns3

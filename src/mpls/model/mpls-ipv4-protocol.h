@@ -18,7 +18,7 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  *         Stefano Avallone <stavallo@gmail.com>
  */
- 
+
 #ifndef MPLS_IPV4_PROTOCOL_H
 #define MPLS_IPV4_PROTOCOL_H
 
@@ -29,11 +29,13 @@
 #include "mpls-ipv4-routing.h"
 
 namespace ns3 {
+
+class Mpls;
+
 namespace mpls {
 
 class Ipv4Routing;
-class Mpls;
- 
+
 /**
  * \brief Ipv4 layer for Mpls
  */
@@ -45,30 +47,20 @@ public:
   Ipv4Protocol ();
   virtual ~Ipv4Protocol ();
 
-  /**
-   * @brief Enable interface auto install.
-   */
-  virtual void EnableMplsInterfaceAutoInstall (void);
-  /**
-   * @brief Disable interface auto install
-   */
-  virtual void DisableMplsInterfaceAutoInstall (void);
-  
   // methods defined in parent class
   void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol);
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
   uint32_t AddInterface (Ptr<NetDevice> device);
-  
+
 protected:
   void NotifyNewAggregate ();
 
 private:
   Ptr<Ipv4Routing> m_routingProtocol;
   Ptr<Mpls> m_mpls;
-  bool m_mplsInterfaceAutoInstall;
 };
 
 } // namespace mpls
 } // namespace ns3
- 
+
 #endif /* MPLS_IPV4_PROTOCOL_H */

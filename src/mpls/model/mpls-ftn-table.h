@@ -56,15 +56,6 @@ public:
    */
   virtual ~FtnTable ();
   /**
-   * @brief Add FTN with a single NHLFE
-   * @param fec
-   * @param nhlfe
-   * @return index of the FTN
-   */
-  template <class T>
-  uint32_t AddFtn (const T &fec, const Nhlfe &nhlfe);
-  
-  /**
    * @brief Add FTN with (possibly) multiple NHLFEs
    * @param ftn
    * @return index of the FTN
@@ -81,6 +72,10 @@ public:
    * @param index
    */
   void RemoveFtn (const uint32_t index);
+  /**
+   * @brief Clear table
+   */
+  void Clear (void);  
   /**
    * \brief Print forwarding information
    * \param os the stream to print to

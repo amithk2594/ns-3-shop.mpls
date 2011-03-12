@@ -35,14 +35,6 @@ FtnTable::~FtnTable ()
 {
 }
 
-template <class T>
-uint32_t
-FtnTable::AddFtn (const T& fec, const Nhlfe& nhlfe)
-{
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (fec, nhlfe);
-  return AddFtn (ftn);
-}
-
 uint32_t
 FtnTable::AddFtn (const Ptr<FecToNhlfe> &ftn)
 {
@@ -61,6 +53,12 @@ void
 FtnTable::RemoveFtn (const uint32_t index)
 {
   m_ftnTable.erase (index);
+}
+
+void
+FtnTable::Clear (void)
+{
+  m_ftnTable.clear ();
 }
 
 void

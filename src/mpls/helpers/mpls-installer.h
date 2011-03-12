@@ -19,17 +19,17 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#ifndef MPLS_HELPER_H
-#define MPLS_HELPER_H
+#ifndef MPLS_INSTALLER_H
+#define MPLS_INSTALLER_H
 
-#include "ns3/node-container.h"
-#include "ns3/net-device-container.h"
-#include "ns3/packet.h"
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
-#include "ns3/mpls-protocol.h"
+#include "ns3/node-container.h"
+#include "ns3/packet.h"
+#include "ns3/mpls.h"
 #include "ns3/mpls-ipv4-protocol.h"
 
+#include "mpls-enum-helper.h"
 #include "mpls-interface-helper.h"
 
 namespace ns3 {
@@ -40,20 +40,20 @@ class Ipv4RoutingHelper;
 /**
  * \brief aggregate MPLS/IP/TCP/UDP functionality to existing Nodes.
  */
-class MplsHelper: public MplsInterfaceHelper
+class MplsInstaller: public MplsInterfaceHelper
 {
 public:
   /**
-   * @brief Create a new MplsHelper
+   * @brief Create a new MplsInstaller
    */
-  MplsHelper(void);
+  MplsInstaller(void);
 
   /**
-   * @brief Destroy the MplsHelper
+   * @brief Destroy the MplsInstaller
    */
-  virtual ~MplsHelper(void);
-  MplsHelper (const MplsHelper &);
-  MplsHelper &operator = (const MplsHelper &o);
+  virtual ~MplsInstaller(void);
+  MplsInstaller (const MplsInstaller &);
+  MplsInstaller &operator = (const MplsInstaller &o);
 
   /**
    * @brief Return helper internal state to that of a newly constructed one
@@ -77,40 +77,25 @@ public:
   /**
    * @brief Aggregate implementations of MPLS, IPv4, TCP, UDP and ARP onto the provided node.
    * 
-   * @param nodeName The name of the node on which to install MPLS stack.
+   * @param node node, node name or node container
    */
-  void Install (std::string nodeName) const;
-
-  /**
-   * @brief Aggregate implementations of MPLS, IPv4, TCP, UDP and ARP onto the provided node.  
-   * 
-   * @param node The node on which to install MPLS stack.
-   */
-  void Install (Ptr<Node> node) const;
-
-  /**
-   * @brief For each node in the input container, aggregate implementations of the 
-   * MPLS, IPv4, TCP, UDP and ARP.
-   * 
-   * @param c NodeContainer that holds the set of nodes on which to install MPLS stack.
-   */
-  void Install (NodeContainer c) const;
-
-  /**
-   * @brief Aggregate MPLS, IPv4, TCP, UDP and ARP stacks to all nodes in the simulation
-   */
-  void InstallAll (void) const;
+  template <class T>
+  void Install (T node) const
+  {
+    ForEachNode (node, MakeCallback (&MplsInstaller::InstallInternal, this));
+  }
 
 private:
 
   void Initialize (void);
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;
-  
+  void InstallInternal (Ptr<Node> node) const;
+    
   static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
   static void Cleanup (void);
 };
 
 } // namespace ns3
 
-#endif /* MPLS_HELPER_H */
+#endif /* MPLS_INSTALLER_H */

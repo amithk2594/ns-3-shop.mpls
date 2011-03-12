@@ -36,6 +36,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/traced-callback.h"
 
+#include "mpls.h"
 #include "mpls-label.h"
 #include "mpls-interface.h"
 #include "mpls-label-stack.h"
@@ -46,7 +47,6 @@
 #include "mpls-ilm-table.h"
 #include "mpls-ftn-table.h"
 #include "mpls-ipv4-protocol.h"
-#include "mpls-ipv4-routing.h"
 
 namespace ns3 {
 namespace mpls {
@@ -131,6 +131,10 @@ public:
    * @brief Lookup FTN using PacketDemux
    */
   Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
+  /**
+   * @brief New interface for specified device is available
+   */
+  void NotifyNewInterface (const Ptr<NetDevice> &device);
 
 protected:
   virtual void DoDispose (void);
