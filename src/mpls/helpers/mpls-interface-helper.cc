@@ -20,6 +20,7 @@
  */
 
 #include <iomanip>
+#include <ostream>
 
 #include "ns3/assert.h"
 #include "ns3/log.h"
@@ -31,6 +32,8 @@
 #include "ns3/mpls-interface.h"
 
 #include "mpls-interface-helper.h"
+#include "mpls-node-helper.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("MplsInterfaceHelper");
 
@@ -44,56 +47,37 @@ MplsInterfaceHelper::~MplsInterfaceHelper ()
 {
 }
 
+template <class T> 
 void 
-MplsInterfaceHelper::EnableInterfaceAutoInstall (NodeContainer c) const
+MplsInterfaceHelper::EnableInterfaceAutoInstall (T node) const
 {
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      EnableInterfaceAutoInstall (*i);
-    }
+  ForEachNode (node, MakeCallback (&EnableInterfaceAutoInstallInternal, this));
+}
+
+template <class T> 
+void 
+MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (T node) const
+{
+  ForEachNode (node, MakeCallback (&DisableInterfaceAutoInstallInternal, this));
+}
+
+template <class T> 
+void 
+MplsInterfaceHelper::PrintInterfaces (T node) const
+{
+  ForEachNode (node, MakeCallback (&PrintInterfacesInternal, this));
 }
 
 void
-MplsInterfaceHelper::EnableInterfaceAutoInstall (std::string nodeName) const
-{
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  EnableInterfaceAutoInstall (node);
-}
-
-
-void
-MplsInterfaceHelper::EnableInterfaceAutoInstall (Ptr<Node> node) const
+MplsInterfaceHelper::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   mpls->EnableInterfaceAutoInstall ();
 }
 
-void 
-MplsInterfaceHelper::EnableInterfaceAutoInstallAll (void) const
-{
-  NodeContainer c = NodeContainer::GetGlobal ();
-
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      if ((*i)->GetObject<mpls::MplsProtocol> () != 0)
-        {
-          EnableInterfaceAutoInstall (*i);
-        }
-    }
-}
-
-void 
-MplsInterfaceHelper::DisableInterfaceAutoInstall (NodeContainer c) const
-{
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      DisableInterfaceAutoInstall (*i);
-    }
-}
-
 void
-MplsInterfaceHelper::DisableInterfaceAutoInstall (Ptr<Node> node) const
+MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
@@ -101,69 +85,19 @@ MplsInterfaceHelper::DisableInterfaceAutoInstall (Ptr<Node> node) const
 }
 
 void
-MplsInterfaceHelper::DisableInterfaceAutoInstall (std::string nodeName) const
-{
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  DisableInterfaceAutoInstall (node);
-}
-
-void 
-MplsInterfaceHelper::DisableInterfaceAutoInstallAll (void) const
-{
-  NodeContainer c = NodeContainer::GetGlobal ();
-
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      if ((*i)->GetObject<mpls::MplsProtocol> () != 0)
-        {
-          DisableInterfaceAutoInstall (*i);
-        }
-    }
-}
-
-void 
-MplsInterfaceHelper::PrintInterfaces (NodeContainer c, std::ostream& os) const
-{
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      PrintInterfaces (*i, os);
-    }
-}
-
-void
-MplsInterfaceHelper::PrintInterfaces (Ptr<Node> node, std::ostream& os) const
+MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
 {
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  os << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
-  os << std::setiosflags(std::ios::left);
+  std::cout << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
+  std::cout << std::setiosflags(std::ios::left);
   
   for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
     {
       Ptr<mpls::Interface> iface = mpls->GetInterface (i);
       Ptr<NetDevice> dev = iface->GetDevice ();
-      os << "  if" << std::setw(10) << i << "dev" << dev->GetIfIndex () << "\n";
+      std::cout << "  if" << std::setw(10) << i << "dev" << dev->GetIfIndex () << "\n";
     }
 }
 
-void
-MplsInterfaceHelper::PrintInterfaces (std::string nodeName, std::ostream& os) const
-{
-  Ptr<Node> node = Names::Find<Node> (nodeName);
-  PrintInterfaces (node, os);
-}
-
-void 
-MplsInterfaceHelper::PrintAllInterfaces (std::ostream& os) const
-{
-  NodeContainer c = NodeContainer::GetGlobal ();
-
-  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
-    {
-      if ((*i)->GetObject<mpls::MplsProtocol> () != 0)
-        {
-          PrintInterfaces (*i, os);
-        }
-    }
-}
 } // namespace ns3

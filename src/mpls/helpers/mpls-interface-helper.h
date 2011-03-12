@@ -22,7 +22,6 @@
 #ifndef MPLS_INTERFACE_HELPER_H
 #define MPLS_INTERFACE_HELPER_H
 
-#include <ostream>
 #include "ns3/node-container.h"
 #include "ns3/node.h"
 #include "ns3/ptr.h"
@@ -51,83 +50,27 @@ public:
   /**
    * @brief Enable MPLS interfaces auto install onto the provided node.
    * 
-   * @param nodeName The name of the node on which to install MPLS stack.
+   * @param node node name, node or container
    */
-  void EnableInterfaceAutoInstall (std::string nodeName) const;
-
-  /**
-   * @brief Enable MPLS interfaces auto install onto the provided node.
-   * 
-   * @param node
-   */
-  void EnableInterfaceAutoInstall (Ptr<Node> node) const;
-
-  /**
-   * @brief Enable MPLS interfaces auto install for each node in the input container.
-   * 
-   * @param c NodeContainer that holds the set of nodes
-   */
-  void EnableInterfaceAutoInstall (NodeContainer c) const;
-
-  /**
-   * @brief Enable MPLS interfaces auto install for all nodes in the simulation
-   * with mpls installed
-   */
-  void EnableInterfaceAutoInstallAll (void) const;
+  template <class T>
+  void EnableInterfaceAutoInstall (T node) const;
   
   /**
    * @brief Disable MPLS interfaces auto install onto the provided node.
    * 
-   * @param nodeName The name of the node.
+   * @param node node name, node or container
    */
-  void DisableInterfaceAutoInstall (std::string nodeName) const;
-
-  /**
-   * @brief Disable MPLS interfaces auto install onto the provided node.
-   * 
-   * @param node
-   */
-  void DisableInterfaceAutoInstall (Ptr<Node> node) const;
-
-  /**
-   * @brief Disable MPLS interfaces auto install for each node in the input container.
-   * 
-   * @param c NodeContainer that holds the set of nodes
-   */
-  void DisableInterfaceAutoInstall (NodeContainer c) const;
-
-  /**
-   * @brief Disable MPLS interfaces auto install for all nodes in the simulation 
-   * with mpls installed
-   */
-  void DisableInterfaceAutoInstallAll (void) const;
+  template <class T>
+  void DisableInterfaceAutoInstall (T node) const;
 
   /**
    * @brief Show MPLS interfaces
    * 
-   * @param node
+   * @param node node name, node or container
+   * @param os stream to print to
    */
-  void PrintInterfaces (Ptr<Node> node, std::ostream& os = std::cout) const;
-
-  /**
-   * @brief Show MPLS interfaces
-   * 
-   * @param nodeName The name of the node.
-   */
-  void PrintInterfaces (std::string nodeName, std::ostream& os = std::cout) const;
-  
-  /**
-   * @brief Show MPLS interfaces
-   * 
-   * @param c NodeContainer that holds the set of nodes
-   */
-  void PrintInterfaces (NodeContainer c, std::ostream& os = std::cout) const;
-
-  /**
-   * @brief Show MPLS interfaces
-   * with mpls installed
-   */
-  void PrintAllInterfaces (std::ostream& os = std::cout) const;
+  template <class T>
+  void PrintInterfaces (T node) const;
 };
 
 } // namespace ns3
