@@ -24,12 +24,11 @@
 
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/object.h"
 #include "ns3/names.h"
 #include "ns3/string.h"
-#include "ns3/node.h"
-#include "ns3/mpls-protocol.h"
 #include "ns3/mpls-interface.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv6-address.h"
 #include "ns3/mac48-address.h"
 
 #include "mpls-interface-helper.h"
@@ -65,7 +64,7 @@ MplsInterfaceHelper::SetOutputStream (const Ptr<OutputStreamWrapper> &stream)
 void
 MplsInterfaceHelper::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
-  Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
+  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   mpls->EnableInterfaceAutoInstall ();
 }
@@ -73,7 +72,7 @@ MplsInterfaceHelper::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
 void
 MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
-  Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
+  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   mpls->DisableInterfaceAutoInstall ();
 }
@@ -83,7 +82,7 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
 {
   std::ostream &os = *(m_stream->GetStream ());
 
-  Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
+  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
 
   os << "Node " << node->GetSystemId () << "-" << node->GetId () << " interfaces:" << std::endl;
@@ -91,10 +90,11 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
 
   for (uint32_t i = 0, c = node->GetNDevices (); i < c; ++i)
     {
-      Address hwaddr = device->GetAddress ();
+      Ptr<NetDevice> dev = node->GetDevice (i);
+      Address hwaddr = dev->GetAddress ();
 
       os << "dev" << std::setw (5) << i << " "
-         << "Type " << device->GetInstanceTypeId ().GetName () << "  "
+         << "Type " << dev->GetInstanceTypeId ().GetName () << "  "
          << "HWaddr ";
 
 
@@ -121,19 +121,17 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
 }
 
 void
-MplsInterfaceHelper::PrintMplsInformation (std::ostream &os, const Ptr<MplsProtocol> &mpls,
-    const Ptr<NetDevice> &device,  uint32_t indent) const
+MplsInterfaceHelper::PrintMplsInfo (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Mpls> &mpls) const
 {
 }
 
 void
-MplsInterfaceHelper::PrintIpv4Information (std::ostream &os, const Ptr<Ipv4> &ipv4,
-    const Ptr<NetDevice> &device,  uint32_t indent) const
+MplsInterfaceHelper::PrintIpv4Info (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Ipv4> &ipv4) const
 {
   int32_t ifIndex = ipv4->GetInterfaceForDevice (dev);
   if (ifIndex < 0) return;
 
-  os << std::setw (indent) << " ";
+//  os << std::setw (indent) << " ";
 
 //  for (uint32_t i = 0, c = ipv4->GetNAddresses (ifIndex); i < c; ++i)
 //    {
@@ -144,34 +142,36 @@ MplsInterfaceHelper::PrintIpv4Information (std::ostream &os, const Ptr<Ipv4> &ip
 }
 
 void
-MplsInterfaceHelper::PrintDeviceInformation (std::ostream &os, const Ptr<NetDevice> &device,
-     uint32_t indent) const
+MplsInterfaceHelper::PrintIpv6Info (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Ipv6> &ipv6) const
 {
-  os << std::setw (indent) << " ";
+}
 
-  os << (device->IsLinkUp () ? "UP" : "DOWN");
+void
+MplsInterfaceHelper::PrintDeviceInfo (std::ostream &os, const Ptr<NetDevice> &dev) const
+{
+  os << (dev->IsLinkUp () ? "UP" : "DOWN");
 
-  if (device->IsPointToPoint ())
+  if (dev->IsPointToPoint ())
     {
       os << " PPP";
     }
 
-  if (device->IsBridge ())
+  if (dev->IsBridge ())
     {
       os << " BRIDGE";
     }
 
-  if (device->IsMulticast ())
+  if (dev->IsMulticast ())
     {
       os << " MULTICAST";
     }
 
-  if (device->IsBroadcast ())
+  if (dev->IsBroadcast ())
     {
       os << " BROADCAST";
     }
 
-  os << "  MTU:" << device->GetMtu ();
+  os << "  MTU:" << dev->GetMtu ();
   os << std::endl;
 }
 

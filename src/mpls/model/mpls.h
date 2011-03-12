@@ -39,10 +39,11 @@
 #include "mpls-ftn-table.h"
 
 namespace ns3 {
-namespace mpls {
 
-class Nhlfe;
-class ForwardingInformation;
+using namespace mpls;
+
+//class ForwardingInformation;
+
 
 /**
  * \ingroup mpls
@@ -71,7 +72,7 @@ public:
   /**
    * @brief Get ILM table
    */
-  virtual void Ptr<IlmTable> GetIlmTable (void) const = 0;
+  virtual Ptr<IlmTable> GetIlmTable (void) const = 0;
   /**
    * @brief Set new FTN table
    */
@@ -79,7 +80,7 @@ public:
   /**
    * @brief Get Ftn table
    */
-  virtual void Ptr<FtnTable> GetFtnTable (void) const = 0;
+  virtual Ptr<FtnTable> GetFtnTable (void) const = 0;
   /**
    * @param device device to add to the list of Mpls interfaces
    * @return interface index of the Mpls interface added
@@ -98,19 +99,19 @@ public:
   /**
    * @brief The number of Mpls interfaces added
    */
-  uint32_t GetNInterfaces (void) const = 0;
+  virtual uint32_t GetNInterfaces (void) const = 0;
   /**
    * @brief Forward packet according to forwarding information
    */
-  void MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl) = 0;
+  virtual void MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl) = 0;
   /**
    * @brief Lookup ILM by label and interface
    */
-  Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface) = 0;
+  virtual Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface) = 0;
   /**
    * @brief Lookup FTN using PacketDemux
    */
-  Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux) = 0;
+  virtual Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux) = 0;
 
 protected:
   virtual void NotifyNewInterface (const Ptr<NetDevice> &device) = 0;

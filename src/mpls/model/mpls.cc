@@ -30,7 +30,6 @@ Mpls::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Mpls")
     .SetParent<Object> ()
-    .AddConstructor<Mpls> ()
   ;
   return tid;
 }

@@ -57,9 +57,8 @@ class Ipv4Protocol;
 
 /**
  * \ingroup mpls
- * Unicast Multiprotocol Label Switching. RFC 3031, 3032.
  */
-class MplsProtocol : public Object
+class MplsProtocol : public Mpls
 {
 public:
   static TypeId GetTypeId (void);
@@ -80,14 +79,9 @@ public:
       DROP_ROUTE_ERROR, /**< Route error */
     };
 
-  /**
-   * @brief Enable interface auto install.
-   */
   void EnableInterfaceAutoInstall (void);
-  /**
-   * @brief Disable interface auto install
-   */
   void DisableInterfaceAutoInstall (void);
+
   /**
    * @brief Set new ILM table
    */
@@ -120,11 +114,6 @@ public:
    */
   Ptr<Interface> GetInterfaceForDevice (const Ptr<const NetDevice> &device) const;
   /**
-   * @brief Get route for the next-hop
-   * @return Ipv4 route
-   */
-  Ptr<Ipv4Route> GetNextHopRoute (const Address &address) const;
-  /**
    * @brief The number of Mpls interfaces added
    */
   uint32_t GetNInterfaces (void) const;
@@ -149,7 +138,6 @@ public:
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
-  virtual void NotifyNewInterface (const Ptr<NetDevice> &device);
 
 private:
   typedef std::vector<Ptr<Interface> > InterfaceList;
@@ -157,6 +145,8 @@ private:
   bool RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
                           Ptr<Interface> &outInterface);
   void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev, Ptr<Ipv4Route> route);
+
+  Ptr<Ipv4Route> GetNextHopRoute (const Address &address) const;
 
   Ptr<Node> m_node;
   Ptr<mpls::Ipv4Protocol> m_ipv4;
@@ -169,9 +159,6 @@ private:
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
   TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
   TracedCallback<Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
-
-  friend class Ipv4Routing;
-  friend class Ipv4Protocol;
 };
 
 } // namespace mpls
