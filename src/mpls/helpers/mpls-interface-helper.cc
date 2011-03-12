@@ -136,6 +136,8 @@ MplsInterfaceHelper::PrintInterfaces (Ptr<Node> node, std::ostream& os) const
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   os << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
+  os << std::setiosflags(ios::right);
+  
   for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
     {
       Ptr<mpls::Interface> iface = mpls->GetInterface (i);
