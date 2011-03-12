@@ -78,6 +78,27 @@ private:
   void PrintInterfacesInternal (Ptr<Node> node) const;
 };
 
+template <class T>
+void
+MplsInterfaceHelper::EnableInterfaceAutoInstall (T node) const
+{
+  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::EnableInterfaceAutoInstallInternal, this));
+}
+
+template <class T>
+void
+MplsInterfaceHelper::DisableInterfaceAutoInstall (T node) const
+{
+  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::DisableInterfaceAutoInstallInternal, this));
+}
+
+template <class T>
+void
+MplsInterfaceHelper::PrintInterfaces (T node) const
+{
+  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::PrintInterfacesInternal, this));
+}
+
 } // namespace ns3
 
 #endif /* MPLS_INTERFACE_HELPER_H */
