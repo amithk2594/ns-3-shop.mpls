@@ -55,27 +55,6 @@ MplsInterfaceHelper::~MplsInterfaceHelper ()
   m_stream = 0;
 }
 
-template <class T>
-void
-MplsInterfaceHelper::EnableInterfaceAutoInstall (T node) const
-{
-  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::EnableInterfaceAutoInstallInternal, this));
-}
-
-template <class T>
-void
-MplsInterfaceHelper::DisableInterfaceAutoInstall (T node) const
-{
-  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::DisableInterfaceAutoInstallInternal, this));
-}
-
-template <class T>
-void
-MplsInterfaceHelper::PrintInterfaces (T node) const
-{
-  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::PrintInterfacesInternal, this));
-}
-
 void
 MplsInterfaceHelper::SetOutputStream (const Ptr<OutputStreamWrapper> &stream)
 {

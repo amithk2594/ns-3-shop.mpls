@@ -48,7 +48,10 @@ public:
    * @param node node name, node or container
    */
   template <class T>
-  void EnableInterfaceAutoInstall (T node) const;
+  void EnableInterfaceAutoInstall (T node) const 
+  {
+    ForEachNode (node, MakeCallback (&MplsInterfaceHelper::EnableInterfaceAutoInstallInternal, this));
+  };
 
   /**
    * @brief Disable MPLS interfaces auto install onto the provided node.
@@ -56,7 +59,10 @@ public:
    * @param node node name, node or container
    */
   template <class T>
-  void DisableInterfaceAutoInstall (T node) const;
+  void DisableInterfaceAutoInstall (T node) const
+  {
+    ForEachNode (node, MakeCallback (&MplsInterfaceHelper::DisableInterfaceAutoInstallInternal, this));
+  }
 
   /**
    * @brief Show MPLS interfaces
@@ -65,7 +71,10 @@ public:
    * @param os stream to print to
    */
   template <class T>
-  void PrintInterfaces (T node) const;
+  void PrintInterfaces (T node) const
+  {
+    ForEachNode (node, MakeCallback (&MplsInterfaceHelper::PrintInterfacesInternal, this));
+  }
 
   /**
    * Set output stream to print to
