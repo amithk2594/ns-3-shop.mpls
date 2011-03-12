@@ -30,6 +30,7 @@
 #include "ns3/node.h"
 #include "ns3/mpls-protocol.h"
 #include "ns3/mpls-interface.h"
+#include "ns3/mac48-address.h"
 
 #include "mpls-interface-helper.h"
 #include "mpls-node-helper.h"
@@ -41,10 +42,17 @@ namespace ns3 {
 
 MplsInterfaceHelper::MplsInterfaceHelper ()
 {
+  m_stream = Create<OutputStreamWrapper> (&std::cout);
+}
+
+MplsInterfaceHelper::MplsInterfaceHelper (const Ptr<OutputStreamWrapper> &stream)
+  : m_stream (stream)
+{
 }
 
 MplsInterfaceHelper::~MplsInterfaceHelper ()
 {
+  m_stream = 0;
 }
 
 template <class T>
@@ -69,6 +77,13 @@ MplsInterfaceHelper::PrintInterfaces (T node) const
 }
 
 void
+MplsInterfaceHelper::SetOutputStream (const Ptr<OutputStreamWrapper> &stream)
+{
+  NS_ASSERT_MSG (stream != 0, "MplsInterfaceHelper::SetOutputStream (): invalid stream");
+  m_stream = stream;
+}
+
+void
 MplsInterfaceHelper::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
@@ -89,15 +104,29 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
 {
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  std::cout << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
-  std::cout << std::setiosflags(std::ios::left);
+
+  std::ostream &os = *m_stream->GetStream ();
+
+  os << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
+  os << std::setiosflags(std::ios::left);
 
   for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
     {
       Ptr<mpls::Interface> iface = mpls->GetInterface (i);
       Ptr<NetDevice> dev = iface->GetDevice ();
-      std::cout << "  if" << std::setw(10) << i << "dev" << dev->GetIfIndex () << "\n";
+      os << "  if" << std::setw(10) << i << "dev" << std::setw(5) << dev->GetIfIndex ();
+      PrintDeviceInformation (os, dev);
+      os << "\n";
     }
+}
+
+void
+MplsInterfaceHelper::PrintDeviceInformation (std::ostream &os, Ptr<NetDevice> device) const
+{
+  Address hwaddr = device->GetAddress ();
+
+  os << "HWaddr "
+     << Mac48Address::IsMatchingType (hwaddr) ? Mac48Address::ConvertFrom (hwaddr) : hwaddr;
 }
 
 } // namespace ns3

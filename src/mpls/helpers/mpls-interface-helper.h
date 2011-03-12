@@ -22,6 +22,8 @@
 #ifndef MPLS_INTERFACE_HELPER_H
 #define MPLS_INTERFACE_HELPER_H
 
+#include <ostream>
+
 #include "ns3/node-container.h"
 #include "ns3/node.h"
 #include "ns3/ptr.h"
@@ -37,14 +39,8 @@ class Node;
 class MplsInterfaceHelper
 {
 public:
-  /**
-   * @brief Create a new MplsInterfaceHelper
-   */
   MplsInterfaceHelper ();
-
-  /**
-   * @brief Destroy the MplsInterfaceHelper
-   */
+  MplsInterfaceHelper (const Ptr<OutputStreamWrapper> &stream);
   virtual ~MplsInterfaceHelper ();
 
   /**
@@ -72,10 +68,18 @@ public:
   template <class T>
   void PrintInterfaces (T node) const;
 
+  /**
+   * Set output stream to print to
+   */
+  void SetOutputStream (const Ptr<OutputStreamWrapper> &stream);
+
 private:
   void EnableInterfaceAutoInstallInternal (Ptr<Node> node) const;
   void DisableInterfaceAutoInstallInternal (Ptr<Node> node) const;
   void PrintInterfacesInternal (Ptr<Node> node) const;
+  void PrintDeviceInformation (std::ostream &os, Ptr<NetDevice> device) const;
+
+  Ptr<OutputStreamWrapper> m_stream;
 };
 
 } // namespace ns3
