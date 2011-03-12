@@ -36,7 +36,7 @@
 #include "mpls-node-helper.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("MplsInterfaceHelper");
+//NS_LOG_COMPONENT_DEFINE ("MplsInterfaceHelper");
 
 namespace ns3 {
 

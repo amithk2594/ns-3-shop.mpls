@@ -27,11 +27,9 @@
 #include "ns3/node-container.h"
 #include "ns3/node.h"
 #include "ns3/ptr.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
-
-class Node;
-
 /**
  * \brief Mpls interface helper
  */
@@ -48,7 +46,7 @@ public:
    * @param node node name, node or container
    */
   template <class T>
-  void EnableInterfaceAutoInstall (T node) const 
+  void EnableInterfaceAutoInstall (T node) const
   {
     ForEachNode (node, MakeCallback (&MplsInterfaceHelper::EnableInterfaceAutoInstallInternal, this));
   };
