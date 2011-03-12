@@ -3,6 +3,7 @@
 def build(bld):
     module = bld.create_ns3_module('mpls', ['network', 'internet'])
     module.source = [
+        'model/mpls.cc',
         'model/mpls-protocol.cc',    
         'model/mpls-packet-demux.cc',
         'model/mpls-fec.cc',
@@ -26,6 +27,7 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mpls'
     headers.source = [
+        'model/mpls.h',
         'model/mpls-protocol.h',    
         'model/mpls-packet-demux.h',
         'model/mpls-fec.h',    
