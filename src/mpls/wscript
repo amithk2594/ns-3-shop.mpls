@@ -18,7 +18,7 @@ def build(bld):
         'model/mpls-ilm-table.cc',
         'model/mpls-ipv4-protocol.cc',
         'model/mpls-ipv4-routing.cc',
-#        'helpers/mpls-node-helper.cc',
+        'helpers/mpls-node-helper.cc',
         'helpers/mpls-interface-helper.cc',
         'helpers/mpls-helper.cc',
         'test/mpls-test.cc',
@@ -41,7 +41,7 @@ def build(bld):
         'model/mpls-ilm-table.h',
         'model/mpls-ipv4-protocol.h',
         'model/mpls-ipv4-routing.h',
-#        'helpers/mpls-node-helper.h',
+        'helpers/mpls-node-helper.h',
         'helpers/mpls-interface-helper.h',
         'helpers/mpls-helper.h',
     ]
