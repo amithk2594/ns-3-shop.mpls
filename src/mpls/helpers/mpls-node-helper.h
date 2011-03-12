@@ -32,11 +32,11 @@ namespace ns3 {
 
 class Node;
 
-typedef Callback<void, Ptr<Node>> ForEachNodeCallback;
+typedef Callback<void, Ptr<Node> > ForEachNodeCallback;
 
-ForEachNode (std::string nodeName, const ForEachNodeCallback& cb);
-ForEachNode (Ptr<Node> node, const ForEachNodeCallback& cb);
-ForEachNode (const NodeContainer& c, const ForEachNodeCallback& cb);
+void ForEachNode (std::string nodeName, const ForEachNodeCallback& cb);
+void ForEachNode (Ptr<Node> node, const ForEachNodeCallback& cb);
+void ForEachNode (const NodeContainer& c, const ForEachNodeCallback& cb);
 
 } // namespace ns3
 

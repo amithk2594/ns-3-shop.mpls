@@ -47,25 +47,25 @@ MplsInterfaceHelper::~MplsInterfaceHelper ()
 {
 }
 
-template <class T> 
-void 
+template <class T>
+void
 MplsInterfaceHelper::EnableInterfaceAutoInstall (T node) const
 {
-  ForEachNode (node, MakeCallback (&EnableInterfaceAutoInstallInternal, this));
+  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::EnableInterfaceAutoInstallInternal, this));
 }
 
-template <class T> 
-void 
-MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (T node) const
+template <class T>
+void
+MplsInterfaceHelper::DisableInterfaceAutoInstall (T node) const
 {
-  ForEachNode (node, MakeCallback (&DisableInterfaceAutoInstallInternal, this));
+  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::DisableInterfaceAutoInstallInternal, this));
 }
 
-template <class T> 
-void 
+template <class T>
+void
 MplsInterfaceHelper::PrintInterfaces (T node) const
 {
-  ForEachNode (node, MakeCallback (&PrintInterfacesInternal, this));
+  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::PrintInterfacesInternal, this));
 }
 
 void
@@ -91,7 +91,7 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   std::cout << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
   std::cout << std::setiosflags(std::ios::left);
-  
+
   for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
     {
       Ptr<mpls::Interface> iface = mpls->GetInterface (i);

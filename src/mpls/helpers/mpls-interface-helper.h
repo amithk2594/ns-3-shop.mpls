@@ -49,15 +49,15 @@ public:
 
   /**
    * @brief Enable MPLS interfaces auto install onto the provided node.
-   * 
+   *
    * @param node node name, node or container
    */
   template <class T>
   void EnableInterfaceAutoInstall (T node) const;
-  
+
   /**
    * @brief Disable MPLS interfaces auto install onto the provided node.
-   * 
+   *
    * @param node node name, node or container
    */
   template <class T>
@@ -65,12 +65,17 @@ public:
 
   /**
    * @brief Show MPLS interfaces
-   * 
+   *
    * @param node node name, node or container
    * @param os stream to print to
    */
   template <class T>
   void PrintInterfaces (T node) const;
+
+private:
+  void EnableInterfaceAutoInstallInternal (Ptr<Node> node) const;
+  void DisableInterfaceAutoInstallInternal (Ptr<Node> node) const;
+  void PrintInterfacesInternal (Ptr<Node> node) const;
 };
 
 } // namespace ns3

@@ -25,17 +25,20 @@
 
 namespace ns3 {
 
+void
 ForEachNode (std::string nodeName, const ForEachNodeCallback& cb)
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
   cb (node);
 }
 
+void
 ForEachNode (Ptr<Node> node, const ForEachNodeCallback& cb)
 {
   cb (node);
 }
 
+void
 ForEachNode (const NodeContainer& c, const ForEachNodeCallback& cb)
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
