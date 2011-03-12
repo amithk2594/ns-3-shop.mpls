@@ -30,27 +30,31 @@
 namespace ns3 {
 namespace mpls {
 
-class MplsIpv4Routing;
+class Ipv4Routing;
+class MplsProtocol;
  
 /**
  * \brief Ipv4 layer for Mpls
  */
-class MplsIpv4Protocol : public Ipv4L3Protocol
+class Ipv4Protocol : public Ipv4L3Protocol
 {
 public:
   static TypeId GetTypeId (void);
 
-  MplsIpv4Protocol ();
-  virtual ~MplsIpv4Protocol ();
+  Ipv4Protocol ();
+  virtual ~Ipv4Protocol ();
 
+  // methods defined in parent class
   void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol);
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
+  uint32_t AddInterface (Ptr<NetDevice> device);
 
 protected:
   void NotifyNewAggregate ();
 
 private:
-  Ptr<MplsIpv4Routing> m_routingProtocol;
+  Ptr<Ipv4Routing> m_routingProtocol;
+  Ptr<MplsProtocol> m_mpls;  
 };
 
 } // namespace mpls

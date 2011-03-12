@@ -18,6 +18,8 @@ def build(bld):
         'model/mpls-ilm-table.cc',
         'model/mpls-ipv4-protocol.cc',
         'model/mpls-ipv4-routing.cc',
+        'helpers/mpls-interface-helper.cc',
+        'helpers/mpls-helper.cc',
         'test/mpls-test.cc',
     ]
     headers = bld.new_task_gen('ns3header')
@@ -38,6 +40,7 @@ def build(bld):
         'model/mpls-ilm-table.h',
         'model/mpls-ipv4-protocol.h',
         'model/mpls-ipv4-routing.h',
-        #'mpls-switcher.h'
+        'helpers/mpls-interface-helper.h',
+        'helpers/mpls-helper.h'
     ]
 

@@ -24,21 +24,21 @@
 
 #include "mpls-interface.h"
 
-NS_LOG_COMPONENT_DEFINE ("MplsInterface");
+NS_LOG_COMPONENT_DEFINE ("mpls::Interface");
 
 namespace ns3 {
 namespace mpls {
 
 TypeId
-MplsInterface::GetTypeId (void)
+Interface::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::mpls::MplsInterface")
+  static TypeId tid = TypeId ("ns3::mpls::Interface")
     .SetParent<Object> ()
     ;
   return tid;
 }
 
-MplsInterface::MplsInterface (int32_t ifIndex)
+Interface::Interface (int32_t ifIndex)
   : m_node (0),
     m_device (0),
     m_ifup (true),
@@ -47,13 +47,13 @@ MplsInterface::MplsInterface (int32_t ifIndex)
   NS_LOG_FUNCTION (this);
 }
 
-MplsInterface::~MplsInterface ()
+Interface::~Interface ()
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
 
 void
-MplsInterface::DoDispose (void)
+Interface::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
   m_node = 0;
@@ -62,55 +62,55 @@ MplsInterface::DoDispose (void)
 }
 
 void
-MplsInterface::SetNode (const Ptr<Node> &node)
+Interface::SetNode (const Ptr<Node> &node)
 {
   m_node = node;
 }
 
 void
-MplsInterface::SetDevice (const Ptr<NetDevice> &device)
+Interface::SetDevice (const Ptr<NetDevice> &device)
 {
   m_device = device;
 }
 
 Ptr<NetDevice>&
-MplsInterface::GetDevice (void)
+Interface::GetDevice (void)
 {
   return m_device;
 }
 
 int32_t
-MplsInterface::GetIfIndex (void)
+Interface::GetIfIndex (void)
 {
   return m_ifIndex;
 }
   
 bool
-MplsInterface::IsUp () const
+Interface::IsUp () const
 {
   return m_ifup;
 }
 
 bool
-MplsInterface::IsDown () const
+Interface::IsDown () const
 {
   return !m_ifup;
 }
 
 void
-MplsInterface::SetUp ()
+Interface::SetUp ()
 {
   m_ifup = true;
 }
 
 void
-MplsInterface::SetDown ()
+Interface::SetDown ()
 {
   m_ifup = false;
 }
 
 void
-MplsInterface::Send (Ptr<Packet>& packet)
+Interface::Send (Ptr<Packet>& packet)
 {
 // /* restore IpHeader */
 //  if (ipHeader != 0)
@@ -134,11 +134,11 @@ MplsInterface::Send (Ptr<Packet>& packet)
 }
   
 void
-MplsInterface::Print (std::ostream &os) const
+Interface::Print (std::ostream &os) const
 {
 }
 
-std::ostream& operator<< (std::ostream& os, const Ptr<MplsInterface> &interface)
+std::ostream& operator<< (std::ostream& os, const Ptr<Interface> &interface)
 {
   interface->Print (os);
   return os;

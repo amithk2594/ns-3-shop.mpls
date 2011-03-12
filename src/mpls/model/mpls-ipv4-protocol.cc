@@ -24,45 +24,48 @@
 
 #include "mpls-ipv4-protocol.h"
 
-NS_LOG_COMPONENT_DEFINE ("MplsIpv4Protocol");
+NS_LOG_COMPONENT_DEFINE ("mpls::Ipv4Protocol");
 
 namespace ns3 {
 namespace mpls {
 
-NS_OBJECT_ENSURE_REGISTERED (MplsIpv4Protocol);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4Protocol);
 
 TypeId 
-MplsIpv4Protocol::GetTypeId (void)
+Ipv4Protocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::mpls::MplsIpv4Protocol")
+  static TypeId tid = TypeId ("ns3::mpls::Ipv4Protocol")
       .SetParent<Ipv4L3Protocol> ()
-      .AddConstructor<MplsIpv4Protocol> ()
+      .AddConstructor<Ipv4Protocol> ()
     ;
   return tid;
 }
 
-MplsIpv4Protocol::MplsIpv4Protocol()
-  : m_routingProtocol (0)
+Ipv4Protocol::Ipv4Protocol()
+  : m_routingProtocol (0),
+    m_mpls (0)
 {
   NS_LOG_FUNCTION (this);
 }
 
-MplsIpv4Protocol::~MplsIpv4Protocol ()
+Ipv4Protocol::~Ipv4Protocol ()
 {
   NS_LOG_FUNCTION (this);
   m_routingProtocol = 0;
+  m_mpls = 0;  
 }
 
 void
-MplsIpv4Protocol::NotifyNewAggregate ()
+Ipv4Protocol::NotifyNewAggregate ()
 {
-  if (!m_routingProtocol)
+  if (!m_mpls)
     {
-      // install MplsIpv4Routing if mpls protocol was installed
       Ptr<MplsProtocol> mpls = GetObject<MplsProtocol> ();
       if (mpls != 0)
         {
-          m_routingProtocol = CreateObject<MplsIpv4Routing> ();
+          m_mpls = mpls;
+          m_routingProtocol = CreateObject<mpls::Ipv4Routing> ();
+          m_routingProtocol->SetIpv4 (this);
           m_routingProtocol->SetMpls (mpls);
           Ipv4L3Protocol::SetRoutingProtocol (m_routingProtocol);
         }
@@ -71,15 +74,29 @@ MplsIpv4Protocol::NotifyNewAggregate ()
   Ipv4L3Protocol::NotifyNewAggregate ();
 }
 
+uint32_t
+Ipv4Protocol::AddInterface (Ptr<NetDevice> device)
+{
+  NS_LOG_FUNCTION (this << &device);
+
+  NS_ASSERT_MSG (m_mpls != 0, "Mpls protocol should be installed first");
+
+  uint32_t index = Ipv4L3Protocol::AddInterface (device);
+  
+  m_mpls->NotifyNewInterface (device);
+  
+  return index;
+}
+
 void 
-MplsIpv4Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
+Ipv4Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
   NS_ASSERT_MSG (m_routingProtocol != 0, "Mpls protocol should be installed first");
   m_routingProtocol->SetRoutingProtocol (routingProtocol);
 }
 
 Ptr<Ipv4RoutingProtocol> 
-MplsIpv4Protocol::GetRoutingProtocol (void) const
+Ipv4Protocol::GetRoutingProtocol (void) const
 {
   NS_ASSERT_MSG (m_routingProtocol != 0, "Mpls protocol should be installed first");
   return m_routingProtocol->GetRoutingProtocol ();

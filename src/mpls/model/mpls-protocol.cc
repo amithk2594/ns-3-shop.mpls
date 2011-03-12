@@ -27,7 +27,7 @@
 #include "mpls-protocol.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("MplsProtocol");
+NS_LOG_COMPONENT_DEFINE ("mpls::MplsProtocol");
 
 namespace ns3 {
 namespace mpls {
@@ -53,7 +53,8 @@ MplsProtocol::GetTypeId (void)
 MplsProtocol::MplsProtocol ()
   : m_node (0),
     m_ipv4 (0),
-    m_ilmTable (0)
+    m_ilmTable (0),
+    m_interfaceAutoInstall (true)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -61,6 +62,33 @@ MplsProtocol::MplsProtocol ()
 MplsProtocol::~MplsProtocol ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+}
+
+void
+MplsProtocol::NotifyNewInterface (const Ptr<NetDevice> &device)
+{
+  NS_LOG_FUNCTION (this << &device);
+
+  if (m_interfaceAutoInstall)
+    {
+      AddInterface (device);
+    }
+}
+
+void
+MplsProtocol::EnableInterfaceAutoInstall ()
+{
+  NS_LOG_FUNCTION (this);
+  
+  m_interfaceAutoInstall = true;
+}
+
+void
+MplsProtocol::DisableInterfaceAutoInstall ()
+{
+  NS_LOG_FUNCTION (this);
+  
+  m_interfaceAutoInstall = false;
 }
 
 void
@@ -81,8 +109,8 @@ MplsProtocol::NotifyNewAggregate ()
       Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
       if (ipv4 != 0)
         {
-          m_ipv4 = DynamicCast<MplsIpv4Protocol> (ipv4);
-          NS_ASSERT_MSG (m_ipv4, "Use MplsIpv4Protocol instead of default Ipv4");
+          m_ipv4 = DynamicCast<mpls::Ipv4Protocol> (ipv4);
+          NS_ASSERT_MSG (m_ipv4, "Use mpls::Ipv4Protocol instead of default Ipv4");
         }
     }
 
@@ -94,7 +122,7 @@ MplsProtocol::DoDispose (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
 
-  for (MplsInterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
+  for (InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
     {
       *i = 0;
     }
@@ -138,7 +166,7 @@ MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
   m_node->RegisterProtocolHandler (MakeCallback (&MplsProtocol::Receive, this), PROT_NUMBER, device);
   
   int32_t index = m_interfaces.size ();
-  Ptr<MplsInterface> interface = CreateObject<MplsInterface> (index);
+  Ptr<Interface> interface = CreateObject<Interface> (index);
   interface->SetNode (m_node);
   interface->SetDevice (device);
 
@@ -147,7 +175,7 @@ MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
   return index;
 }
 
-Ptr<MplsInterface>
+Ptr<Interface>
 MplsProtocol::GetInterface (int32_t index) const
 {
   if (index >= 0 && index < (int)m_interfaces.size ())
@@ -157,10 +185,10 @@ MplsProtocol::GetInterface (int32_t index) const
   return 0;
 }
 
-Ptr<MplsInterface>
+Ptr<Interface>
 MplsProtocol::GetInterfaceForDevice (const Ptr<const NetDevice> &device) const
 {
-  for (MplsInterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+  for (InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
       if ((*i)->GetDevice () == device)
         {
@@ -232,9 +260,9 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
         break;
     }
 
-  Ptr<MplsInterface> mplsInterface = GetInterfaceForDevice (device);
+  Ptr<Interface> Interface = GetInterfaceForDevice (device);
 
-  if (!mplsInterface->IsUp ()) 
+  if (!Interface->IsUp ()) 
     {
       //m_rxTrace (...);
     }
@@ -314,7 +342,7 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
     return;
   }
   
-  Ptr<IncomingLabelMap> ilm = LookupIlm (label, mplsInterface->GetIfIndex ());
+  Ptr<IncomingLabelMap> ilm = LookupIlm (label, Interface->GetIfIndex ());
   
   if (ilm == 0)
     {
@@ -329,7 +357,7 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
 void 
 MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl)
 {
-  Ptr<MplsInterface> outInterface;
+  Ptr<Interface> outInterface;
   Ptr<Ipv4Route> route;
 
   for (ForwardingInformation::Iterator i = fwd->Begin (); i != fwd->End (); ++i)
@@ -430,7 +458,7 @@ MplsProtocol::LookupFtn (PacketDemux &demux)
 
 bool
 MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl, 
-    Ptr<MplsInterface> &outInterface)
+    Ptr<Interface> &outInterface)
 {
   NS_LOG_FUNCTION (this);
   

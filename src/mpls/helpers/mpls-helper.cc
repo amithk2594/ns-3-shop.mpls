@@ -1,0 +1,165 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Andrey Churin <aachurin@gmail.com>
+ *         Stefano Avallone <stavallo@gmail.com>
+ */
+
+#include "ns3/assert.h"
+#include "ns3/log.h"
+#include "ns3/object.h"
+#include "ns3/names.h"
+#include "ns3/ipv4.h"
+#include "ns3/packet-socket-factory.h"
+#include "ns3/config.h"
+#include "ns3/simulator.h"
+#include "ns3/string.h"
+#include "ns3/net-device.h"
+#include "ns3/callback.h"
+#include "ns3/node.h"
+#include "ns3/core-config.h"
+#include "ns3/arp-l3-protocol.h"
+#include "ns3/ipv4-list-routing-helper.h"
+#include "ns3/ipv4-static-routing-helper.h"
+#include "ns3/ipv4-global-routing-helper.h"
+#include "ns3/ipv6-list-routing-helper.h"
+#include "ns3/ipv6-static-routing-helper.h"
+
+#include "mpls-helper.h"
+
+NS_LOG_COMPONENT_DEFINE ("MplsHelper");
+
+namespace ns3 {
+
+MplsHelper::MplsHelper ()
+  : m_routing (0)
+{
+  Initialize ();
+}
+
+// private method called by both constructor and Reset ()
+void
+MplsHelper::Initialize ()
+{
+  SetTcp ("ns3::TcpL4Protocol");
+  Ipv4StaticRoutingHelper staticRouting;
+  Ipv4GlobalRoutingHelper globalRouting;
+  Ipv4ListRoutingHelper listRouting;
+  listRouting.Add (staticRouting, 0);
+  listRouting.Add (globalRouting, -10);
+  SetRoutingHelper (listRouting);
+}
+
+MplsHelper::~MplsHelper ()
+{
+  delete m_routing;
+}
+
+MplsHelper::MplsHelper (const MplsHelper &o)
+{
+  m_routing = o.m_routing->Copy ();
+  m_tcpFactory = o.m_tcpFactory;
+}
+
+MplsHelper &
+MplsHelper::operator = (const MplsHelper &o)
+{
+  if (this == &o)
+    {
+      return *this;
+    }
+  m_routing = o.m_routing->Copy ();
+  return *this;
+}
+
+void
+MplsHelper::Reset (void)
+{
+  delete m_routing;
+  m_routing = 0;
+  Initialize ();
+}
+
+void 
+MplsHelper::SetRoutingHelper (const Ipv4RoutingHelper &routing)
+{
+  delete m_routing;
+  m_routing = routing.Copy ();
+}
+
+void
+MplsHelper::SetTcp (const std::string tid)
+{
+  m_tcpFactory.SetTypeId (tid);
+}
+
+void
+MplsHelper::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
+{
+  ObjectFactory factory;
+  factory.SetTypeId (typeId);
+  Ptr<Object> protocol = factory.Create <Object> ();
+  node->AggregateObject (protocol);
+}
+
+void 
+MplsHelper::Install (NodeContainer c) const
+{
+  for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
+    {
+      Install (*i);
+    }
+}
+
+void
+MplsHelper::Install (Ptr<Node> node) const
+{
+  if (node->GetObject<mpls::MplsProtocol> () != 0)
+    {
+      NS_FATAL_ERROR ("MplsHelper::Install (): Aggregating " 
+                      "an Mpls to a node with an existing Mpls object");
+      return;
+    }
+
+  CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::mpls::Ipv4Protocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::mpls::MplsProtocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
+  CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
+  node->AggregateObject (m_tcpFactory.Create<Object> ());
+  Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
+  node->AggregateObject (factory);
+  // Set routing
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
+  Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
+  ipv4->SetRoutingProtocol (ipv4Routing);
+}
+
+void
+MplsHelper::Install (std::string nodeName) const
+{
+  Ptr<Node> node = Names::Find<Node> (nodeName);
+  Install (node);
+}
+
+void 
+MplsHelper::InstallAll (void) const
+{
+  Install (NodeContainer::GetGlobal ());
+}
+
+} // namespace ns3

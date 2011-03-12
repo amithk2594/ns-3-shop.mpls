@@ -46,18 +46,18 @@ class MplsProtocol;
  * \brief
  * Mpls ipv4 routing hook
  */
-class MplsIpv4Routing : public Ipv4RoutingProtocol
+class Ipv4Routing : public Ipv4RoutingProtocol
 {
 public:
   static TypeId GetTypeId (void);
   /**
    * @brief Constructor
    */
-  MplsIpv4Routing ();
+  Ipv4Routing ();
   /**
    * @brief Destructor
    */
-  virtual ~MplsIpv4Routing ();
+  virtual ~Ipv4Routing ();
   /**
    * @brief Set underlying Ipv4 routing protocol
    */
@@ -86,7 +86,7 @@ protected:
 
 private:
   Ptr<MplsProtocol> m_mpls;
-  Ptr<FtnTable> m_ftnTable;
+  Ptr<Ipv4> m_ipv4;  
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
   PacketDemux m_demux;  
 };
