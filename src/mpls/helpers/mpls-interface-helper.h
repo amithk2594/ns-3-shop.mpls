@@ -40,12 +40,12 @@ public:
   /**
    * @brief Create a new MplsInterfaceHelper
    */
-  MplsInterfaceHelper(void);
+  MplsInterfaceHelper(void) {};
 
   /**
    * @brief Destroy the MplsInterfaceHelper
    */
-  virtual ~MplsInterfaceHelper(void);
+  virtual ~MplsInterfaceHelper(void) {};
 
   /**
    * @brief Enable MPLS interfaces auto install onto the provided node.
@@ -77,27 +77,6 @@ private:
   void DisableInterfaceAutoInstallInternal (Ptr<Node> node) const;
   void PrintInterfacesInternal (Ptr<Node> node) const;
 };
-
-template <class T>
-void
-MplsInterfaceHelper::EnableInterfaceAutoInstall (T node) const
-{
-  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::EnableInterfaceAutoInstallInternal, this));
-}
-
-template <class T>
-void
-MplsInterfaceHelper::DisableInterfaceAutoInstall (T node) const
-{
-  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::DisableInterfaceAutoInstallInternal, this));
-}
-
-template <class T>
-void
-MplsInterfaceHelper::PrintInterfaces (T node) const
-{
-  ForEachNode (node, MakeCallback (&MplsInterfaceHelper::PrintInterfacesInternal, this));
-}
 
 } // namespace ns3
 
