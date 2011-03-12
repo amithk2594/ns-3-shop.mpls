@@ -19,6 +19,8 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
+#include <iomanip>
+
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/object.h"
@@ -120,16 +122,16 @@ MplsInterfaceHelper::DisableInterfaceAutoInstallAll (void) const
 }
 
 void 
-MplsInterfaceHelper::ShowInterfaces (NodeContainer c, std::ostream& os) const
+MplsInterfaceHelper::PrintInterfaces (NodeContainer c, std::ostream& os) const
 {
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); ++i)
     {
-      ShowInterfaces (*i, os);
+      PrintInterfaces (*i, os);
     }
 }
 
 void
-MplsInterfaceHelper::ShowInterfaces (Ptr<Node> node, std::ostream& os) const
+MplsInterfaceHelper::PrintInterfaces (Ptr<Node> node, std::ostream& os) const
 {
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
@@ -137,19 +139,20 @@ MplsInterfaceHelper::ShowInterfaces (Ptr<Node> node, std::ostream& os) const
   for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
     {
       Ptr<mpls::Interface> iface = mpls->GetInterface (i);
-      os << "  interface " << i << "\n";
+      Ptr<NetDevice> dev = iface->GetDevice ();
+      os << "  if" << std::setw(10) << i << "dev" << dev->GetIfIndex () << "\n";
     }
 }
 
 void
-MplsInterfaceHelper::ShowInterfaces (std::string nodeName, std::ostream& os) const
+MplsInterfaceHelper::PrintInterfaces (std::string nodeName, std::ostream& os) const
 {
   Ptr<Node> node = Names::Find<Node> (nodeName);
-  ShowInterfaces (node, os);
+  PrintInterfaces (node, os);
 }
 
 void 
-MplsInterfaceHelper::ShowAllInterfaces (std::ostream& os) const
+MplsInterfaceHelper::PrintAllInterfaces (std::ostream& os) const
 {
   NodeContainer c = NodeContainer::GetGlobal ();
 
@@ -157,7 +160,7 @@ MplsInterfaceHelper::ShowAllInterfaces (std::ostream& os) const
     {
       if ((*i)->GetObject<mpls::MplsProtocol> () != 0)
         {
-          ShowInterfaces (*i, os);
+          PrintInterfaces (*i, os);
         }
     }
 }

@@ -107,27 +107,27 @@ public:
    * 
    * @param node
    */
-  void ShowInterfaces (Ptr<Node> node, std::ostream& os = std::cout) const;
+  void PrintInterfaces (Ptr<Node> node, std::ostream& os = std::cout) const;
 
   /**
    * @brief Show MPLS interfaces
    * 
    * @param nodeName The name of the node.
    */
-  void ShowInterfaces (std::string nodeName, std::ostream& os = std::cout) const;
+  void PrintInterfaces (std::string nodeName, std::ostream& os = std::cout) const;
   
   /**
    * @brief Show MPLS interfaces
    * 
    * @param c NodeContainer that holds the set of nodes
    */
-  void ShowInterfaces (NodeContainer c, std::ostream& os = std::cout) const;
+  void PrintInterfaces (NodeContainer c, std::ostream& os = std::cout) const;
 
   /**
    * @brief Show MPLS interfaces
    * with mpls installed
    */
-  void ShowAllInterfaces (std::ostream& os = std::cout) const;
+  void PrintAllInterfaces (std::ostream& os = std::cout) const;
 };
 
 } // namespace ns3
