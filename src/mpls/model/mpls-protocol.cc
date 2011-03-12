@@ -27,17 +27,18 @@
 #include "mpls-protocol.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("mpls::MplsProtocol");
+NS_LOG_COMPONENT_DEFINE ("MplsProtocol");
 
 namespace ns3 {
-namespace mpls {
+
+using namespace mpls;
 
 const uint16_t MplsProtocol::PROT_NUMBER = 0x8847;
 
 TypeId
 MplsProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::mpls::MplsProtocol")
+  static TypeId tid = TypeId ("ns3::MplsProtocol")
     .SetParent<Object> ()
     .AddConstructor<MplsProtocol> ()
     .AddTraceSource ("Tx", "Send packet to outgoing interface.",

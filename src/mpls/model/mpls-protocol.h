@@ -49,7 +49,7 @@
 #include "mpls-ipv4-routing.h"
 
 namespace ns3 {
-namespace mpls {
+using namespace mpls;
 
 class Nhlfe;
 class ForwardingInformation;
@@ -174,7 +174,6 @@ private:
   friend class Ipv4Protocol;  
 };
 
-} // namespace mpls
 } // namespace ns3
 
 #endif /* MPLS_ROUTING_PROTOCOL_H */
