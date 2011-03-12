@@ -73,7 +73,7 @@ public:
    * @param tid the type id, typically it is set to  "ns3::TcpL4Protocol"
    */
   void SetTcp(std::string tid);
-  
+
   /**
    * @brief Aggregate implementations of MPLS, IPv4, TCP, UDP and ARP onto the provided node.
    * 

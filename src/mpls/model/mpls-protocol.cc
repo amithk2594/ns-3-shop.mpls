@@ -27,18 +27,17 @@
 #include "mpls-protocol.h"
 
 
-NS_LOG_COMPONENT_DEFINE ("MplsProtocol");
+NS_LOG_COMPONENT_DEFINE ("mpls::MplsProtocol");
 
 namespace ns3 {
-
-using namespace mpls;
+namespace mpls {
 
 const uint16_t MplsProtocol::PROT_NUMBER = 0x8847;
 
 TypeId
 MplsProtocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::MplsProtocol")
+  static TypeId tid = TypeId ("ns3::mpls::MplsProtocol")
     .SetParent<Object> ()
     .AddConstructor<MplsProtocol> ()
     .AddTraceSource ("Tx", "Send packet to outgoing interface.",
@@ -80,7 +79,7 @@ void
 MplsProtocol::EnableInterfaceAutoInstall ()
 {
   NS_LOG_FUNCTION (this);
-  
+
   m_interfaceAutoInstall = true;
 }
 
@@ -88,7 +87,7 @@ void
 MplsProtocol::DisableInterfaceAutoInstall ()
 {
   NS_LOG_FUNCTION (this);
-  
+
   m_interfaceAutoInstall = false;
 }
 
@@ -98,13 +97,13 @@ MplsProtocol::NotifyNewAggregate ()
   if (m_node == 0)
     {
       Ptr<Node> node = this->GetObject<Node> ();
-      
+
       if (node != 0)
         {
           m_node = node;
         }
     }
-    
+
   if (m_ipv4 == 0)
     {
       Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
@@ -163,16 +162,16 @@ int32_t
 MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 {
   NS_LOG_FUNCTION (this << &device);
-  
+
   m_node->RegisterProtocolHandler (MakeCallback (&MplsProtocol::Receive, this), PROT_NUMBER, device);
-  
+
   int32_t index = m_interfaces.size ();
   Ptr<Interface> interface = CreateObject<Interface> (index);
   interface->SetNode (m_node);
   interface->SetDevice (device);
 
   m_interfaces.push_back (interface);
-  
+
   return index;
 }
 
@@ -215,10 +214,10 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
       Socket::SocketErrno sockerr;
 
       header.SetDestination(Ipv4Address::ConvertFrom (address));
-      
+
       Ptr<Ipv4RoutingProtocol> routing = m_ipv4->GetRoutingProtocol ();
       NS_ASSERT_MSG (routing, "Need a ipv4 routing protocol object");
-      
+
       // XXX: i don't know if we can do this
       Ptr<Ipv4Route> route = routing->RouteOutput (0, header, 0, sockerr);
 
@@ -231,20 +230,20 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
   return 0;
 }
 
-uint32_t 
+uint32_t
 MplsProtocol::GetNInterfaces (void) const
 {
   return m_interfaces.size ();
 }
 
-void 
+void
 MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                          const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION (this << &device << p << protocol << from);
 
   NS_LOG_LOGIC ("Packet from " << from << " received on node " << m_node->GetId ());
-    
+
   switch (packetType)
     {
       case NetDevice::PACKET_BROADCAST:
@@ -256,14 +255,14 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
         NS_LOG_LOGIC ("Dropping received packet -- multicast");
         //m_dropTrace (...);
         return;
-        
+
       default:
         break;
     }
 
   Ptr<Interface> Interface = GetInterfaceForDevice (device);
 
-  if (!Interface->IsUp ()) 
+  if (!Interface->IsUp ())
     {
       //m_rxTrace (...);
     }
@@ -273,14 +272,14 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
       //m_dropTrace (...);
       return;
     }
-    
+
   Ptr<Packet> packet = p->Copy ();
   LabelStack stack;
   packet->RemoveHeader (stack);
-  
+
   uint32_t sh = stack.Peek ();
   uint8_t ttl = shim::GetTtl (sh);
-  
+
   if (ttl <= 1)
     {
       NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
@@ -300,7 +299,7 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
           if (!shim::IsBos (label))
             {
               NS_LOG_WARN ("Dropping received packet -- illegal Ipv4 explicit null label");
-              // m_dropTrace 
+              // m_dropTrace
               return;
             }
           NS_LOG_LOGIC ("Force Ipv4 forwarding");
@@ -312,11 +311,11 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
           if (!shim::IsBos (label))
             {
               NS_LOG_WARN ("Dropping received packet -- illegal Ipv6 explicit null label");
-              // m_dropTrace 
+              // m_dropTrace
               return;
             }
           // for future research
-          NS_LOG_LOGIC ("Dropping received packet -- ipv6 is not supported"); 
+          NS_LOG_LOGIC ("Dropping received packet -- ipv6 is not supported");
           //m_dropTrace (...);
           return;
         }
@@ -324,15 +323,15 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
         {
           NS_LOG_WARN ("Skip label -- route alert label not supported");
         }
-      else 
+      else
         {
           NS_LOG_WARN ("Skip label -- unknown reserved label");
         }
 
       stack.Pop ();
-      
+
       if (stack.IsEmpty ()) break;
-      
+
       sh = stack.Peek ();
       label = shim::GetLabel (sh);
     }
@@ -342,9 +341,9 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
     //m_dropTrace (...);
     return;
   }
-  
+
   Ptr<IncomingLabelMap> ilm = LookupIlm (label, Interface->GetIfIndex ());
-  
+
   if (ilm == 0)
     {
       NS_LOG_LOGIC ("Dropping received packet -- ILM not found");
@@ -355,7 +354,7 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
   MplsForward (packet, ilm, stack, ttl);
 }
 
-void 
+void
 MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl)
 {
   Ptr<Interface> outInterface;
@@ -365,7 +364,7 @@ MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation>
     {
       const Nhlfe& nhlfe = *i;
       int32_t outIfIndex = nhlfe.GetInterface ();
-      
+
       if (outIfIndex >= 0)
         {
           route = 0;
@@ -424,7 +423,7 @@ MplsProtocol::LookupIlm (Label label, int32_t interface)
           return ilm;
         }
     }
-    
+
   for (IlmTable::Iterator i = begin; i != end; ++i)
     {
       ilm = (*i).second;
@@ -444,7 +443,7 @@ MplsProtocol::LookupFtn (PacketDemux &demux)
 
   FtnTable::Iterator begin = m_ftnTable->Begin ();
   FtnTable::Iterator end = m_ftnTable->End ();
-  
+
   for (FtnTable::Iterator i = begin; i != end; ++i)
     {
       const Ptr<FecToNhlfe> &ftn = (*i).second;
@@ -458,18 +457,18 @@ MplsProtocol::LookupFtn (PacketDemux &demux)
 }
 
 bool
-MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl, 
+MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
     Ptr<Interface> &outInterface)
 {
   NS_LOG_FUNCTION (this);
-  
+
   switch (nhlfe.m_opcode)
-    {  
+    {
       case OP_POP:
         NS_ASSERT_MSG (!stack.IsEmpty (), "POP operation on the empty stack");
         stack.Pop ();
         break;
-        
+
       case OP_SWAP:
         for (uint32_t i = 0, count = nhlfe.m_count; i < count; ++i)
           {
@@ -484,7 +483,7 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
             i ? stack.Push (label) : stack.Swap (label);
           }
         break;
-        
+
       default:
         NS_ASSERT_MSG (0, "Invalid operation code");
     }
@@ -504,13 +503,13 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
 
   // A labeled IP datagram which is not "too big" MUST be transmitted
   // without fragmentation.
-   
+
   shim::SetTtl (stack.Peek (), ttl);
   packet->AddHeader (stack);
 
   outInterface->Send (packet);
   //m_txTrace;
-  
+
   return true;
 }
 
@@ -527,7 +526,7 @@ MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev
   Ipv4Header header;
   packet->RemoveHeader (header);
   header.SetTtl (ttl);
-  
+
   // if there is no route
   if (route == 0)
     {
@@ -537,7 +536,7 @@ MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev
       NS_ASSERT_MSG (routing, "Need a ipv4 routing protocol object");
       route = routing->RouteOutput (packet, header, outDev, sockerr);
     }
-    
+
   m_ipv4->SendWithHeader (packet, header, route);
 }
 

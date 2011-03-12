@@ -49,7 +49,7 @@
 #include "mpls-ipv4-routing.h"
 
 namespace ns3 {
-using namespace mpls;
+namespace mpls {
 
 class Nhlfe;
 class ForwardingInformation;
@@ -67,12 +67,12 @@ public:
 
   MplsProtocol ();
   virtual ~MplsProtocol ();
-  
+
   /**
    * @enum DropReason
    * @brief Reason why a packet has been dropped.
    */
-  enum DropReason 
+  enum DropReason
     {
       DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
       DROP_NO_ROUTE, /**< No route to host */
@@ -82,11 +82,11 @@ public:
 
   /**
    * @brief Enable interface auto install.
-   */      
+   */
   void EnableInterfaceAutoInstall (void);
   /**
    * @brief Disable interface auto install
-   */  
+   */
   void DisableInterfaceAutoInstall (void);
   /**
    * @brief Set new ILM table
@@ -145,7 +145,7 @@ public:
    * @brief Lookup FTN using PacketDemux
    */
   Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
-  
+
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
@@ -153,27 +153,28 @@ protected:
 
 private:
   typedef std::vector<Ptr<Interface> > InterfaceList;
-  
-  bool RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl, 
+
+  bool RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
                           Ptr<Interface> &outInterface);
   void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev, Ptr<Ipv4Route> route);
-  
+
   Ptr<Node> m_node;
   Ptr<mpls::Ipv4Protocol> m_ipv4;
   Ptr<IlmTable> m_ilmTable;
-  Ptr<FtnTable> m_ftnTable;  
-  
+  Ptr<FtnTable> m_ftnTable;
+
   InterfaceList m_interfaces;
   bool m_interfaceAutoInstall;
-  
+
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
   TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
   TracedCallback<Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
-  
+
   friend class Ipv4Routing;
-  friend class Ipv4Protocol;  
+  friend class Ipv4Protocol;
 };
 
+} // namespace mpls
 } // namespace ns3
 
 #endif /* MPLS_ROUTING_PROTOCOL_H */

@@ -28,7 +28,6 @@
 #include "ns3/node.h"
 #include "ns3/ptr.h"
 
-
 namespace ns3 {
 
 class Node;

@@ -105,19 +105,20 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
 
-  std::ostream &os = *m_stream->GetStream ();
+  //std::ostream *os = m_stream->GetStream ();
 
-  os << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
-  os << std::setiosflags(std::ios::left);
+  //std::cout << &std::cout << " " << os << std::endl;
+//  os << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:" << std::endl;
+//  os << std::setiosflags(std::ios::left);
 
-  for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
-    {
-      Ptr<mpls::Interface> iface = mpls->GetInterface (i);
-      Ptr<NetDevice> dev = iface->GetDevice ();
-      os << "  if" << std::setw(10) << i << "dev" << std::setw(5) << dev->GetIfIndex ();
-      PrintDeviceInformation (os, dev);
-      os << "\n";
-    }
+//  for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
+//    {
+//      Ptr<mpls::Interface> iface = mpls->GetInterface (i);
+//      Ptr<NetDevice> dev = iface->GetDevice ();
+//      os << "  if" << std::setw(10) << i << "dev" << std::setw(5) << dev->GetIfIndex ();
+//      PrintDeviceInformation (os, dev);
+//      os << std::endl;
+//    }
 }
 
 void
