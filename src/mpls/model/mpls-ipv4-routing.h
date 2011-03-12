@@ -34,13 +34,13 @@
 #include "ns3/socket.h"
 
 #include "mpls-packet-demux.h"
-#include "mpls-protocol.h"
+#include "mpls.h"
 
 namespace ns3 {
 namespace mpls {
 
 class PacketDemux;
-class MplsProtocol;
+class Mpls;
 
 /**
  * \brief
@@ -78,14 +78,14 @@ public:
   void NotifyRemoveAddress (uint32_t interface, Ipv4InterfaceAddress address);
   void PrintRoutingTable (Ptr<OutputStreamWrapper> stream) const;
 
-  void SetMpls (Ptr<MplsProtocol> mpls);
+  void SetMpls (Ptr<Mpls> mpls);
   void SetIpv4 (Ptr<Ipv4> ipv4);
     
 protected:
   void DoDispose (void);
 
 private:
-  Ptr<MplsProtocol> m_mpls;
+  Ptr<Mpls> m_mpls;
   Ptr<Ipv4> m_ipv4;  
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
   PacketDemux m_demux;  

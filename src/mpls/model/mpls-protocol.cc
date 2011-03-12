@@ -32,6 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("mpls::MplsProtocol");
 namespace ns3 {
 namespace mpls {
 
+NS_OBJECT_ENSURE_REGISTERED (MplsProtocol);
+
 const uint16_t MplsProtocol::PROT_NUMBER = 0x8847;
 
 TypeId
@@ -53,8 +55,7 @@ MplsProtocol::GetTypeId (void)
 MplsProtocol::MplsProtocol ()
   : m_node (0),
     m_ipv4 (0),
-    m_ilmTable (0),
-    m_interfaceAutoInstall (true)
+    m_ilmTable (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -62,33 +63,6 @@ MplsProtocol::MplsProtocol ()
 MplsProtocol::~MplsProtocol ()
 {
   NS_LOG_FUNCTION_NOARGS ();
-}
-
-void
-MplsProtocol::NotifyNewInterface (const Ptr<NetDevice> &device)
-{
-  NS_LOG_FUNCTION (this << &device);
-
-  if (m_interfaceAutoInstall)
-    {
-      AddInterface (device);
-    }
-}
-
-void
-MplsProtocol::EnableInterfaceAutoInstall ()
-{
-  NS_LOG_FUNCTION (this);
-
-  m_interfaceAutoInstall = true;
-}
-
-void
-MplsProtocol::DisableInterfaceAutoInstall ()
-{
-  NS_LOG_FUNCTION (this);
-
-  m_interfaceAutoInstall = false;
 }
 
 void
@@ -462,7 +436,7 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
 {
   NS_LOG_FUNCTION (this);
 
-  switch (nhlfe.m_opcode)
+  switch (nhlfe.GetOpCode ())
     {
       case OP_POP:
         NS_ASSERT_MSG (!stack.IsEmpty (), "POP operation on the empty stack");
@@ -470,9 +444,9 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
         break;
 
       case OP_SWAP:
-        for (uint32_t i = 0, count = nhlfe.m_count; i < count; ++i)
+        for (uint32_t i = 0, c = nhlfe.GetNLabels (); i < c; ++i)
           {
-            Label label = nhlfe.m_labels[i];
+            Label label = nhlfe.GetLabel (i);
             if (label == Label::IMPLICIT_NULL)
               {
                 // Penultimate Hop Popping

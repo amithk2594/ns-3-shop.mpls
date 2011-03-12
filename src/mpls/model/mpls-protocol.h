@@ -79,9 +79,6 @@ public:
       DROP_ROUTE_ERROR, /**< Route error */
     };
 
-  void EnableInterfaceAutoInstall (void);
-  void DisableInterfaceAutoInstall (void);
-
   /**
    * @brief Set new ILM table
    */

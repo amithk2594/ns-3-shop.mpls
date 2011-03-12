@@ -57,6 +57,24 @@ Nhlfe::GetNextHop (void) const
   return m_nextHop;
 }
 
+uint32_t 
+Nhlfe::GetOpCode (void) const
+{
+  return m_opcode;
+}
+
+uint32_t 
+Nhlfe::GetNLabels (void) const
+{
+  return m_count;
+}
+
+uint32_t 
+Nhlfe::GetLabel (uint32_t index) const
+{
+  return m_labels[index];
+}
+  
 std::ostream& operator<< (std::ostream& os, const Nhlfe& nhlfe)
 {
   // TODO:

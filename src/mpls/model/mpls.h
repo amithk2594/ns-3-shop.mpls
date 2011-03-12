@@ -42,9 +42,6 @@ namespace ns3 {
 
 using namespace mpls;
 
-//class ForwardingInformation;
-
-
 /**
  * \ingroup mpls
  * Multiprotocol Label Switching. RFC 3031, 3032.
@@ -57,14 +54,6 @@ public:
   Mpls ();
   virtual ~Mpls ();
 
-  /**
-   * @brief Enable interface auto install.
-   */
-  virtual void EnableInterfaceAutoInstall (void) = 0;
-  /**
-   * @brief Disable interface auto install
-   */
-  virtual void DisableInterfaceAutoInstall (void) = 0;
   /**
    * @brief Set new ILM table
    */
@@ -112,9 +101,6 @@ public:
    * @brief Lookup FTN using PacketDemux
    */
   virtual Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux) = 0;
-
-protected:
-  virtual void NotifyNewInterface (const Ptr<NetDevice> &device) = 0;
 };
 
 } // namespace ns3

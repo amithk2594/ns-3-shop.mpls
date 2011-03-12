@@ -25,13 +25,14 @@
 #include "ns3/ipv4-l3-protocol.h"
 #include "ns3/ipv4-routing-protocol.h"
 
+#include "mpls.h"
 #include "mpls-ipv4-routing.h"
 
 namespace ns3 {
 namespace mpls {
 
 class Ipv4Routing;
-class MplsProtocol;
+class Mpls;
  
 /**
  * \brief Ipv4 layer for Mpls
@@ -44,17 +45,27 @@ public:
   Ipv4Protocol ();
   virtual ~Ipv4Protocol ();
 
+  /**
+   * @brief Enable interface auto install.
+   */
+  virtual void EnableMplsInterfaceAutoInstall (void);
+  /**
+   * @brief Disable interface auto install
+   */
+  virtual void DisableMplsInterfaceAutoInstall (void);
+  
   // methods defined in parent class
   void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol);
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
   uint32_t AddInterface (Ptr<NetDevice> device);
-
+  
 protected:
   void NotifyNewAggregate ();
 
 private:
   Ptr<Ipv4Routing> m_routingProtocol;
-  Ptr<MplsProtocol> m_mpls;  
+  Ptr<Mpls> m_mpls;
+  bool m_mplsInterfaceAutoInstall;
 };
 
 } // namespace mpls

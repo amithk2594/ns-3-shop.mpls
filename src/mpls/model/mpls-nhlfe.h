@@ -66,7 +66,18 @@ public:
    * @brief Get next-hop
    */
   const Address& GetNextHop (void) const;
-
+  /**
+   * @brief Return operation code
+   */
+  uint32_t GetOpCode (void) const;
+  /**
+   * @brief Return labels count
+   */
+  uint32_t GetNLabels (void) const;
+  /**
+   * @brief Return label by index
+   */
+  uint32_t GetLabel (uint32_t index) const;
 private:
   int32_t m_interface;
   Address m_nextHop;
@@ -76,7 +87,6 @@ private:
   
   friend class Swap;
   friend class Pop;
-  friend class MplsProtocol;
 };
 
 /**

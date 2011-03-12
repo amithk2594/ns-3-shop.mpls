@@ -43,7 +43,8 @@ Ipv4Protocol::GetTypeId (void)
 
 Ipv4Protocol::Ipv4Protocol()
   : m_routingProtocol (0),
-    m_mpls (0)
+    m_mpls (0),
+    m_mplsInterfaceAutoInstall (true)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -52,7 +53,7 @@ Ipv4Protocol::~Ipv4Protocol ()
 {
   NS_LOG_FUNCTION (this);
   m_routingProtocol = 0;
-  m_mpls = 0;  
+  m_mpls = 0;
 }
 
 void
@@ -60,7 +61,7 @@ Ipv4Protocol::NotifyNewAggregate ()
 {
   if (!m_mpls)
     {
-      Ptr<MplsProtocol> mpls = GetObject<MplsProtocol> ();
+      Ptr<MplsProtocol> mpls = GetObject<Mpls> ();
       if (mpls != 0)
         {
           m_mpls = mpls;
@@ -74,6 +75,22 @@ Ipv4Protocol::NotifyNewAggregate ()
   Ipv4L3Protocol::NotifyNewAggregate ();
 }
 
+void
+Ipv4Protocol::EnableMplsInterfaceAutoInstall ()
+{
+  NS_LOG_FUNCTION (this);
+
+  m_mplsInterfaceAutoInstall = true;
+}
+
+void
+Ipv4Protocol::DisableMplsInterfaceAutoInstall ()
+{
+  NS_LOG_FUNCTION (this);
+
+  m_mplsInterfaceAutoInstall = false;
+}
+
 uint32_t
 Ipv4Protocol::AddInterface (Ptr<NetDevice> device)
 {
@@ -83,7 +100,9 @@ Ipv4Protocol::AddInterface (Ptr<NetDevice> device)
 
   uint32_t index = Ipv4L3Protocol::AddInterface (device);
   
-  m_mpls->NotifyNewInterface (device);
+  if (m_mplsInterfaceAutoInstall)
+    {
+    }
   
   return index;
 }
