@@ -36,7 +36,7 @@
 #include "mpls-node-helper.h"
 
 
-//NS_LOG_COMPONENT_DEFINE ("MplsInterfaceHelper");
+NS_LOG_COMPONENT_DEFINE ("MplsInterfaceHelper");
 
 namespace ns3 {
 
@@ -81,32 +81,98 @@ MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
 void
 MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
 {
+  std::ostream &os = *(m_stream->GetStream ());
+
   Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
 
-  //std::ostream *os = m_stream->GetStream ();
+  os << "Node " << node->GetSystemId () << "-" << node->GetId () << " interfaces:" << std::endl;
+  os << std::setiosflags(std::ios::left);
 
-  //std::cout << &std::cout << " " << os << std::endl;
-//  os << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:" << std::endl;
-//  os << std::setiosflags(std::ios::left);
+  for (uint32_t i = 0, c = node->GetNDevices (); i < c; ++i)
+    {
+      Address hwaddr = device->GetAddress ();
 
-//  for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
+      os << "dev" << std::setw (5) << i << " "
+         << "Type " << device->GetInstanceTypeId ().GetName () << "  "
+         << "HWaddr ";
+
+
+      if (Mac48Address::IsMatchingType (hwaddr))
+        {
+          os << Mac48Address::ConvertFrom (hwaddr);
+        }
+      else
+        {
+          os << hwaddr;
+        }
+
+      //Ptr<mpls::Interface> iface = mpls->GetInterface (i);
+      //Ptr<NetDevice> dev = iface->GetDevice ();
+
+      //if (ipv4)
+      //  {
+      //    PrintIpv4Information (os, ipv4, device, 23);
+      //  }
+      //PrintDeviceInformation (os, device, 23);
+
+      os << std::endl;
+    }
+}
+
+void
+MplsInterfaceHelper::PrintMplsInformation (std::ostream &os, const Ptr<MplsProtocol> &mpls,
+    const Ptr<NetDevice> &device,  uint32_t indent) const
+{
+}
+
+void
+MplsInterfaceHelper::PrintIpv4Information (std::ostream &os, const Ptr<Ipv4> &ipv4,
+    const Ptr<NetDevice> &device,  uint32_t indent) const
+{
+  int32_t ifIndex = ipv4->GetInterfaceForDevice (dev);
+  if (ifIndex < 0) return;
+
+  os << std::setw (indent) << " ";
+
+//  for (uint32_t i = 0, c = ipv4->GetNAddresses (ifIndex); i < c; ++i)
 //    {
-//      Ptr<mpls::Interface> iface = mpls->GetInterface (i);
-//      Ptr<NetDevice> dev = iface->GetDevice ();
-//      os << "  if" << std::setw(10) << i << "dev" << std::setw(5) << dev->GetIfIndex ();
-//      PrintDeviceInformation (os, dev);
-//      os << std::endl;
+//      Ipv4InterfaceAddress addr = ipv4->GetAddress (ifIndex, i);
+//      Ipv4Address local = addr.GetLocal ();
+//      Ipv4Mask mask = addr.GetMask ();
 //    }
 }
 
 void
-MplsInterfaceHelper::PrintDeviceInformation (std::ostream &os, Ptr<NetDevice> device) const
+MplsInterfaceHelper::PrintDeviceInformation (std::ostream &os, const Ptr<NetDevice> &device,
+     uint32_t indent) const
 {
-  Address hwaddr = device->GetAddress ();
+  os << std::setw (indent) << " ";
 
-  os << "HWaddr "
-     << Mac48Address::IsMatchingType (hwaddr) ? Mac48Address::ConvertFrom (hwaddr) : hwaddr;
+  os << (device->IsLinkUp () ? "UP" : "DOWN");
+
+  if (device->IsPointToPoint ())
+    {
+      os << " PPP";
+    }
+
+  if (device->IsBridge ())
+    {
+      os << " BRIDGE";
+    }
+
+  if (device->IsMulticast ())
+    {
+      os << " MULTICAST";
+    }
+
+  if (device->IsBroadcast ())
+    {
+      os << " BROADCAST";
+    }
+
+  os << "  MTU:" << device->GetMtu ();
+  os << std::endl;
 }
 
 } // namespace ns3

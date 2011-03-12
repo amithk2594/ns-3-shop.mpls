@@ -83,7 +83,10 @@ private:
   void EnableInterfaceAutoInstallInternal (Ptr<Node> node) const;
   void DisableInterfaceAutoInstallInternal (Ptr<Node> node) const;
   void PrintInterfacesInternal (Ptr<Node> node) const;
-  void PrintDeviceInformation (std::ostream &os, Ptr<NetDevice> device) const;
+  void PrintMplsInfo (std::ostream &os, const Ptr<NetDevice> &device, const Ptr<MplsProtocol> &mpls) const;
+  void PrintIpv4Info (std::ostream &os, const Ptr<NetDevice> &device, const Ptr<Ipv4> &ipv4) const;
+  void PrintIpv6Info (std::ostream &os, const Ptr<NetDevice> &device, const Ptr<Ipv6> &ipv6) const;
+  void PrintDeviceInfo (std::ostream &os, const Ptr<NetDevice> &device) const;
 
   Ptr<OutputStreamWrapper> m_stream;
 };
