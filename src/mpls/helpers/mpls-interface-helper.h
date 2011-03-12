@@ -40,12 +40,12 @@ public:
   /**
    * @brief Create a new MplsInterfaceHelper
    */
-  MplsInterfaceHelper(void) {};
+  MplsInterfaceHelper ();
 
   /**
    * @brief Destroy the MplsInterfaceHelper
    */
-  virtual ~MplsInterfaceHelper(void) {};
+  virtual ~MplsInterfaceHelper ();
 
   /**
    * @brief Enable MPLS interfaces auto install onto the provided node.

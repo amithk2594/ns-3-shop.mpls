@@ -47,38 +47,6 @@ MplsInterfaceHelper::~MplsInterfaceHelper ()
 {
 }
 
-void
-MplsInterfaceHelper::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
-{
-  Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->EnableInterfaceAutoInstall ();
-}
-
-void
-MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
-{
-  Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->DisableInterfaceAutoInstall ();
-}
-
-void
-MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
-{
-  Ptr<mpls::MplsProtocol> mpls = node->GetObject<mpls::MplsProtocol> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  std::cout << "Node " << node->GetSystemId () << "-" << node->GetId () << " MPLS interfaces:\n";
-  std::cout << std::setiosflags(std::ios::left);
-
-  for (uint32_t i = 0; i < mpls->GetNInterfaces (); ++i)
-    {
-      Ptr<mpls::Interface> iface = mpls->GetInterface (i);
-      Ptr<NetDevice> dev = iface->GetDevice ();
-      std::cout << "  if" << std::setw(10) << i << "dev" << dev->GetIfIndex () << "\n";
-    }
-}
-
 template <class T>
 void
 MplsInterfaceHelper::EnableInterfaceAutoInstall (T node) const
