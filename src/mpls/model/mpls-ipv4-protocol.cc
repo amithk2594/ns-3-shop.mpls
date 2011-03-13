@@ -58,7 +58,7 @@ Ipv4Protocol::~Ipv4Protocol ()
 void
 Ipv4Protocol::NotifyNewAggregate ()
 {
-  if (m_mpls != 0)
+  if (m_mpls == 0)
     {
       Ptr<Mpls> mpls = GetObject<Mpls> ();
       if (mpls != 0)
@@ -95,7 +95,7 @@ void
 Ipv4Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {
   NS_LOG_FUNCTION (this << routingProtocol);
-  
+
   NS_ASSERT_MSG (m_routingProtocol != 0, "Mpls protocol should be installed first");
   m_routingProtocol->SetRoutingProtocol (routingProtocol);
 }
