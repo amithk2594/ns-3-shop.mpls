@@ -27,8 +27,7 @@ namespace ns3 {
 namespace mpls {
 
 Nhlfe::Nhlfe (const Operation& op, int32_t outInterface)
-  : m_interface (outInterface),
-    m_nextHop ()
+  : m_interface (outInterface)
 {
   NS_ASSERT_MSG (outInterface, "Invalid outgoing interface index");
   op.Accept (*this);
@@ -39,6 +38,12 @@ Nhlfe::Nhlfe (const Operation& op, const Address& nextHop)
     m_nextHop (nextHop)
 {
   NS_ASSERT_MSG (!nextHop.IsInvalid (), "Invalid next-hop address");
+  op.Accept (*this);
+}
+
+Nhlfe::Nhlfe (const Operation& op)
+  : m_interface (-1)
+{
   op.Accept (*this);
 }
 
@@ -97,11 +102,11 @@ Nhlfe::Print (std::ostream &os) const
   
   if (m_interface >= 0)
     {
-      os << "oif:" << m_interface;
+      os << "oif " << m_interface;
     }
   else 
     {
-      os << "nexthop:";
+      os << "nexthop ";
       if (Ipv4Address::IsMatchingType (m_nextHop))
         {
           os << Ipv4Address::ConvertFrom (m_nextHop);

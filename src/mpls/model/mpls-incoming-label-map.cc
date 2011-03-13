@@ -69,7 +69,14 @@ IncomingLabelMap::SetInterface (int32_t interface)
 void
 IncomingLabelMap::Print (std::ostream &os) const
 {
-  os << "ilm: if" << m_interface << " " << m_label;
+  os << "ilm" << GetIndex () << " ";
+
+  if (m_interface >= 0)
+    {
+      os << "if" << m_interface << " ";
+    }
+
+  os << "label " << m_label;
 }
 
 } // namespace mpls

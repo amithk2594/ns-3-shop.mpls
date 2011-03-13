@@ -92,7 +92,7 @@ public:
   
 private:
   FtnList m_ftnTable;
-  static uint32_t ftnId;
+  uint32_t m_ftnId;
 };
 
 std::ostream& operator<< (std::ostream& os, const Ptr<FtnTable> &ftn);

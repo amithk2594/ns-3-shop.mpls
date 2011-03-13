@@ -43,6 +43,11 @@ class Nhlfe
 {
 public:
   /**
+   * @brief construct NHLFE with specified operation
+   * @param op Operation to perform
+   */
+  Nhlfe (const Operation& op);
+  /**
    * @brief construct NHLFE with specified operation and outgoing interface
    * @param op Operation to perform
    * @param outInterface Outgoing interface index   

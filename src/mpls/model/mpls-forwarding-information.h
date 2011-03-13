@@ -65,7 +65,14 @@ public:
    * @return NHLFE count
    */
   uint32_t GetNNhlfe (void) const;
-
+  /**
+   * @brief Get object index
+   */
+  uint32_t GetIndex (void) const;
+  /**
+   * @brief Set object index
+   */
+  void SetIndex (uint32_t index);
   /**
    * @brief Print NHLFE
    */
@@ -80,6 +87,7 @@ public:
 protected:
   ForwardingInformation ();
   NhlfeVector m_nhlfe;
+  uint32_t m_index;
 };
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info);

@@ -28,6 +28,7 @@ namespace ns3 {
 namespace mpls {
 
 ForwardingInformation::ForwardingInformation ()
+  : m_index (0)
 {
 }
 
@@ -55,6 +56,18 @@ uint32_t
 ForwardingInformation::GetNNhlfe (void) const
 {
   return m_nhlfe.size ();
+}
+
+uint32_t
+ForwardingInformation::GetIndex (void) const
+{
+  return m_index;
+}
+
+void
+ForwardingInformation::SetIndex (uint32_t index)
+{
+  m_index = index;
 }
 
 ForwardingInformation::Iterator

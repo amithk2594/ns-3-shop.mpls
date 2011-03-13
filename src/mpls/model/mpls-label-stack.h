@@ -84,6 +84,10 @@ public:
    */
   bool IsEmpty (void) const;
   /**
+   * @brief Return stack size
+   */
+  uint32_t GetSize (void) const;  
+  /**
    * @brief Check if stack is broken. We should drop packet if stack is broken.
    */
   bool IsBroken (void) const;

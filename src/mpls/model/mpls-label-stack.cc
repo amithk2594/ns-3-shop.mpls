@@ -110,6 +110,12 @@ LabelStack::IsBroken (void) const
 }
 
 uint32_t
+LabelStack::GetSize (void) const
+{
+  return m_entries.size ();
+}
+  
+uint32_t
 LabelStack::GetSerializedSize (void) const
 {
   return m_entries.size () * 4;

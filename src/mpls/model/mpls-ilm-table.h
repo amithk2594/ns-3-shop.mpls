@@ -91,7 +91,7 @@ public:
   
 private:
   IlmList m_ilmTable;
-  static uint32_t ilmId;
+  uint32_t m_ilmId;
 };
 
 std::ostream& operator<< (std::ostream& os, const Ptr<IlmTable> &ilm);

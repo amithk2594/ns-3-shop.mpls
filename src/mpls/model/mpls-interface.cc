@@ -19,8 +19,14 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
+#define NS_LOG_APPEND_CONTEXT \
+    if (m_node != 0) { \
+      std::clog << Simulator::Now ().GetSeconds () \
+      << " [node " << m_node->GetId () << "] "; }
+
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/simulator.h"
 
 #include "mpls.h"
 #include "mpls-interface.h"

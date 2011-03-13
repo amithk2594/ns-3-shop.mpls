@@ -19,8 +19,14 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
+#define NS_LOG_APPEND_CONTEXT \
+    if (m_mpls != 0 && m_mpls->GetObject<Node> () != 0) { \
+      std::clog << Simulator::Now ().GetSeconds () \
+      << " [node " << m_mpls->GetObject<Node> ()->GetId () << "] "; }
+
 #include "ns3/log.h"
 #include "ns3/assert.h"
+#include "ns3/simulator.h"
 
 #include "mpls-ipv4-routing.h"
 
@@ -92,15 +98,26 @@ Ipv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<cons
 
   m_demux.Assign (p, header);
 
+  NS_LOG_DEBUG ("Classification of the received packet (idev " << idev->GetIfIndex () << " " << header << ")");
+      
   Ptr<FecToNhlfe> ftn = m_mpls->LookupFtn (m_demux);
 
   if (ftn == 0)
     {
-      NS_LOG_LOGIC ("Dropping received packet -- FTN not found");
+      NS_LOG_DEBUG ("Dropping received packet -- ftn not found");
       //m_mpls->m_dropTrace (...)
       ecb (packet, header, Socket::ERROR_NOROUTETOHOST);
       return false;
     }
+
+  NS_LOG_DEBUG ("Found suitable entry -- " << Ptr<ForwardingInformation> (ftn) << 
+                " with " << ftn->GetNNhlfe () << " available nhlfe");
+
+  // push back ipv4 header
+  packet->AddHeader (header);
+
+  // TODO: we should check ttl
+  // and force ipv4 trace if it's possible
 
   LabelStack stack;
   m_mpls->MplsForward (packet, ftn, stack, header.GetTtl ());

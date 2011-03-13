@@ -24,10 +24,8 @@
 namespace ns3 {
 namespace mpls {
 
-
-uint32_t FtnTable::ftnId = 0;
-  
 FtnTable::FtnTable ()
+  : m_ftnId (0)
 {
 }
 
@@ -38,9 +36,10 @@ FtnTable::~FtnTable ()
 uint32_t
 FtnTable::AddFtn (const Ptr<FecToNhlfe> &ftn)
 {
-  m_ftnTable[++ftnId] = ftn;
+  m_ftnTable[++m_ftnId] = ftn;
+  ftn->SetIndex (m_ftnId);
   
-  return ftnId;
+  return m_ftnId;
 }
 
 Ptr<FecToNhlfe>

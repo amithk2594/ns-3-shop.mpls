@@ -24,10 +24,8 @@
 namespace ns3 {
 namespace mpls {
 
-
-uint32_t IlmTable::ilmId = 0;
-  
 IlmTable::IlmTable ()
+  : m_ilmId (0)
 {
 }
 
@@ -38,9 +36,10 @@ IlmTable::~IlmTable ()
 uint32_t
 IlmTable::AddIlm (const Ptr<IncomingLabelMap>& ilm)
 {
-  m_ilmTable[++ilmId] = ilm;
+  m_ilmTable[++m_ilmId] = ilm;
+  ilm->SetIndex (m_ilmId);
   
-  return ilmId;
+  return m_ilmId;
 }
 
 Ptr<IncomingLabelMap>
