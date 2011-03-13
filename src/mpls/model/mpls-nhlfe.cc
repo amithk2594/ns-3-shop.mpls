@@ -20,6 +20,7 @@
  */
  
 #include "ns3/assert.h"
+#include "ns3/ipv4-address.h"
 #include "mpls-nhlfe.h"
 
 namespace ns3 {
@@ -75,9 +76,46 @@ Nhlfe::GetLabel (uint32_t index) const
   return m_labels[index];
 }
   
+void
+Nhlfe::Print (std::ostream &os) const
+{
+  switch (m_opcode) 
+    {
+      case OP_POP:
+        os << "pop";
+        break;
+      case OP_SWAP:
+        os << "swap";
+        for (uint32_t i = 0; i < m_count; ++i)
+          {
+            os << "," << Label (m_labels[i]);
+          }
+        break;
+    }
+
+  os << " ";
+  
+  if (m_interface >= 0)
+    {
+      os << "oif:" << m_interface;
+    }
+  else 
+    {
+      os << "nexthop:";
+      if (Ipv4Address::IsMatchingType (m_nextHop))
+        {
+          os << Ipv4Address::ConvertFrom (m_nextHop);
+        }
+      else
+        {
+          os << m_nextHop;
+        }
+    }  
+}
+
 std::ostream& operator<< (std::ostream& os, const Nhlfe& nhlfe)
 {
-  // TODO:
+  nhlfe.Print (os);
   return os;
 }
 

@@ -57,7 +57,7 @@ ForwardingInformation::GetNNhlfe (void) const
   return m_nhlfe.size ();
 }
 
-ForwardingInformation::Iterator 
+ForwardingInformation::Iterator
 ForwardingInformation::Begin (void) const
 {
   return m_nhlfe.begin ();

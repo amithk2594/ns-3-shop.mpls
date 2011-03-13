@@ -78,6 +78,7 @@ public:
    * @brief Return label by index
    */
   uint32_t GetLabel (uint32_t index) const;
+  void Print (std::ostream &os) const;
 private:
   int32_t m_interface;
   Address m_nextHop;

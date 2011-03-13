@@ -34,12 +34,7 @@ const uint32_t Label::IMPLICIT_NULL = 3;
 Label::Label (uint32_t value)
   : m_value (value)
 {
-  NS_ASSERT_MSG (value > 0xf && value <= 0xfffff, "Invalid label value");
-}
-
-Label::Label (uint32_t value, uint32_t t)
-  : m_value (value)
-{
+  NS_ASSERT_MSG (value <= 0xfffff, "Invalid label value");
 }
 
 Label::operator uint32_t (void) const
@@ -47,32 +42,28 @@ Label::operator uint32_t (void) const
   return m_value;
 }
 
-const Label&
+Label
 Label::GetIpv4ExplicitNull (void)
 {
-  static Label label (IPV4_EXPLICIT_NULL, 0);
-  return label;
+  return Label (IPV4_EXPLICIT_NULL);
 }
 
-const Label&
+Label
 Label::GetRouteAlert (void)
 {
-  static Label label (ROUTE_ALERT, 0);
-  return label;
+  return Label (IPV4_EXPLICIT_NULL);
 }
 
-const Label&
+Label
 Label::GetIpv6ExplicitNull (void)
 {
-  static Label label (IPV6_EXPLICIT_NULL, 0);
-  return label;
+  return Label (IPV4_EXPLICIT_NULL);
 }
 
-const Label&
+Label
 Label::GetImplicitNull (void)
 {
-  static Label label (IMPLICIT_NULL, 0);
-  return label;
+  return Label (IPV4_EXPLICIT_NULL);
 }
 
 std::ostream& operator<< (std::ostream& os, const Label &label)
@@ -80,23 +71,23 @@ std::ostream& operator<< (std::ostream& os, const Label &label)
   switch (label)
   {
     case Label::IPV4_EXPLICIT_NULL:
-      os << "Ipv4 Explicit NULL";
+      os << "ipv4_explicit_null";
       break;
 
     case Label::IPV6_EXPLICIT_NULL:
-      os << "Ipv6 Explicit NULL";
+      os << "ipv6_explicit_null";
       break;
 
     case Label::ROUTE_ALERT:
-      os << "Route Alert";
+      os << "route_alert";
       break;
 
     case Label::IMPLICIT_NULL:
-      os << "Implicit NULL";
+      os << "implicit_nULL";
       break;
 
     default:
-      os << "Label " << label.m_value;
+      os << label.m_value;
   }
 
   return os;

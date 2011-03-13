@@ -22,6 +22,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 
+#include "mpls.h"
 #include "mpls-interface.h"
 
 NS_LOG_COMPONENT_DEFINE ("mpls::Interface");
@@ -100,37 +101,31 @@ Interface::IsDown () const
 void
 Interface::SetUp ()
 {
+  NS_LOG_FUNCTION (this);
   m_ifup = true;
 }
 
 void
 Interface::SetDown ()
 {
+  NS_LOG_FUNCTION (this);
   m_ifup = false;
 }
 
-void
+bool
 Interface::Send (Ptr<Packet>& packet)
 {
-// /* restore IpHeader */
-//  if (ipHeader != 0)
-//    {
-//      packet->AddHeader (*ipHeader);
-//    }
+  NS_LOG_FUNCTION (this << packet);
 
-//  /* place MPLS shim */
-//  packet->AddHeader (stack);
+  if (packet->GetSize () > m_device->GetMtu ())
+    {
+      NS_LOG_LOGIC ("dropping received packet -- MTU size exceeded");
+      return false;
+    }
 
-//  if (packet->GetSize () > outDev->GetMtu ())
-//    {
-//      NS_LOG_DEBUG ("Node[" << m_node->GetId () << "]::MplsProtocol::MplsForward (): "
-//                    "dropping received packet -- MTU size exceeded");
-//      // XXX: need MTU Path Discover algoritm
-//      return;
-//    }
-
-//  // XXX: now only PointToPoint devices supported
-//  outDev->Send (packet, outDev->GetBroadcast (), PROT_NUMBER);
+  // XXX: now only PointToPoint devices supported
+  m_device->Send (packet, m_device->GetBroadcast (), Mpls::PROT_NUMBER);
+  return true;
 }
 
 } // namespace mpls

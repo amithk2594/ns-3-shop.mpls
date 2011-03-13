@@ -39,19 +39,19 @@ public:
   /**
    * @brief Create a new MplsSwitch object
    */
-  MplsSwitch();
+  MplsSwitch ();
   /**
    * @brief Create a new MplsSwitch object
    */
-  MplsSwitch(const Ptr<Node> &node);
+  MplsSwitch (const Ptr<Node> &node);
   /**
    * @brief Create a new MplsSwitch object
    */
-  MplsSwitch(const std::string &name);  
+  MplsSwitch (const std::string &name);
   /**
    * @brief Destroy the MplsSwitch
    */
-  virtual ~MplsSwitch();
+  virtual ~MplsSwitch ();
   /**
    * @brief Add mpls interface for specified device
    * @param devIfIndex Device index
@@ -63,14 +63,14 @@ public:
   bool IsUp (uint32_t i) const;
   /**
    * @brief Enable interface
-   */  
-  void 	SetUp (uint32_t i);
+   */
+  void SetUp (uint32_t i);
   /**
    * @brief Disable interface
-   */    
-  void 	SetDown (uint32_t i);
+   */
+  void SetDown (uint32_t i);
 };
 
 } // namespace ns3
 
-#endif /* MPLS_SWITCH_H */
+#endif /* MPLS_SWITCH_HELPER_H */

@@ -51,6 +51,8 @@ class Mpls : public Object
 public:
   static TypeId GetTypeId (void);
 
+  static const uint16_t PROT_NUMBER;
+
   Mpls ();
   virtual ~Mpls ();
 

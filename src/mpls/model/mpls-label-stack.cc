@@ -19,8 +19,11 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
+#include "ns3/log.h"
 #include "ns3/assert.h"
 #include "mpls-label-stack.h"
+
+NS_LOG_COMPONENT_DEFINE ("mpls::LabelStack");
 
 namespace ns3 {
 namespace mpls {
@@ -56,12 +59,16 @@ LabelStack::~LabelStack ()
 void
 LabelStack::Push (uint32_t s)
 {
+  NS_LOG_FUNCTION (this << s);
+
   m_entries.push_back (s);
 }
 
 void
 LabelStack::Swap (uint32_t s)
 {
+  NS_LOG_FUNCTION (this << s);
+
   if (m_entries.empty ())
     {
       m_entries.push_back (s);
@@ -114,7 +121,7 @@ LabelStack::Serialize (Buffer::Iterator start) const
   NS_ASSERT_MSG (m_entries.size(), "Empty label stack");
 
   Stack::const_reverse_iterator i = m_entries.rbegin ();
-  Stack::const_reverse_iterator end = m_entries.rend () + 1;
+  Stack::const_reverse_iterator end = m_entries.rend () - 1;
 
   while (i != end)
     {
@@ -155,6 +162,21 @@ LabelStack::Deserialize (Buffer::Iterator start)
 void
 LabelStack::Print (std::ostream &os) const
 {
+  if (m_entries.size ()) 
+    {
+      os << Label (shim::GetLabel (m_entries[0]));
+      
+      for (Stack::const_iterator i = m_entries.begin () + 1;
+           i != m_entries.end ();
+           i++)
+        {
+          os << " " << Label (shim::GetLabel (*i));
+        }
+    }
+  else
+    {
+      os << "empty";
+    }
 }
 
 } // namespace mpls

@@ -36,7 +36,7 @@ template <class Address, class Mask>
 static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, bool slash)
 {
   #define MAX_STR_LEN 80
-  
+
   NS_ASSERT (strlen (addrstr) < MAX_STR_LEN);
   char tmp[MAX_STR_LEN];
   char ch = 0;
@@ -60,266 +60,263 @@ static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, bo
 }
 
 
-Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask)
+Ipv4SourceAddressPrefix::Ipv4SourceAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv4SourceAddressPrefixFec::Ipv4SourceAddressPrefixFec (char const *address)
+Ipv4SourceAddressPrefix::Ipv4SourceAddressPrefix (char const *address)
   : m_mask (Ipv4Mask ("/32"))
 {
   AsciiToPrefix (address, m_address, m_mask, true);
 }
 
 bool
-Ipv4SourceAddressPrefixFec::operator() (PacketDemux &pd) const
+Ipv4SourceAddressPrefix::operator() (PacketDemux &pd) const
 {
   const Ipv4Header* h = pd.GetIpv4Header ();
-  
+
   if (h && (m_mask.IsMatch (h->GetSource (), m_address)))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
-Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask)
+Ipv4DestinationAddressPrefix::Ipv4DestinationAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv4DestinationAddressPrefixFec::Ipv4DestinationAddressPrefixFec (char const *address)
+Ipv4DestinationAddressPrefix::Ipv4DestinationAddressPrefix (char const *address)
   : m_mask (Ipv4Mask ("/32"))
 {
   AsciiToPrefix (address, m_address, m_mask, true);
 }
 
 bool
-Ipv4DestinationAddressPrefixFec::operator() (PacketDemux &pd) const
+Ipv4DestinationAddressPrefix::operator() (PacketDemux &pd) const
 {
   const Ipv4Header* h = pd.GetIpv4Header ();
-  
+
   if (h && (m_mask.IsMatch (h->GetDestination (), m_address)))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
-Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask)
+Ipv6SourceAddressPrefix::Ipv6SourceAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv6SourceAddressPrefixFec::Ipv6SourceAddressPrefixFec (char const *address)
+Ipv6SourceAddressPrefix::Ipv6SourceAddressPrefix (char const *address)
   : m_mask (Ipv6Prefix (128))
 {
   AsciiToPrefix (address, m_address, m_mask, false);
 }
 
 bool
-Ipv6SourceAddressPrefixFec::operator() (PacketDemux &pd) const
+Ipv6SourceAddressPrefix::operator() (PacketDemux &pd) const
 {
   const Ipv6Header* h = pd.GetIpv6Header ();
-  
+
   if (h && (m_mask.IsMatch (h->GetSourceAddress (), m_address)))
     {
       return true;
     }
-  
+
   return false;
 }
 
-  
-Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask)
+Ipv6DestinationAddressPrefix::Ipv6DestinationAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv6DestinationAddressPrefixFec::Ipv6DestinationAddressPrefixFec (char const *address)
+Ipv6DestinationAddressPrefix::Ipv6DestinationAddressPrefix (char const *address)
   : m_mask (Ipv6Prefix (128))
 {
   AsciiToPrefix (address, m_address, m_mask, false);
 }
 
 bool
-Ipv6DestinationAddressPrefixFec::operator() (PacketDemux &pd) const
+Ipv6DestinationAddressPrefix::operator() (PacketDemux &pd) const
 {
   const Ipv6Header* h = pd.GetIpv6Header ();
-  
+
   if (h && (m_mask.IsMatch (h->GetDestinationAddress (), m_address)))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
-UdpSourcePortFec::UdpSourcePortFec (uint16_t port)
+UdpSourcePort::UdpSourcePort (uint16_t port)
   : m_port (port)
 {
 }
 
 bool
-UdpSourcePortFec::operator() (PacketDemux& pd) const
+UdpSourcePort::operator() (PacketDemux& pd) const
 {
   const UdpHeader* h = pd.GetUdpHeader ();
-  
+
   if ((h) && (h->GetSourcePort () == m_port))
     {
       return true;
     }
-  
+
   return false;
 }
 
-
-
-UdpSourcePortRangeFec::UdpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort)
+UdpSourcePortRange::UdpSourcePortRange (uint16_t minPort, uint16_t maxPort)
   : m_minPort (minPort),
     m_maxPort (maxPort)
 {
 }
 
 bool
-UdpSourcePortRangeFec::operator() (PacketDemux& pd) const
+UdpSourcePortRange::operator() (PacketDemux& pd) const
 {
   const UdpHeader* h = pd.GetUdpHeader ();
-  
+
   if ((h) && (h->GetSourcePort () >= m_minPort) && (h->GetSourcePort () <= m_maxPort))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
-UdpDestinationPortFec::UdpDestinationPortFec (uint16_t port)
+UdpDestinationPort::UdpDestinationPort (uint16_t port)
   : m_port (port)
 {
 }
 
 bool
-UdpDestinationPortFec::operator() (PacketDemux& pd) const
+UdpDestinationPort::operator() (PacketDemux& pd) const
 {
   const UdpHeader* h = pd.GetUdpHeader ();
-  
+
   if (h && (h->GetDestinationPort () == m_port))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
 
-UdpDestinationPortRangeFec::UdpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort)
+UdpDestinationPortRange::UdpDestinationPortRange (uint16_t minPort, uint16_t maxPort)
   : m_minPort (minPort),
     m_maxPort (maxPort)
 {
 }
 
 bool
-UdpDestinationPortRangeFec::operator() (PacketDemux& pd) const
+UdpDestinationPortRange::operator() (PacketDemux& pd) const
 {
   const UdpHeader* h = pd.GetUdpHeader ();
-  
+
   if (h && (h->GetDestinationPort () >= m_minPort) && (h->GetDestinationPort () <= m_maxPort))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
-TcpSourcePortFec::TcpSourcePortFec (uint16_t port)
+TcpSourcePort::TcpSourcePort (uint16_t port)
   : m_port (port)
 {
 }
 
 bool
-TcpSourcePortFec::operator() (PacketDemux& pd) const
+TcpSourcePort::operator() (PacketDemux& pd) const
 {
   const TcpHeader* h = pd.GetTcpHeader ();
-  
+
   if (h && (h->GetSourcePort () == m_port))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
 
-TcpSourcePortRangeFec::TcpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort)
+TcpSourcePortRange::TcpSourcePortRange (uint16_t minPort, uint16_t maxPort)
   : m_minPort (minPort),
     m_maxPort (maxPort)
 {
 }
 
 bool
-TcpSourcePortRangeFec::operator() (PacketDemux& pd) const
+TcpSourcePortRange::operator() (PacketDemux& pd) const
 {
   const TcpHeader* h = pd.GetTcpHeader ();
-  
+
   if (h && (h->GetSourcePort () >= m_minPort) && (h->GetSourcePort () <= m_maxPort))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
-TcpDestinationPortFec::TcpDestinationPortFec (uint16_t port)
+TcpDestinationPort::TcpDestinationPort (uint16_t port)
   : m_port (port)
 {
 }
 
 bool
-TcpDestinationPortFec::operator() (PacketDemux& pd) const
+TcpDestinationPort::operator() (PacketDemux& pd) const
 {
   const TcpHeader* h = pd.GetTcpHeader ();
-  
+
   if (h && (h->GetDestinationPort () == m_port))
     {
       return true;
     }
-  
+
   return false;
 }
 
 
 
-TcpDestinationPortRangeFec::TcpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort)
+TcpDestinationPortRange::TcpDestinationPortRange (uint16_t minPort, uint16_t maxPort)
   : m_minPort (minPort),
     m_maxPort (maxPort)
 {
 }
 
 bool
-TcpDestinationPortRangeFec::operator() (PacketDemux& pd) const
+TcpDestinationPortRange::operator() (PacketDemux& pd) const
 {
   const TcpHeader* h = pd.GetTcpHeader ();
-  
+
   if (h && (h->GetDestinationPort () >= m_minPort) && (h->GetDestinationPort () <= m_maxPort))
     {
       return true;
     }
-  
+
   return false;
 }
 

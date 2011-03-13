@@ -65,15 +65,15 @@ public:
    * @return NHLFE count
    */
   uint32_t GetNNhlfe (void) const;
+
   /**
    * @brief Print NHLFE
-   * @param os the stream to print to
    */
   virtual void Print (std::ostream &os) const = 0;
-  
+
   typedef std::vector<Nhlfe> NhlfeVector;
   typedef NhlfeVector::const_iterator Iterator;
- 
+
   Iterator Begin (void) const;
   Iterator End (void) const;
 
@@ -82,9 +82,6 @@ protected:
   NhlfeVector m_nhlfe;
 };
 
-/**
- * \brief output operation for ForwardingInformation
- */
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info);
 
 } // namespace mpls

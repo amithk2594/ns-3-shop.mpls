@@ -69,7 +69,7 @@ public:
 
   typename Operation1::result_type
   operator() (typename Operation2::argument_type& x) const
-  { 
+  {
     return m_fn1 (m_fn2 (x));
   }
 };
@@ -82,7 +82,7 @@ protected:
   Operation1 m_fn1;
   Operation2 m_fn2;
   Operation3 m_fn3;
-  
+
 public:
   BinaryCompose(const Operation1& x, const Operation2& y, const Operation3& z): m_fn1(x), m_fn2(y), m_fn3(z) {}
 
@@ -97,7 +97,7 @@ public:
 // Logic Operations
 
 template <class LeftPred, class RightPred>
-BinaryCompose<std::logical_and<bool>, LeftPred, RightPred> 
+BinaryCompose<std::logical_and<bool>, LeftPred, RightPred>
 operator&& (const LeftPred &left, const RightPred &right)
 {
   return BinaryCompose<std::logical_and<bool>, LeftPred, RightPred> (std::logical_and<bool> (), left, right);
@@ -105,7 +105,7 @@ operator&& (const LeftPred &left, const RightPred &right)
 
 
 template <class LeftPred, class RightPred>
-BinaryCompose<std::logical_or<bool>, LeftPred, RightPred> 
+BinaryCompose<std::logical_or<bool>, LeftPred, RightPred>
 operator|| (const LeftPred &left, const RightPred &right)
 {
   return BinaryCompose<std::logical_or<bool>, LeftPred, RightPred> (std::logical_or<bool> (), left, right);
@@ -113,7 +113,7 @@ operator|| (const LeftPred &left, const RightPred &right)
 
 
 template <class Pred>
-UnaryCompose<std::logical_not<bool>, Pred> 
+UnaryCompose<std::logical_not<bool>, Pred>
 operator! (const Pred &pred)
 {
   return UnaryCompose<std::logical_not<bool>, Pred> (std::logical_not<bool> (), pred);
@@ -125,16 +125,16 @@ operator! (const Pred &pred)
 /**
  * \ingroup Mpls
  * \brief
- * Ipv4SourceAddressPrefixFec matches a given IPv4 source address prefix
+ * Ipv4SourceAddressPrefix matches a given IPv4 source address prefix
  */
-class Ipv4SourceAddressPrefixFec : public Fec
+class Ipv4SourceAddressPrefix : public Fec
 {
 public:
-  Ipv4SourceAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
-  Ipv4SourceAddressPrefixFec (char const *address);
+  Ipv4SourceAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
+  Ipv4SourceAddressPrefix (char const *address);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   Ipv4Address m_address;
   Ipv4Mask m_mask;
@@ -144,16 +144,16 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * Ipv4DestinationAddressPrefixFec matches a given IPv4 destination address prefix
+ * Ipv4DestinationAddressPrefix matches a given IPv4 destination address prefix
  */
-class Ipv4DestinationAddressPrefixFec : public Fec
+class Ipv4DestinationAddressPrefix : public Fec
 {
 public:
-  Ipv4DestinationAddressPrefixFec (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
-  Ipv4DestinationAddressPrefixFec (char const *address);
+  Ipv4DestinationAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
+  Ipv4DestinationAddressPrefix (char const *address);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   Ipv4Address m_address;
   Ipv4Mask m_mask;
@@ -163,16 +163,16 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * Ipv6SourceAddressPrefixFec matches a given IPv6 source address prefix
+ * Ipv6SourceAddressPrefix matches a given IPv6 source address prefix
  */
-class Ipv6SourceAddressPrefixFec : public Fec
+class Ipv6SourceAddressPrefix : public Fec
 {
 public:
-  Ipv6SourceAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
-  Ipv6SourceAddressPrefixFec (char const *address);
+  Ipv6SourceAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
+  Ipv6SourceAddressPrefix (char const *address);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   Ipv6Address m_address;
   Ipv6Prefix m_mask;
@@ -184,14 +184,14 @@ private:
  * \brief
  * Ipv6DestinationAddressPrefixFec matches a given IPv6 destination address prefix
  */
-class Ipv6DestinationAddressPrefixFec : public Fec
+class Ipv6DestinationAddressPrefix : public Fec
 {
 public:
-  Ipv6DestinationAddressPrefixFec (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
-  Ipv6DestinationAddressPrefixFec (char const *address);
+  Ipv6DestinationAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
+  Ipv6DestinationAddressPrefix (char const *address);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   Ipv6Address m_address;
   Ipv6Prefix m_mask;
@@ -201,15 +201,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * UdpSourcePortFec matches a given UDP source port
+ * UdpSourcePort matches a given UDP source port
  */
-class UdpSourcePortFec : public Fec
+class UdpSourcePort : public Fec
 {
 public:
-  UdpSourcePortFec (uint16_t port);
+  UdpSourcePort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_port;
 };
@@ -218,15 +218,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * UdpSourcePortRangeFec matches a given range of UDP source ports
+ * UdpSourcePortRange matches a given range of UDP source ports
  */
-class UdpSourcePortRangeFec : public Fec
+class UdpSourcePortRange : public Fec
 {
 public:
-  UdpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort);
+  UdpSourcePortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;
@@ -236,15 +236,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * UdpDestinationPortFec matches a given UDP destination port
+ * UdpDestinationPort matches a given UDP destination port
  */
-class UdpDestinationPortFec : public Fec
+class UdpDestinationPort : public Fec
 {
 public:
-  UdpDestinationPortFec (uint16_t port);
+  UdpDestinationPort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_port;
 };
@@ -253,15 +253,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * UdpDestinationPortRangeFec matches a given range of UDP destination ports
+ * UdpDestinationPortRange matches a given range of UDP destination ports
  */
-class UdpDestinationPortRangeFec : public Fec
+class UdpDestinationPortRange : public Fec
 {
 public:
-  UdpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort);
+  UdpDestinationPortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;
@@ -271,15 +271,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * TcpSourcePortFec matches a given TCP source port
+ * TcpSourcePort matches a given TCP source port
  */
-class TcpSourcePortFec : public Fec
+class TcpSourcePort : public Fec
 {
 public:
-  TcpSourcePortFec (uint16_t port);
+  TcpSourcePort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_port;
 };
@@ -288,15 +288,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * TcpSourcePortRangeFec matches a given range of TCP source ports
+ * TcpSourcePortRange matches a given range of TCP source ports
  */
-class TcpSourcePortRangeFec : public Fec
+class TcpSourcePortRange : public Fec
 {
 public:
-  TcpSourcePortRangeFec (uint16_t minPort, uint16_t maxPort);
+  TcpSourcePortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;
@@ -306,15 +306,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * TcpDestinationPortFec matches a given TCP destination port
+ * TcpDestinationPort matches a given TCP destination port
  */
-class TcpDestinationPortFec : public Fec
+class TcpDestinationPort : public Fec
 {
 public:
-  TcpDestinationPortFec (uint16_t port);
+  TcpDestinationPort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_port;
 };
@@ -323,15 +323,15 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * TcpDestinationPortRangeFec matches a given range of TCP destination ports
+ * TcpDestinationPortRange matches a given range of TCP destination ports
  */
-class TcpDestinationPortRangeFec : public Fec
+class TcpDestinationPortRange : public Fec
 {
 public:
-  TcpDestinationPortRangeFec (uint16_t minPort, uint16_t maxPort);
+  TcpDestinationPortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-  
+
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;

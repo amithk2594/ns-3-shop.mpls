@@ -18,7 +18,7 @@
  * Author: Andrey Churin <aachurin@gmail.com>
  *         Stefano Avallone <stavallo@gmail.com>
  */
- 
+
 #include "mpls-fec-to-nhlfe.h"
 
 namespace ns3 {
@@ -31,7 +31,7 @@ FecToNhlfe::FecToNhlfe (Fec* fec, const Nhlfe &nhlfe)
 
   AddNhlfe (nhlfe);
 }
-  
+
 FecToNhlfe::~FecToNhlfe ()
 {
   delete m_fec;
@@ -54,6 +54,7 @@ FecToNhlfe::SetFec (Fec* fec)
 void
 FecToNhlfe::Print (std::ostream &os) const
 {
+  os << "ftn: " << this;
 }
 
 } // namespace mpls

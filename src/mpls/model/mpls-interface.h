@@ -77,7 +77,7 @@ public:
   /**
    * @brier Send packet 
    */
-  void Send (Ptr<Packet>& packet);
+  bool Send (Ptr<Packet>& packet);
   /**
    * @brief Get device associated with interface
    */

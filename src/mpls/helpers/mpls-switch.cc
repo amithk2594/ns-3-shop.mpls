@@ -45,7 +45,7 @@ MplsSwitch::MplsSwitch (const std::string &node)
 {
 }
 
-MplsSwitch::~MplsSwitch()
+MplsSwitch::~MplsSwitch ()
 {
 }
 

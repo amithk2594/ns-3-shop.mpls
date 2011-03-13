@@ -25,6 +25,8 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Mpls);
 
+const uint16_t Mpls::PROT_NUMBER = 0x8847;
+
 TypeId
 Mpls::GetTypeId (void)
 {
