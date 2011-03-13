@@ -58,7 +58,7 @@ Ipv4Protocol::~Ipv4Protocol ()
 void
 Ipv4Protocol::NotifyNewAggregate ()
 {
-  if (!m_mpls)
+  if (m_mpls != 0)
     {
       Ptr<Mpls> mpls = GetObject<Mpls> ();
       if (mpls != 0)

@@ -87,7 +87,7 @@ MplsProtocol::NotifyNewAggregate ()
       if (ipv4 != 0)
         {
           m_ipv4 = DynamicCast<mpls::Ipv4Protocol> (ipv4);
-          NS_ASSERT_MSG (m_ipv4, "Use mpls::Ipv4Protocol instead of default Ipv4");
+          NS_ASSERT_MSG (m_ipv4 != 0, "Use mpls::Ipv4Protocol instead of default Ipv4");
         }
     }
 
@@ -206,7 +206,7 @@ MplsProtocol::GetNextHopRoute (const Address &address) const
       header.SetDestination(Ipv4Address::ConvertFrom (address));
 
       Ptr<Ipv4RoutingProtocol> routing = m_ipv4->GetRoutingProtocol ();
-      NS_ASSERT_MSG (routing, "Need a ipv4 routing protocol object");
+      NS_ASSERT_MSG (routing != 0, "Need a ipv4 routing protocol object");
 
       // XXX: i don't know if we can do this
       Ptr<Ipv4Route> route = routing->RouteOutput (0, header, 0, sockerr);
@@ -606,7 +606,7 @@ MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev
       Socket::SocketErrno sockerr;
 
       Ptr<Ipv4RoutingProtocol> routing = m_ipv4->GetRoutingProtocol ();
-      NS_ASSERT_MSG (routing, "Need a ipv4 routing protocol object");
+      NS_ASSERT_MSG (routing != 0, "Need a ipv4 routing protocol object");
       route = routing->RouteOutput (packet, header, outDev, sockerr);
     }
 

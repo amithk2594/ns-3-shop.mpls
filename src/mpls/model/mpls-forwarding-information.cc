@@ -42,13 +42,13 @@ ForwardingInformation::AddNhlfe (const Nhlfe& nhlfe)
 {
   uint32_t index = m_nhlfe.size ();
   m_nhlfe.push_back (nhlfe);
-	return index;
+  return index;
 }
 
 void
 ForwardingInformation::RemoveNhlfe (uint32_t index)
 {
-	NS_ASSERT_MSG (index < m_nhlfe.size (), "Invalid NHLFE index");
+  NS_ASSERT_MSG (index < m_nhlfe.size (), "Invalid NHLFE index");
   m_nhlfe.erase (m_nhlfe.begin () + index);
 }
 

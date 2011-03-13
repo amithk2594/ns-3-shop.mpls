@@ -37,9 +37,9 @@ main (int argc, char *argv[])
   LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("mpls::MplsProtocol", LOG_LEVEL_DEBUG);
-  LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);  
+  LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
 
-//  LogComponentEnable ("mpls::LabelStack", LOG_LEVEL_ALL);  
+//  LogComponentEnable ("mpls::LabelStack", LOG_LEVEL_ALL);
 
   NodeContainer hosts;
   NodeContainer routers;
@@ -99,10 +99,10 @@ main (int argc, char *argv[])
   MplsSwitch sw1 (routers.Get (0));
 
   sw1.AddFtn (
-    Ipv4DestinationAddressPrefix ("192.168.4.2"), 
-        Nhlfe (Pop (), Ipv4Address ("10.1.1.2")),     // invalid nhlfe  
+    Ipv4DestinationAddressPrefix ("192.168.4.2"),
+        Nhlfe (Pop (), Ipv4Address ("10.1.1.2")),     // invalid nhlfe
         Nhlfe (Swap (200), Ipv4Address ("10.1.2.1")), // invalid nhlfe
-        Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe  
+        Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe
   );
 
   MplsSwitch sw2 (routers.Get (1));
@@ -110,9 +110,9 @@ main (int argc, char *argv[])
 
   MplsSwitch sw3 (routers.Get (2));
   //sw3.AddIlm (200, Nhlfe(Pop ()));
-  // we can also use 
+  // we can also use
   sw3.AddIlm (200, Nhlfe(Pop (), Ipv4Address ("192.168.4.2")));
-  
+
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   mpls.PrintInterfaces (routers);
