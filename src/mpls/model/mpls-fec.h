@@ -97,7 +97,7 @@ public:
 // Logic Operations
 
 template <class LeftPred, class RightPred>
-BinaryCompose<std::logical_and<bool>, LeftPred, RightPred>
+static BinaryCompose<std::logical_and<bool>, LeftPred, RightPred>
 operator&& (const LeftPred &left, const RightPred &right)
 {
   return BinaryCompose<std::logical_and<bool>, LeftPred, RightPred> (std::logical_and<bool> (), left, right);
@@ -105,7 +105,7 @@ operator&& (const LeftPred &left, const RightPred &right)
 
 
 template <class LeftPred, class RightPred>
-BinaryCompose<std::logical_or<bool>, LeftPred, RightPred>
+static BinaryCompose<std::logical_or<bool>, LeftPred, RightPred>
 operator|| (const LeftPred &left, const RightPred &right)
 {
   return BinaryCompose<std::logical_or<bool>, LeftPred, RightPred> (std::logical_or<bool> (), left, right);
@@ -113,7 +113,7 @@ operator|| (const LeftPred &left, const RightPred &right)
 
 
 template <class Pred>
-UnaryCompose<std::logical_not<bool>, Pred>
+static UnaryCompose<std::logical_not<bool>, Pred>
 operator! (const Pred &pred)
 {
   return UnaryCompose<std::logical_not<bool>, Pred> (std::logical_not<bool> (), pred);
