@@ -109,12 +109,12 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
         
       os << std::endl;
 
-      if (mpls)
+      if (mpls != 0)
         {
           PrintMplsInfo (os, dev, mpls);
         }
 
-      if (ipv4)
+      if (ipv4 != 0)
         { 
           PrintIpv4Info (os, dev, ipv4);
         }
