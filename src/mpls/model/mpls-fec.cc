@@ -60,20 +60,20 @@ static void AsciiToPrefix (char const *addrstr, Address &address, Mask &mask, bo
 }
 
 
-Ipv4SourceAddressPrefix::Ipv4SourceAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask)
+Ipv4Source::Ipv4Source (const Ipv4Address &address, const Ipv4Mask &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv4SourceAddressPrefix::Ipv4SourceAddressPrefix (char const *address)
+Ipv4Source::Ipv4Source (char const *address)
   : m_mask (Ipv4Mask ("/32"))
 {
   AsciiToPrefix (address, m_address, m_mask, true);
 }
 
 bool
-Ipv4SourceAddressPrefix::operator() (PacketDemux &pd) const
+Ipv4Source::operator() (PacketDemux &pd) const
 {
   const Ipv4Header* h = pd.GetIpv4Header ();
 
@@ -85,21 +85,30 @@ Ipv4SourceAddressPrefix::operator() (PacketDemux &pd) const
   return false;
 }
 
+void
+Ipv4Source::Print (std::ostream &os) const
+{
+  os << "inet src:" << m_address;
+  if (m_mask.GetPrefixLength ())
+    {
+      os << "/" << m_mask.GetPrefixLength ();
+    }
+}
 
-Ipv4DestinationAddressPrefix::Ipv4DestinationAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask)
+Ipv4Destination::Ipv4Destination (const Ipv4Address &address, const Ipv4Mask &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv4DestinationAddressPrefix::Ipv4DestinationAddressPrefix (char const *address)
+Ipv4Destination::Ipv4Destination (char const *address)
   : m_mask (Ipv4Mask ("/32"))
 {
   AsciiToPrefix (address, m_address, m_mask, true);
 }
 
 bool
-Ipv4DestinationAddressPrefix::operator() (PacketDemux &pd) const
+Ipv4Destination::operator() (PacketDemux &pd) const
 {
   const Ipv4Header* h = pd.GetIpv4Header ();
 
@@ -111,21 +120,30 @@ Ipv4DestinationAddressPrefix::operator() (PacketDemux &pd) const
   return false;
 }
 
+void
+Ipv4Destination::Print (std::ostream &os) const
+{
+  os << "inet dst:" << m_address;
+  if (m_mask.GetPrefixLength ())
+    {
+      os << "/" << m_mask.GetPrefixLength ();
+    }
+}
 
-Ipv6SourceAddressPrefix::Ipv6SourceAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask)
+Ipv6Source::Ipv6Source (const Ipv6Address &address, const Ipv6Prefix &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv6SourceAddressPrefix::Ipv6SourceAddressPrefix (char const *address)
+Ipv6Source::Ipv6Source (char const *address)
   : m_mask (Ipv6Prefix (128))
 {
   AsciiToPrefix (address, m_address, m_mask, false);
 }
 
 bool
-Ipv6SourceAddressPrefix::operator() (PacketDemux &pd) const
+Ipv6Source::operator() (PacketDemux &pd) const
 {
   const Ipv6Header* h = pd.GetIpv6Header ();
 
@@ -137,20 +155,30 @@ Ipv6SourceAddressPrefix::operator() (PacketDemux &pd) const
   return false;
 }
 
-Ipv6DestinationAddressPrefix::Ipv6DestinationAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask)
+void
+Ipv6Source::Print (std::ostream &os) const
+{
+  os << "inet6 src:" << m_address;
+  if (m_mask.GetPrefixLength ())
+    {
+      os << "/" << m_mask.GetPrefixLength ();
+    }
+}
+
+Ipv6Destination::Ipv6Destination (const Ipv6Address &address, const Ipv6Prefix &mask)
   : m_address (address),
     m_mask (mask)
 {
 }
 
-Ipv6DestinationAddressPrefix::Ipv6DestinationAddressPrefix (char const *address)
+Ipv6Destination::Ipv6Destination (char const *address)
   : m_mask (Ipv6Prefix (128))
 {
   AsciiToPrefix (address, m_address, m_mask, false);
 }
 
 bool
-Ipv6DestinationAddressPrefix::operator() (PacketDemux &pd) const
+Ipv6Destination::operator() (PacketDemux &pd) const
 {
   const Ipv6Header* h = pd.GetIpv6Header ();
 
@@ -162,6 +190,15 @@ Ipv6DestinationAddressPrefix::operator() (PacketDemux &pd) const
   return false;
 }
 
+void
+Ipv6Destination::Print (std::ostream &os) const
+{
+  os << "inet6 dst:" << m_address;
+  if (m_mask.GetPrefixLength ())
+    {
+      os << "/" << m_mask.GetPrefixLength ();
+    }
+}
 
 UdpSourcePort::UdpSourcePort (uint16_t port)
   : m_port (port)
@@ -180,6 +217,13 @@ UdpSourcePort::operator() (PacketDemux& pd) const
 
   return false;
 }
+
+void
+UdpSourcePort::Print (std::ostream &os) const
+{
+  os << "udp src:" << m_port;
+}
+
 
 UdpSourcePortRange::UdpSourcePortRange (uint16_t minPort, uint16_t maxPort)
   : m_minPort (minPort),
@@ -200,6 +244,11 @@ UdpSourcePortRange::operator() (PacketDemux& pd) const
   return false;
 }
 
+void
+UdpSourcePortRange::Print (std::ostream &os) const
+{
+  os << "udp src:" << m_minPort << "-" << m_maxPort;
+}
 
 UdpDestinationPort::UdpDestinationPort (uint16_t port)
   : m_port (port)
@@ -219,7 +268,11 @@ UdpDestinationPort::operator() (PacketDemux& pd) const
   return false;
 }
 
-
+void
+UdpDestinationPort::Print (std::ostream &os) const
+{
+  os << "udp dst:" << m_port;
+}
 
 UdpDestinationPortRange::UdpDestinationPortRange (uint16_t minPort, uint16_t maxPort)
   : m_minPort (minPort),
@@ -240,7 +293,12 @@ UdpDestinationPortRange::operator() (PacketDemux& pd) const
   return false;
 }
 
-
+void
+UdpDestinationPortRange::Print (std::ostream &os) const
+{
+  os << "udp dst:" << m_minPort << "-" << m_maxPort;
+}
+  
 TcpSourcePort::TcpSourcePort (uint16_t port)
   : m_port (port)
 {
@@ -259,7 +317,11 @@ TcpSourcePort::operator() (PacketDemux& pd) const
   return false;
 }
 
-
+void
+TcpSourcePort::Print (std::ostream &os) const
+{
+  os << "tcp src:" << m_port;
+}
 
 TcpSourcePortRange::TcpSourcePortRange (uint16_t minPort, uint16_t maxPort)
   : m_minPort (minPort),
@@ -278,6 +340,12 @@ TcpSourcePortRange::operator() (PacketDemux& pd) const
     }
 
   return false;
+}
+
+void
+TcpSourcePortRange::Print (std::ostream &os) const
+{
+  os << "tcp src:" << m_minPort << "-" << m_maxPort;
 }
 
 
@@ -299,6 +367,11 @@ TcpDestinationPort::operator() (PacketDemux& pd) const
   return false;
 }
 
+void
+TcpDestinationPort::Print (std::ostream &os) const
+{
+  os << "tcp dst:" << m_port;
+}
 
 
 TcpDestinationPortRange::TcpDestinationPortRange (uint16_t minPort, uint16_t maxPort)
@@ -318,6 +391,12 @@ TcpDestinationPortRange::operator() (PacketDemux& pd) const
     }
 
   return false;
+}
+
+void
+TcpDestinationPortRange::Print (std::ostream &os) const
+{
+  os << "tcp dst:" << m_minPort << "-" << m_maxPort;
 }
 
 } // namespace mpls

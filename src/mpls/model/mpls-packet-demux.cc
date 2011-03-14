@@ -86,7 +86,6 @@ PacketDemux::~PacketDemux ()
 void
 PacketDemux::Assign (const Ptr<const Packet> &packet, const Ipv4Header &header)
 {
-  ResetHolders ();
   m_ipv4Header = &header;
   m_packet = packet->Copy ();
 }
@@ -98,8 +97,9 @@ PacketDemux::Assign (const Ptr<const Packet> &packet, const Ipv6Header &header)
 }
 
 void
-PacketDemux::ResetHolders (void)
+PacketDemux::Release (void)
 {
+  m_packet = 0;
   m_ipv4Header = 0;
   m_ipv6Header = 0;
   m_tcpHolder.Reset ();

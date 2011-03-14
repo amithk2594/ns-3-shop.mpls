@@ -77,7 +77,7 @@ main (int argc, char *argv[])
   apps.Stop (Seconds (2.0));
 
   // Hosts configuration
-  devices = pointToPoint.Install (routers.Get(0), hosts.Get(0));
+  devices = pointToPoint.Install (hosts.Get(0), routers.Get(0));
   address.SetBase ("192.168.1.0", "255.255.255.0");
   address.Assign (devices);
 
@@ -98,11 +98,13 @@ main (int argc, char *argv[])
 
   MplsSwitch sw1 (routers.Get (0));
 
+  std::cout << (Ipv4Source ("192.168.4.2") && TcpSourcePort (200)) << std::endl;
+  
   sw1.AddFtn (
-    Ipv4DestinationAddressPrefix ("192.168.4.2"),
-        Nhlfe (Pop (), Ipv4Address ("10.1.1.2")),     // invalid nhlfe
-        Nhlfe (Swap (200), Ipv4Address ("10.1.2.1")), // invalid nhlfe
-        Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe
+      Ipv4Source ("192.168.1.1") || Ipv4Destination ("192.168.4.2"),
+          Nhlfe (Pop (), Ipv4Address ("10.1.1.2")),     // invalid nhlfe
+          Nhlfe (Swap (200), Ipv4Address ("10.1.2.1")), // invalid nhlfe
+          Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe
   );
 
   MplsSwitch sw2 (routers.Get (1));

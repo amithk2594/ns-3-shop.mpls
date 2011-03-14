@@ -76,6 +76,10 @@ public:
    */
   void Assign (const Ptr<const Packet> &packet, const Ipv6Header &header);  
   /**
+   * @brief Release
+   */  
+  void Release (void);    
+  /**
    * \return Ipv4 header if exists
    */
   const Ipv4Header* GetIpv4Header (void);
@@ -94,7 +98,6 @@ public:
   
 private:
   Header* GetHeaderFromHolder (uint8_t protocol, HeaderHolder& holder);
-  void ResetHolders (void);  
 
   Ptr<Packet> m_packet;
   const Ipv4Header* m_ipv4Header;

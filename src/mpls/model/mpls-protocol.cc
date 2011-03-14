@@ -151,7 +151,7 @@ MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 {
   NS_LOG_FUNCTION (this << &device);
 
-  m_node->RegisterProtocolHandler (MakeCallback (&MplsProtocol::Receive, this), Mpls::PROT_NUMBER, device);
+  m_node->RegisterProtocolHandler (MakeCallback (&MplsProtocol::ReceiveMpls, this), Mpls::PROT_NUMBER, device);
 
   int32_t index = m_interfaces.size ();
   Ptr<Interface> interface = CreateObject<Interface> (index);
@@ -226,8 +226,54 @@ MplsProtocol::GetNInterfaces (void) const
   return m_interfaces.size ();
 }
 
+bool
+MplsProtocol::ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, const Ptr<const NetDevice> &device)
+{
+  NS_LOG_DEBUG ("Classification of the received packet (idev " << device->GetIfIndex () << " " << header << ")");
+
+  uint8_t ttl = header.GetTtl ();
+  
+  if (ttl <= 1)
+    {
+      NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
+      //m_dropTrace (...);
+      return true;
+    }
+
+  m_demux.Assign (packet, header);
+      
+  Ptr<FecToNhlfe> ftn = LookupFtn (m_demux);
+  
+  m_demux.Release ();
+
+  if (ftn == 0)
+    {
+      NS_LOG_DEBUG ("Dropping received packet -- ftn not found");
+      //m_dropTrace (...)
+      return false;
+    }
+
+  NS_LOG_DEBUG ("Found suitable entry -- " << Ptr<ForwardingInformation> (ftn) << 
+                " with " << ftn->GetNNhlfe () << " available nhlfe");
+
+  // push back ipv4 header
+  packet->AddHeader (header);
+
+  LabelStack stack;
+  MplsForward (packet, ftn, stack, ttl - 1);
+
+  return true;
+}
+
+bool
+MplsProtocol::ReceiveIpv6 (const Ptr<Packet> &packet, const Ipv6Header &header, const Ptr<const NetDevice> &device)
+{
+  NS_ASSERT_MSG (0, "Ipv6 is not supported");
+  return false;
+}
+
 void
-MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
                          const Address &to, NetDevice::PacketType packetType)
 {
   NS_LOG_FUNCTION (this << &device << p << protocol << from);
@@ -353,7 +399,7 @@ MplsProtocol::Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t prot
 }
 
 void
-MplsProtocol::MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, 
+MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, 
     int8_t ttl)
 {
   NS_LOG_FUNCTION (this << packet << fwd << stack << (uint32_t)ttl);
@@ -517,8 +563,8 @@ MplsProtocol::LookupFtn (PacketDemux &demux)
 }
 
 bool
-MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
-    Ptr<Interface> &outInterface)
+MplsProtocol::RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
+    const Ptr<Interface> &outInterface)
 {
   NS_LOG_FUNCTION (this << packet << nhlfe << stack << (uint32_t)ttl << outInterface);
 
@@ -585,7 +631,8 @@ MplsProtocol::RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelSta
 }
 
 void
-MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev, Ptr<Ipv4Route> route)
+MplsProtocol::IpForward (const Ptr<Packet> &packet, uint8_t ttl, const Ptr<NetDevice> &outDev, 
+  const Ptr<Ipv4Route> &route)
 {
   NS_LOG_FUNCTION (this << packet << (uint32_t)ttl << outDev << route);
 
@@ -607,10 +654,13 @@ MplsProtocol::IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev
 
       Ptr<Ipv4RoutingProtocol> routing = m_ipv4->GetRoutingProtocol ();
       NS_ASSERT_MSG (routing != 0, "Need a ipv4 routing protocol object");
-      route = routing->RouteOutput (packet, header, outDev, sockerr);
-    }
 
-  m_ipv4->SendWithHeader (packet, header, route);
+      m_ipv4->SendWithHeader (packet, header, routing->RouteOutput (packet, header, outDev, sockerr));
+    }
+  else
+    {
+      m_ipv4->SendWithHeader (packet, header, route);
+    }
 }
 
 } // namespace mpls

@@ -32,6 +32,7 @@
 #include "ns3/packet.h"
 #include "ns3/address.h"
 #include "ns3/ipv4-header.h"
+#include "ns3/ipv6-header.h"
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/traced-callback.h"
@@ -47,6 +48,7 @@
 #include "mpls-ilm-table.h"
 #include "mpls-ftn-table.h"
 #include "mpls-ipv4-protocol.h"
+#include "mpls-packet-demux.h"
 
 namespace ns3 {
 namespace mpls {
@@ -116,20 +118,16 @@ public:
   /**
    * @brief Lower layer calls this method after calling L3Demux::Lookup
    */
-  void Receive (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
-                    const Address &to, NetDevice::PacketType packetType);
+  void ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t protocol, const Address &from,
+                    const Address &to, NetDevice::PacketType packetType);  
   /**
-   * @brief Forward packet according to forwarding information
+   * @brief Unlabeled ipv4 packet entry point
    */
-  void MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl);
+  bool ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, const Ptr<const NetDevice> &device);
   /**
-   * @brief Lookup ILM by label and interface
+   * @brief Unlabeled ipv4 packet entry point
    */
-  Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface);
-  /**
-   * @brief Lookup FTN using PacketDemux
-   */
-  Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
+  bool ReceiveIpv6 (const Ptr<Packet> &packet, const Ipv6Header &header, const Ptr<const NetDevice> &device);
   /**
    * @brief New interface for specified device is available
    */
@@ -142,9 +140,13 @@ protected:
 private:
   typedef std::vector<Ptr<Interface> > InterfaceList;
 
-  bool RealMplsForward (Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
-                          Ptr<Interface> &outInterface);
-  void IpForward (Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev, Ptr<Ipv4Route> route);
+  void MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl);
+  Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface);
+  Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
+
+  bool RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
+                          const Ptr<Interface> &outInterface);
+  void IpForward (const Ptr<Packet> &packet, uint8_t ttl, const Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route);
 
   Ptr<Ipv4Route> GetNextHopRoute (const Address &address) const;
 
@@ -156,6 +158,8 @@ private:
   InterfaceList m_interfaces;
   bool m_interfaceAutoInstall;
 
+  PacketDemux m_demux;
+  
   TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
   TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
   TracedCallback<Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;

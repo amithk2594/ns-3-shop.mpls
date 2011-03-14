@@ -77,7 +77,7 @@ public:
   /**
    * @brier Send packet 
    */
-  bool Send (Ptr<Packet>& packet);
+  bool Send (const Ptr<Packet>& packet);
   /**
    * @brief Get device associated with interface
    */

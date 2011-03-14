@@ -119,7 +119,7 @@ Interface::SetDown ()
 }
 
 bool
-Interface::Send (Ptr<Packet>& packet)
+Interface::Send (const Ptr<Packet>& packet)
 {
   NS_LOG_FUNCTION (this << packet);
 

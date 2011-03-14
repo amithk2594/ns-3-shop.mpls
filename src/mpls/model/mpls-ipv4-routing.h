@@ -33,13 +33,10 @@
 #include "ns3/ipv4-routing-protocol.h"
 #include "ns3/socket.h"
 
-#include "mpls-packet-demux.h"
 #include "mpls.h"
 
 namespace ns3 {
 namespace mpls {
-
-class PacketDemux;
 
 /**
  * \brief
@@ -87,7 +84,6 @@ private:
   Ptr<Mpls> m_mpls;
   Ptr<Ipv4> m_ipv4;  
   Ptr<Ipv4RoutingProtocol> m_routingProtocol;
-  PacketDemux m_demux;  
 };
 
 } // namespace mpls

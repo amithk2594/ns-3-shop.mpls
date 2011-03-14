@@ -27,6 +27,8 @@
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/packet.h"
+#include "ns3/ipv4-header.h"
+#include "ns3/ipv6-header.h"
 
 #include "mpls-label.h"
 #include "mpls-interface.h"
@@ -99,17 +101,15 @@ public:
    */
   virtual uint32_t GetNInterfaces (void) const = 0;
   /**
-   * @brief Forward packet according to forwarding information
+   * @brief ipv4 unlabeled packet entry point
    */
-  virtual void MplsForward (Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl) = 0;
+  virtual bool ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, 
+                              const Ptr<const NetDevice> &device) = 0;
   /**
-   * @brief Lookup ILM by label and interface
+   * @brief ipv6 unlabeled packet entry point
    */
-  virtual Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface) = 0;
-  /**
-   * @brief Lookup FTN using PacketDemux
-   */
-  virtual Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux) = 0;
+  virtual bool ReceiveIpv6 (const Ptr<Packet> &packet, const Ipv6Header &header, 
+                              const Ptr<const NetDevice> &device) = 0;  
 
 private:
   bool m_newInterfaceNotification;

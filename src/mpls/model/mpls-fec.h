@@ -39,101 +39,95 @@ class PacketDemux;
  * \brief
  * Fec is abstract FEC class. It is inherited by Fec rules classes
  */
-class Fec : public std::unary_function<PacketDemux, bool>
+class Fec
 {
 public:
   virtual ~Fec ();
   /**
-   * \brief Check if the packet matches the FEC
-   * \param pc Packet Context
-   */
+   * @brief Check if the packet matches the FEC
+   * @param pd PacketDemux object
+   */  
   virtual bool operator() (PacketDemux &pd) const = 0;
+  virtual void Print (std::ostream &os) const = 0;
 
+  template <class T> static Fec* Build (const T &fec) { return new T(fec); }
+};
+
+template <class A, class B>
+class __And : public Fec
+{
+protected:
+  A m_a;
+  B m_b;
+
+public:
+  __And (const A& a, const B& b): m_a(a), m_b(b) {}
+  
+  bool operator() (PacketDemux &pd) const { return m_a (pd) && m_b (pd); }
+  void Print (std::ostream &os) const {os << "(" << m_a << " & " << m_b << ")";};
+  friend std::ostream& operator<< (std::ostream &os, const __And &o) { o.Print (os); return os; };
+};
+
+template <class A, class B>
+class __Or : public Fec
+{
+protected:
+  A m_a;
+  B m_b;
+
+public:
+  __Or (const A& a, const B& b): m_a(a), m_b(b) {}
+  
+  bool operator() (PacketDemux &pd) const { return m_a (pd) || m_b (pd); }
+  void Print (std::ostream &os) const {os << "(" << m_a << " || " << m_b << ")";};  
+  friend std::ostream& operator<< (std::ostream &os, const __Or &o) { o.Print (os); return os; };
+};
+
+template <class A>
+class __Not : public Fec
+{
+protected:
+  A m_a;
+
+public:
+  __Not (const A& a): m_a(a) {}
+  
+  bool operator() (PacketDemux &pd) const { return !m_a (pd); }
+  void Print (std::ostream &os) const {os << "!(" << m_a << ")";};  
+  friend std::ostream& operator<< (std::ostream &os, const __Not &o) { o.Print (os); return os; };  
+};
+
+template <class C>
+class FecOperand : public Fec
+{
+public:
   template <class T>
-  static Fec* Build (const T &fec) { return new T(fec); }
+  __And<C, T> operator&& (const T &right) { return __And<C, T> (*(C*)this, right); }
+  template <class T>
+  __Or<C, T> operator|| (const T &right) { return __Or<C, T> (*(C*)this, right); }
+  template <class T>
+  __Not<C> operator! () { return __Not<C> (*(C*)this); }
+
+  friend std::ostream& operator<< (std::ostream& os, const C& c) { c.Print (os); return os; }
 };
 
 //std::ostream& operator<< (std::ostream& os, const Fec& fec);
-
-// We need to define compositing function objects that inherits from Fec
-
-template <class Operation1, class Operation2>
-class UnaryCompose : public Fec
-{
-protected:
-  Operation1 m_fn1;
-  Operation2 m_fn2;
-
-public:
-  UnaryCompose (const Operation1& x, const Operation2& y): m_fn1(x), m_fn2(y) {}
-
-  typename Operation1::result_type
-  operator() (typename Operation2::argument_type& x) const
-  {
-    return m_fn1 (m_fn2 (x));
-  }
-};
-
-
-template <class Operation1, class Operation2, class Operation3>
-class BinaryCompose : public Fec
-{
-protected:
-  Operation1 m_fn1;
-  Operation2 m_fn2;
-  Operation3 m_fn3;
-
-public:
-  BinaryCompose(const Operation1& x, const Operation2& y, const Operation3& z): m_fn1(x), m_fn2(y), m_fn3(z) {}
-
-  typename Operation1::result_type
-  operator()(typename Operation2::argument_type& x) const
-  {
-    return m_fn1 (m_fn2 (x), m_fn3 (x));
-  }
-};
-
-
-// Logic Operations
-
-template <class LeftPred, class RightPred>
-BinaryCompose<std::logical_and<bool>, LeftPred, RightPred>
-operator&& (const LeftPred &left, const RightPred &right)
-{
-  return BinaryCompose<std::logical_and<bool>, LeftPred, RightPred> (std::logical_and<bool> (), left, right);
-}
-
-
-template <class LeftPred, class RightPred>
-BinaryCompose<std::logical_or<bool>, LeftPred, RightPred>
-operator|| (const LeftPred &left, const RightPred &right)
-{
-  return BinaryCompose<std::logical_or<bool>, LeftPred, RightPred> (std::logical_or<bool> (), left, right);
-}
-
-
-template <class Pred>
-UnaryCompose<std::logical_not<bool>, Pred>
-operator! (const Pred &pred)
-{
-  return UnaryCompose<std::logical_not<bool>, Pred> (std::logical_not<bool> (), pred);
-}
-
 
 // FEC rules
 
 /**
  * \ingroup Mpls
  * \brief
- * Ipv4SourceAddressPrefix matches a given IPv4 source address prefix
+ * Ipv4Source matches a given IPv4 source address prefix
  */
-class Ipv4SourceAddressPrefix : public Fec
+class Ipv4Source : public FecOperand<Ipv4Source>
 {
 public:
-  Ipv4SourceAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
-  Ipv4SourceAddressPrefix (char const *address);
+  Ipv4Source (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
+  Ipv4Source (char const *address);
 
   bool operator() (PacketDemux &pd) const;
+  void Print (std::ostream &os) const;
 
 private:
   Ipv4Address m_address;
@@ -144,15 +138,16 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * Ipv4DestinationAddressPrefix matches a given IPv4 destination address prefix
+ * Ipv4Destination matches a given IPv4 destination address prefix
  */
-class Ipv4DestinationAddressPrefix : public Fec
+class Ipv4Destination : public FecOperand<Ipv4Destination>
 {
 public:
-  Ipv4DestinationAddressPrefix (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
-  Ipv4DestinationAddressPrefix (char const *address);
+  Ipv4Destination (const Ipv4Address &address, const Ipv4Mask &mask = Ipv4Mask ("/32"));
+  Ipv4Destination (char const *address);
 
   bool operator() (PacketDemux &pd) const;
+  void Print (std::ostream &os) const;
 
 private:
   Ipv4Address m_address;
@@ -163,15 +158,16 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * Ipv6SourceAddressPrefix matches a given IPv6 source address prefix
+ * Ipv6Source matches a given IPv6 source address prefix
  */
-class Ipv6SourceAddressPrefix : public Fec
+class Ipv6Source : public FecOperand<Ipv6Source>
 {
 public:
-  Ipv6SourceAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
-  Ipv6SourceAddressPrefix (char const *address);
+  Ipv6Source (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
+  Ipv6Source (char const *address);
 
   bool operator() (PacketDemux &pd) const;
+  void Print (std::ostream &os) const;  
 
 private:
   Ipv6Address m_address;
@@ -182,16 +178,17 @@ private:
 /**
  * \ingroup Mpls
  * \brief
- * Ipv6DestinationAddressPrefixFec matches a given IPv6 destination address prefix
+ * Ipv6DestinationFec matches a given IPv6 destination address prefix
  */
-class Ipv6DestinationAddressPrefix : public Fec
+class Ipv6Destination : public FecOperand<Ipv6Destination>
 {
 public:
-  Ipv6DestinationAddressPrefix (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
-  Ipv6DestinationAddressPrefix (char const *address);
+  Ipv6Destination (const Ipv6Address &address, const Ipv6Prefix &mask = Ipv6Prefix (128));
+  Ipv6Destination (char const *address);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   Ipv6Address m_address;
   Ipv6Prefix m_mask;
@@ -203,13 +200,14 @@ private:
  * \brief
  * UdpSourcePort matches a given UDP source port
  */
-class UdpSourcePort : public Fec
+class UdpSourcePort : public FecOperand<UdpSourcePort>
 {
 public:
   UdpSourcePort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_port;
 };
@@ -220,13 +218,14 @@ private:
  * \brief
  * UdpSourcePortRange matches a given range of UDP source ports
  */
-class UdpSourcePortRange : public Fec
+class UdpSourcePortRange : public FecOperand<UdpSourcePortRange>
 {
 public:
   UdpSourcePortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;
@@ -238,13 +237,14 @@ private:
  * \brief
  * UdpDestinationPort matches a given UDP destination port
  */
-class UdpDestinationPort : public Fec
+class UdpDestinationPort : public FecOperand<UdpDestinationPort>
 {
 public:
   UdpDestinationPort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_port;
 };
@@ -255,13 +255,14 @@ private:
  * \brief
  * UdpDestinationPortRange matches a given range of UDP destination ports
  */
-class UdpDestinationPortRange : public Fec
+class UdpDestinationPortRange : public FecOperand<UdpDestinationPortRange>
 {
 public:
   UdpDestinationPortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;
@@ -273,13 +274,14 @@ private:
  * \brief
  * TcpSourcePort matches a given TCP source port
  */
-class TcpSourcePort : public Fec
+class TcpSourcePort : public FecOperand<TcpSourcePort>
 {
 public:
   TcpSourcePort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_port;
 };
@@ -290,13 +292,14 @@ private:
  * \brief
  * TcpSourcePortRange matches a given range of TCP source ports
  */
-class TcpSourcePortRange : public Fec
+class TcpSourcePortRange : public FecOperand<TcpSourcePortRange>
 {
 public:
   TcpSourcePortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;
@@ -308,13 +311,14 @@ private:
  * \brief
  * TcpDestinationPort matches a given TCP destination port
  */
-class TcpDestinationPort : public Fec
+class TcpDestinationPort : public FecOperand<TcpDestinationPort>
 {
 public:
   TcpDestinationPort (uint16_t port);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_port;
 };
@@ -325,13 +329,14 @@ private:
  * \brief
  * TcpDestinationPortRange matches a given range of TCP destination ports
  */
-class TcpDestinationPortRange : public Fec
+class TcpDestinationPortRange : public FecOperand<TcpDestinationPortRange>
 {
 public:
   TcpDestinationPortRange (uint16_t minPort, uint16_t maxPort);
 
   bool operator() (PacketDemux &pd) const;
-
+  void Print (std::ostream &os) const;
+  
 private:
   uint16_t m_minPort;
   uint16_t m_maxPort;
