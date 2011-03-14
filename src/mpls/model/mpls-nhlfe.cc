@@ -98,15 +98,13 @@ Nhlfe::Print (std::ostream &os) const
         break;
     }
 
-  os << " ";
-  
   if (m_interface >= 0)
     {
-      os << "oif " << m_interface;
+      os << " oif " << m_interface;
     }
-  else 
+  else if (!m_nextHop.IsInvalid ()) 
     {
-      os << "nexthop ";
+      os << " nexthop ";
       if (Ipv4Address::IsMatchingType (m_nextHop))
         {
           os << Ipv4Address::ConvertFrom (m_nextHop);
