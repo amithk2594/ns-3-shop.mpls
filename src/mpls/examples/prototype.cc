@@ -99,7 +99,7 @@ main (int argc, char *argv[])
   MplsSwitch sw1 (routers.Get (0));
 
   sw1.AddFtn (
-      Ipv4Source ("192.168.1.1") || Ipv4Destination ("192.168.4.2"),
+      Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
           Nhlfe (Pop (), Ipv4Address ("10.1.1.2")),     // invalid nhlfe
           Nhlfe (Swap (200), Ipv4Address ("10.1.2.1")), // invalid nhlfe
           Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe
@@ -109,9 +109,9 @@ main (int argc, char *argv[])
   sw2.AddIlm (100, Nhlfe(Swap (200), Ipv4Address ("10.1.3.2")));
 
   MplsSwitch sw3 (routers.Get (2));
-  //sw3.AddIlm (200, Nhlfe(Pop ()));
+  sw3.AddIlm (200, Nhlfe(Pop ()));
   // we can also use
-  sw3.AddIlm (200, Nhlfe(Pop (), Ipv4Address ("192.168.4.2")));
+  //sw3.AddIlm (200, Nhlfe(Pop (), Ipv4Address ("192.168.4.2")));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
