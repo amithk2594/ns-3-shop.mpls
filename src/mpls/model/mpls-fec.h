@@ -33,6 +33,7 @@ namespace ns3 {
 namespace mpls {
 
 class PacketDemux;
+template <class T> class FecOperand;
 
 /**
  * \ingroup Mpls
@@ -54,7 +55,7 @@ public:
 };
 
 template <class A, class B>
-class __And : public Fec
+class __And : public FecOperand<__And<A,B> >
 {
 protected:
   A m_a;
@@ -65,11 +66,10 @@ public:
   
   bool operator() (PacketDemux &pd) const { return m_a (pd) && m_b (pd); }
   void Print (std::ostream &os) const {os << "(" << m_a << " & " << m_b << ")";};
-  friend std::ostream& operator<< (std::ostream &os, const __And &o) { o.Print (os); return os; };
 };
 
 template <class A, class B>
-class __Or : public Fec
+class __Or : public FecOperand<__Or<A,B> >
 {
 protected:
   A m_a;
@@ -80,11 +80,10 @@ public:
   
   bool operator() (PacketDemux &pd) const { return m_a (pd) || m_b (pd); }
   void Print (std::ostream &os) const {os << "(" << m_a << " | " << m_b << ")";};  
-  friend std::ostream& operator<< (std::ostream &os, const __Or &o) { o.Print (os); return os; };
 };
 
 template <class A>
-class __Not : public Fec
+class __Not : public FecOperand<__Not<A> >
 {
 protected:
   A m_a;
@@ -94,7 +93,6 @@ public:
   
   bool operator() (PacketDemux &pd) const { return !m_a (pd); }
   void Print (std::ostream &os) const {os << "~" << m_a; };
-  friend std::ostream& operator<< (std::ostream &os, const __Not &o) { o.Print (os); return os; };  
 };
 
 template <class C>
@@ -105,7 +103,6 @@ public:
   __And<C, T> operator&& (const T &right) { return __And<C, T> (*(C*)this, right); }
   template <class T>
   __Or<C, T> operator|| (const T &right) { return __Or<C, T> (*(C*)this, right); }
-  template <class T>
   __Not<C> operator! () { return __Not<C> (*(C*)this); }
 
   friend std::ostream& operator<< (std::ostream& os, const C& c) { c.Print (os); return os; }
