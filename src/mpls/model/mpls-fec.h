@@ -79,7 +79,7 @@ public:
   __Or (const A& a, const B& b): m_a(a), m_b(b) {}
   
   bool operator() (PacketDemux &pd) const { return m_a (pd) || m_b (pd); }
-  void Print (std::ostream &os) const {os << "(" << m_a << " || " << m_b << ")";};  
+  void Print (std::ostream &os) const {os << "(" << m_a << " | " << m_b << ")";};  
   friend std::ostream& operator<< (std::ostream &os, const __Or &o) { o.Print (os); return os; };
 };
 
@@ -93,7 +93,7 @@ public:
   __Not (const A& a): m_a(a) {}
   
   bool operator() (PacketDemux &pd) const { return !m_a (pd); }
-  void Print (std::ostream &os) const {os << "!(" << m_a << ")";};  
+  void Print (std::ostream &os) const {os << "~" << m_a; };
   friend std::ostream& operator<< (std::ostream &os, const __Not &o) { o.Print (os); return os; };  
 };
 

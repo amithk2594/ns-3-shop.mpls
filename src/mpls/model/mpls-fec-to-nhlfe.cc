@@ -54,7 +54,8 @@ FecToNhlfe::SetFec (Fec* fec)
 void
 FecToNhlfe::Print (std::ostream &os) const
 {
-  os << "ftn" << GetIndex ();
+  os << "ftn" << GetIndex () << " ";
+  m_fec->Print (os);
 }
 
 } // namespace mpls
