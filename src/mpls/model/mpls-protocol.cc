@@ -663,5 +663,72 @@ MplsProtocol::IpForward (const Ptr<Packet> &packet, uint8_t ttl, const Ptr<NetDe
     }
 }
 
+//NS_OBJECT_ENSURE_REGISTERED (IpProbe);
+
+TypeId
+IpProbe::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::mpls::IpProbe")
+    .SetParent<Header> ()
+    .AddConstructor<IpProbe> ()
+  ;
+  return tid;
+}
+
+TypeId
+IpProbe::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+IpProbe::IpProbe()
+{
+  m_version = 0;
+}
+
+IpProbe::~IpProbe()
+{
+}
+
+uint8_t
+IpProbe::GetIpVersion (const Ptr<Packet> &packet)
+{
+  IpProbe ip;
+  
+  packet->PeekHeader (ip);
+    
+//  if (ip.m_version != 4 && ip.m_version != 6)
+//    NS_LOG_DEBUG ("Returning undefined IP protocol version");
+
+  return ip.m_version;
+}
+
+uint32_t
+IpProbe::GetSerializedSize (void) const
+{
+//  NS_LOG_WARN ("Returning invalid serialized size");
+  
+  return 0;
+}
+
+void IpProbe::Serialize (Buffer::Iterator start) const
+{
+//  NS_LOG_WARN ("Doing nothing");
+}
+
+uint32_t
+IpProbe::Deserialize (Buffer::Iterator start)
+{
+  m_version = start.ReadU8 () >> 4;
+
+  return 0;
+}
+
+void
+IpProbe::Print (std::ostream& os) const
+{
+}
+
+
 } // namespace mpls
 } // namespace ns3

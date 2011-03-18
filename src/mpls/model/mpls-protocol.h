@@ -165,6 +165,36 @@ private:
   TracedCallback<Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
 };
 
+
+class IpProbe : public Header
+{
+public:  
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  /**
+   * @brief Create an empty object
+   */ 
+  IpProbe ();
+  /**
+   * @brief Destructor
+   */ 
+  virtual ~IpProbe ();
+  /**
+   * @brief Returns the IP protocol version
+   */ 
+  static uint8_t GetIpVersion (const Ptr<Packet> &packet);
+  
+  // Functions defined in base class Header
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual void Print (std::ostream &os) const; 
+  
+private:
+  uint8_t m_version;
+};
+
+
 } // namespace mpls
 } // namespace ns3
 
