@@ -29,6 +29,7 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/arp-cache.h"
 
 namespace ns3 {
 namespace mpls {
@@ -42,14 +43,17 @@ class Interface : public Object
 {
 public:
   static TypeId GetTypeId (void);
-  /**
-   * @brief Create mpls interface
-   */
+  
   Interface (int32_t ifIndex);
-  /**
-   * @brief Destructor
-   */
   virtual ~Interface ();
+  
+  void SetNode (const Ptr<Node> &node); 
+  void SetDevice (const Ptr<NetDevice> &device);
+
+  /**
+   * @return the underlying NetDevice.
+   */
+  Ptr<NetDevice> GetDevice () const;
   /**
    * @brief Returns true if this interface is enabled  
    */
@@ -67,21 +71,9 @@ public:
    */
   void SetDown ();
   /**
-   * @brief Set device
-   */
-  void SetDevice (const Ptr<NetDevice> &device);
-  /**
-   * @brief Set node
-   */  
-  void SetNode (const Ptr<Node> &node);
-  /**
    * @brier Send packet 
    */
   bool Send (const Ptr<Packet>& packet);
-  /**
-   * @brief Get device associated with interface
-   */
-  Ptr<NetDevice>& GetDevice (void);
   /**
    * @brief Returns interface index
    */
@@ -96,7 +88,7 @@ private:
   Ptr<Node> m_node;
   Ptr<NetDevice> m_device;
   bool m_ifup;
-  int32_t m_ifIndex;  
+  int32_t m_ifIndex;
 };
 
 } // namespace mpls

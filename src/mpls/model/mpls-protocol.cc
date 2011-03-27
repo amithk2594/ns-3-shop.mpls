@@ -95,13 +95,28 @@ MplsProtocol::NotifyNewAggregate ()
 }
 
 void
-MplsProtocol::NotifyNewInterface (const Ptr<NetDevice> &device)
+MplsProtocol::NotifyNewInterface (const Ptr<Ipv4Interface> &ipv4if)
 {
-  NS_LOG_FUNCTION (this << &device);
-
-  if (GetInterfaceForDevice (device) == 0)
+  NS_LOG_FUNCTION (this << &ipv4if);
+  
+  Ptr<NetDevice> device = ipv4if->GetDevice ();
+  
+  NS_ASSERT (device != 0);
+  
+  Ptr<Interface> mplsIf = GetInterfaceForDevice (device);
+  
+  if (mplsIf == 0)
     {
-      AddInterface (device);
+      mplsIf = AddInterface (device);
+    }
+
+  mplsIf->AggregateObject (ipv4if);
+
+  if (device->NeedsArp())
+    {
+      Ptr<MacResolver> resolver = GetObject<MacResolver> ();
+      m_node->RegisterProtocolHandler (MakeCallback (&MacResolver::Receive, PeekPointer (resolver)),
+                                       MacResolver::PROT_NUMBER, device);
     }
 }
 
@@ -146,7 +161,7 @@ MplsProtocol::GetFtnTable (void) const
   return m_ftnTable;
 }
 
-int32_t
+Ptr<Interface>
 MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 {
   NS_LOG_FUNCTION (this << &device);
@@ -160,7 +175,7 @@ MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 
   m_interfaces.push_back (interface);
 
-  return index;
+  return interface;
 }
 
 Ptr<Interface>
@@ -617,15 +632,15 @@ MplsProtocol::RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, La
 
   NS_LOG_DEBUG ("Sendind labeled packet via if" << outInterface->GetIfIndex () << " " << 
                 "dev" << outInterface->GetDevice ()-> GetIfIndex ());
-
-  if (!outInterface->Send (packet))
+                
+  if (packet->GetSize () > outInterface->GetDevice ()->GetMtu ())
     {
+      NS_LOG_LOGIC ("dropping received packet -- MTU size exceeded");
       // m_dropTrace
     }
-  else
-    {
-      // m_txTrace
-    }
+
+  outInterface->Send (packet, nhlfe.GetNextHop());
+  // m_txTrace ???
 
   return true;
 }

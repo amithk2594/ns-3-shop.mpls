@@ -85,7 +85,7 @@ Ipv4Protocol::AddInterface (Ptr<NetDevice> device)
 
   if (m_mpls->IsNewInterfaceNotificationEnabled ())
     {
-      m_mpls->NotifyNewInterface (device);
+      m_mpls->NotifyNewInterface (GetInterface(index));
     }
 
   return index;
