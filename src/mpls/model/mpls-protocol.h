@@ -98,9 +98,9 @@ public:
   Ptr<FtnTable> GetFtnTable (void) const;
   /**
    * @param device device to add to the list of Mpls interfaces
-   * @return interface index of the Mpls interface added
+   * @return the Mpls interface
    */
-  int32_t AddInterface (const Ptr<NetDevice> &device);
+  Ptr<Interface> AddInterface (const Ptr<NetDevice> &device);
   /**
    * @brief Get Mpls interface by index
    * @param index Mpls interface index

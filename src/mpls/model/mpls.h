@@ -27,6 +27,8 @@
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/packet.h"
+#include "ns3/ipv4-interface.h"
+#include "ns3/ipv6-interface.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv6-header.h"
 
@@ -63,7 +65,9 @@ public:
    */
   void EnableNewInterfaceNotification (bool enabled);
   bool IsNewInterfaceNotificationEnabled (void) const;
-  virtual void NotifyNewInterface (const Ptr<NetDevice> &device) = 0;
+  
+  virtual void NotifyNewInterface (const Ptr<Ipv4Interface> &iface) = 0;
+  virtual void NotifyNewInterface (const Ptr<Ipv6Interface> &iface) = 0;
 
   /**
    * @brief Set new ILM table
@@ -83,9 +87,9 @@ public:
   virtual Ptr<FtnTable> GetFtnTable (void) const = 0;
   /**
    * @param device device to add to the list of Mpls interfaces
-   * @return interface index of the Mpls interface added
+   * @return the Mpls interface
    */
-  virtual int32_t AddInterface (const Ptr<NetDevice> &device) = 0;
+  virtual Ptr<Interface> AddInterface (const Ptr<NetDevice> &device) = 0;
   /**
    * @brief Get Mpls interface by index
    * @param index Mpls interface index
