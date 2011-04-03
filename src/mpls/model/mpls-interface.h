@@ -44,12 +44,31 @@ class Interface : public Object
 public:
   static TypeId GetTypeId (void);
   
+  /**
+   * @enum AddressResolvingMode 
+   * @brief Link layer address resolving mode
+   */
+  enum AddressResolvingMode 
+    {
+      AUTO = 0,
+      DYNAMIC,
+      STATIC
+    };
+  
   Interface (int32_t ifIndex);
   virtual ~Interface ();
   
   void SetNode (const Ptr<Node> &node); 
   void SetDevice (const Ptr<NetDevice> &device);
 
+  /**
+   * @brief Set link layer address resolving mode
+   */
+  void SetAddressResolvingMode (AddressResolvingMode mode);
+  /**
+   * @return address resolving mode
+   */
+  AddressResolvingMode SetAddressResolvingMode () const;
   /**
    * @return the underlying NetDevice.
    */
@@ -89,6 +108,8 @@ private:
   Ptr<NetDevice> m_device;
   bool m_ifup;
   int32_t m_ifIndex;
+  Ptr<AddressResolvingTable> m_addressResolvingTable;
+  AddressResolvingMode m_addressResolvingMode;
 };
 
 } // namespace mpls
