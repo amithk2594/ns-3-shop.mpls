@@ -248,10 +248,19 @@ MplsProtocol::ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, 
 
   uint8_t ttl = header.GetTtl ();
   
+  Ptr<Interface> interface = GetInterfaceForDevice (device);
+  
+  uint32_t ifindex = 0;
+
+  if (interface)
+    ifindex = interface->GetIfIndex ();
+
+  // XXX: or is it better to add an assert for the case interface == 0 ?
+
   if (ttl <= 1)
     {
       NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
-      //m_dropTrace (...);
+      m_dropTrace (packet, DROP_TTL_EXPIRED, ifindex);
       return true;
     }
 
@@ -264,7 +273,7 @@ MplsProtocol::ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, 
   if (ftn == 0)
     {
       NS_LOG_DEBUG ("Dropping received packet -- ftn not found");
-      //m_dropTrace (...)
+      m_dropTrace (packet, DROP_FTN_NOT_FOUND, ifindex);
       return false;
     }
 
@@ -295,32 +304,34 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
 
   NS_LOG_DEBUG ("Packet from " << from << " received on node " << m_node->GetId ());
 
+  Ptr<Interface> interface = GetInterfaceForDevice (device);
+
+  // XXX shall we add an assert for the case interface == 0 ?
+  
   switch (packetType)
     {
       case NetDevice::PACKET_BROADCAST:
         NS_LOG_DEBUG ("Dropping received packet -- broadcast");
-        //m_dropTrace (...);
+        m_dropTrace (p, DROP_BROADCAST_NOT_SUPPORTED, interface->GetIfIndex ());
         return;
 
       case NetDevice::PACKET_MULTICAST:
         NS_LOG_DEBUG ("Dropping received packet -- multicast");
-        //m_dropTrace (...);
+        m_dropTrace (p, DROP_MULTICAST_NOT_SUPPORTED, interface->GetIfIndex ());
         return;
 
       default:
         break;
     }
 
-  Ptr<Interface> interface = GetInterfaceForDevice (device);
-
   if (interface->IsUp ())
     {
-      //m_rxTrace (...);
+      m_rxTrace (p, interface->GetIfIndex ());
     }
   else
     {
       NS_LOG_DEBUG ("Dropping received packet -- interface " << interface->GetIfIndex () << " is disabled");
-      //m_dropTrace (...);
+      m_dropTrace (p, DROP_INTERFACE_DOWN, interface->GetIfIndex ());
       return;
     }
 
@@ -328,6 +339,8 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
   LabelStack stack;
   packet->RemoveHeader (stack);
 
+  // XXX Peek causes a segfault if stack is empty. Put an assert ?
+  
   uint32_t sh = stack.Peek ();
   uint8_t ttl = shim::GetTtl (sh);
 
@@ -336,7 +349,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
   if (ttl <= 1)
     {
       NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
-      //m_dropTrace (...);
+      m_dropTrace (packet, DROP_TTL_EXPIRED, interface->GetIfIndex ());
       return;
     }
 
@@ -352,7 +365,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
           if (!shim::IsBos (label))
             {
               NS_LOG_WARN ("Dropping received packet -- illegal Ipv4 explicit null label");
-              // m_dropTrace
+              m_dropTrace (packet, DROP_ILLEGAL_IPV4_EXPLICIT_NULL, interface->GetIfIndex ());
               return;
             }
           NS_LOG_DEBUG ("Ipv4_excplicit_null label was encountered -- ipv4 based forwarding must be used");
@@ -364,12 +377,12 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
           if (!shim::IsBos (label))
             {
               NS_LOG_WARN ("Dropping received packet -- illegal Ipv6 explicit null label");
-              // m_dropTrace
+              m_dropTrace (packet, DROP_ILLEGAL_IPV6_EXPLICIT_NULL, interface->GetIfIndex ());
               return;
             }
           // for future research
           NS_LOG_DEBUG ("Dropping received packet -- ipv6 is not supported");
-          //m_dropTrace (...);
+          m_dropTrace (packet, DROP_IPV6_NOT_SUPPORTED, interface->GetIfIndex ());
           return;
         }
       else if (label == Label::ROUTE_ALERT)
@@ -391,7 +404,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
 
   if (stack.IsEmpty ()) {
     NS_LOG_WARN ("Dropping received packet -- empty label stack");
-    //m_dropTrace (...);
+    m_dropTrace (packet, DROP_EMPTY_STACK, interface->GetIfIndex ());
     return;
   }
 
@@ -403,7 +416,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
   if (ilm == 0)
     {
       NS_LOG_DEBUG ("Dropping received packet -- ILM not found");
-      //m_dropTrace (...);
+      m_dropTrace (packet, DROP_ILM_NOT_FOUND, interface->GetIfIndex ());
       return;
     }
 
@@ -518,7 +531,7 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
     }
 
   NS_LOG_DEBUG ("Dropping received packet -- there is no suitable nhlfe");
-  //m_dropTrace (...);
+  m_dropTrace (packet, DROP_NO_SUITABLE_NHLFE, 0);
 }
 
 Ptr<IncomingLabelMap>
@@ -636,11 +649,11 @@ MplsProtocol::RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, La
   if (packet->GetSize () > outInterface->GetDevice ()->GetMtu ())
     {
       NS_LOG_LOGIC ("dropping received packet -- MTU size exceeded");
-      // m_dropTrace
+      m_dropTrace (packet, DROP_MTU_EXCEEDED, outInterface->GetIfIndex ());
     }
 
   outInterface->Send (packet, nhlfe.GetNextHop());
-  // m_txTrace ???
+  m_txTrace (packet, outInterface->GetIfIndex ());
 
   return true;
 }
@@ -654,7 +667,7 @@ MplsProtocol::IpForward (const Ptr<Packet> &packet, uint8_t ttl, const Ptr<NetDe
   if (m_ipv4 == 0)
     {
       NS_LOG_WARN ("Dropping received packet -- ipv4 is not installed");
-      // m_dropTrace
+      m_dropTrace (packet, DROP_NO_IPV4, outDev->GetIfIndex ());
       return;
     }
 
