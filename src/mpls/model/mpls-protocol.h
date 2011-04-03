@@ -75,9 +75,19 @@ public:
   enum DropReason
     {
       DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
-      DROP_NO_ROUTE, /**< No route to host */
+      DROP_MTU_EXCEEDED, /**< Packet size is greater than the device MTU */
+      DROP_FTN_NOT_FOUND, /**< An FTN matching the packet has not been found */
+      DROP_ILM_NOT_FOUND, /**< An ILM matching the label has not been found */
+      DROP_NO_SUITABLE_NHLFE, /**< An NHLFE suitable to process the packet has not been found */
+      DROP_EMPTY_STACK, /**< Empty label stack */
+      DROP_BROADCAST_NOT_SUPPORTED, /**< Received a broadcast packet */
+      DROP_MULTICAST_NOT_SUPPORTED, /**< Received a multicast packet */
+      DROP_IPV6_NOT_SUPPORTED, /**< Received an IPv6 packet */
+      DROP_ILLEGAL_IPV4_EXPLICIT_NULL, /**< IPv4 Explicit Null label not at the bottom of the stack */
+      DROP_ILLEGAL_IPV6_EXPLICIT_NULL, /**< IPv6 Explicit Null label not at the bottom of the stack */
+      DROP_NO_IPV4, /**< IPv4 is not installed on the node */
       DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
-      DROP_ROUTE_ERROR, /**< Route error */
+      DROP_SEND_FAILED, /**< Sending the packet through the identified interface failed */
     };
 
   /**
