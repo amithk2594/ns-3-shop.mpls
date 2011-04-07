@@ -19,9 +19,6 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-/**
- * \defgroup mpls
- */
 #ifndef MPLS_LABEL_H
 #define MPLS_LABEL_H
 

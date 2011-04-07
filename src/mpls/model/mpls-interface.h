@@ -72,7 +72,7 @@ public:
   /**
    * @return address resolving mode
    */
-  AddressResolvingMode SetAddressResolvingMode () const;
+  AddressResolvingMode GetAddressResolvingMode () const;
   /**
    * @return the underlying NetDevice.
    */
@@ -94,9 +94,13 @@ public:
    */
   void SetDown ();
   /**
+   * @brier Send packet
+   */
+  void Send (const Ptr<Packet>& packet, const Address &dest);
+  /**
    * @brier Send packet 
    */
-  bool Send (const Ptr<Packet>& packet);
+  void Send (const Ptr<Packet>& packet, const Mac48Address &dest);
   /**
    * @brief Returns interface index
    */
@@ -104,16 +108,17 @@ public:
   /**
    * @brief Do lookup in the address resolving table against an ip address
    * @param destination The destination IPv4 address to lookup the MAC address
+   * @return true if address found
    */
-  const Mac48Address* LookupAddress (Ipv4Address &destination);
+  bool LookupAddress (const Address &dest, Mac48Address& addr);
   /**
-   * @brief Add an Ipv4Address to the address resolving table
+   * @brief Add an address to the address resolving table
    */
-  void AddAddress (const Ipv4Address &dest, const Mac48Address &mac);
+  void AddAddress (const Address &dest, const Mac48Address &mac);
   /**
-   * @brief Remove an Ipv4Address from the address resolving table
+   * @brief Remove an address from the address resolving table
    */
-  void RemoveAddress (const Ipv4Address &dest);
+  void RemoveAddress (const Address &dest);
 
 protected:
   virtual void DoDispose (void);
@@ -130,7 +135,7 @@ private:
   typedef sgi::hash_map<Ipv4Address, Mac48Address, Ipv4AddressHash> Ipv4Table;
   typedef sgi::hash_map<Ipv4Address, Mac48Address, Ipv4AddressHash>::iterator Ipv4TableIterator;
 
-  Ipv4Table m_ipv4AddressResolvingTable;
+  Ipv4Table m_ipv4resolving;
 };
 
 } // namespace mpls

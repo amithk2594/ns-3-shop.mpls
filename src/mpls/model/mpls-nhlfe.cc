@@ -29,7 +29,7 @@ namespace mpls {
 Nhlfe::Nhlfe (const Operation& op, int32_t outInterface)
   : m_interface (outInterface)
 {
-  NS_ASSERT_MSG (outInterface, "Invalid outgoing interface index");
+  NS_ASSERT_MSG (outInterface >= 0, "Invalid outgoing interface index");
   op.Accept (*this);
 }
 
@@ -37,6 +37,15 @@ Nhlfe::Nhlfe (const Operation& op, const Address& nextHop)
   : m_interface (-1),
     m_nextHop (nextHop)
 {
+  NS_ASSERT_MSG (!nextHop.IsInvalid (), "Invalid next-hop address");
+  op.Accept (*this);
+}
+
+Nhlfe::Nhlfe (const Operation& op, int32_t outInterface, const Address& nextHop)
+  : m_interface (outInterface),
+    m_nextHop (nextHop)
+{
+  NS_ASSERT_MSG (outInterface >= 0, "Invalid outgoing interface index");
   NS_ASSERT_MSG (!nextHop.IsInvalid (), "Invalid next-hop address");
   op.Accept (*this);
 }
