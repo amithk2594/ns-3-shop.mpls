@@ -182,5 +182,29 @@ Interface::Send (const Ptr<Packet>& packet, const Mac48Address &nextHop)
   m_device->Send (packet, nextHop, Mpls::PROT_NUMBER);
 }
 
+const Mac48Address*
+Interface::LookupAddress (Ipv4Address& destination)
+{
+  Ipv4TableIterator i = m_ipv4AddressResolvingTable.find (destination);
+  
+  if (i == m_ipv4AddressResolvingTable.end ())
+    return 0;
+  
+  return &(i->second);
+}
+
+void
+Interface::AddAddress (const Ipv4Address& dest, const Mac48Address& mac)
+{
+  m_ipv4AddressResolvingTable.insert (std::pair<Ipv4Address, Mac48Address> (dest, mac));
+}
+
+void
+Interface::RemoveAddress (const Ipv4Address& dest)
+{
+  m_ipv4AddressResolvingTable.erase (dest);
+}
+
+
 } // namespace mpls
 } // namespace ns3

@@ -30,6 +30,10 @@
 #include "ns3/node.h"
 #include "ns3/packet.h"
 #include "ns3/arp-cache.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/mac48-address.h"
+#include "ns3/ptr.h"
+#include "ns3/sgi-hashmap.h"
 
 namespace ns3 {
 namespace mpls {
@@ -97,6 +101,19 @@ public:
    * @brief Returns interface index
    */
   int32_t GetIfIndex (void);  
+  /**
+   * @brief Do lookup in the address resolving table against an ip address
+   * @param destination The destination IPv4 address to lookup the MAC address
+   */
+  const Mac48Address* LookupAddress (Ipv4Address &destination);
+  /**
+   * @brief Add an Ipv4Address to the address resolving table
+   */
+  void AddAddress (const Ipv4Address &dest, const Mac48Address &mac);
+  /**
+   * @brief Remove an Ipv4Address from the address resolving table
+   */
+  void RemoveAddress (const Ipv4Address &dest);
 
 protected:
   virtual void DoDispose (void);
@@ -108,8 +125,12 @@ private:
   Ptr<NetDevice> m_device;
   bool m_ifup;
   int32_t m_ifIndex;
-  Ptr<AddressResolvingTable> m_addressResolvingTable;
   AddressResolvingMode m_addressResolvingMode;
+
+  typedef sgi::hash_map<Ipv4Address, Mac48Address, Ipv4AddressHash> Ipv4Table;
+  typedef sgi::hash_map<Ipv4Address, Mac48Address, Ipv4AddressHash>::iterator Ipv4TableIterator;
+
+  Ipv4Table m_ipv4AddressResolvingTable;
 };
 
 } // namespace mpls
