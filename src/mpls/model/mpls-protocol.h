@@ -49,6 +49,7 @@
 #include "mpls-ftn-table.h"
 #include "mpls-ipv4-protocol.h"
 #include "mpls-packet-demux.h"
+#include "mpls-traces.h"
 
 namespace ns3 {
 namespace mpls {
@@ -67,28 +68,6 @@ public:
 
   MplsProtocol ();
   virtual ~MplsProtocol ();
-
-  /**
-   * @enum DropReason
-   * @brief Reason why a packet has been dropped.
-   */
-  enum DropReason
-    {
-      DROP_TTL_EXPIRED = 1, /**< Packet TTL has expired */
-      DROP_MTU_EXCEEDED, /**< Packet size is greater than the device MTU */
-      DROP_FTN_NOT_FOUND, /**< An FTN matching the packet has not been found */
-      DROP_ILM_NOT_FOUND, /**< An ILM matching the label has not been found */
-      DROP_NO_SUITABLE_NHLFE, /**< An NHLFE suitable to process the packet has not been found */
-      DROP_EMPTY_STACK, /**< Empty label stack */
-      DROP_BROADCAST_NOT_SUPPORTED, /**< Received a broadcast packet */
-      DROP_MULTICAST_NOT_SUPPORTED, /**< Received a multicast packet */
-      DROP_IPV6_NOT_SUPPORTED, /**< Received an IPv6 packet */
-      DROP_ILLEGAL_IPV4_EXPLICIT_NULL, /**< IPv4 Explicit Null label not at the bottom of the stack */
-      DROP_ILLEGAL_IPV6_EXPLICIT_NULL, /**< IPv6 Explicit Null label not at the bottom of the stack */
-      DROP_NO_IPV4, /**< IPv4 is not installed on the node */
-      DROP_INTERFACE_DOWN, /**< Interface is down so can not send packet */
-      DROP_SEND_FAILED, /**< Sending the packet through the identified interface failed */
-    };
 
   /**
    * @brief Set new ILM table
@@ -153,7 +132,6 @@ private:
   void MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl);
   Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface);
   Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
-
   bool RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
                           const Ptr<Interface> &outInterface);
   void IpForward (const Ptr<Packet> &packet, uint8_t ttl, const Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route);
@@ -170,9 +148,9 @@ private:
 
   PacketDemux m_demux;
   
-  TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
-  TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
-  TracedCallback<Ptr<const Packet>, DropReason, uint32_t> m_dropTrace;
+  traces::TxTracedCallback m_txTrace;
+  traces::RxTracedCallback m_rxTrace;
+  traces::DropTracedCallback m_dropTrace;
 };
 
 

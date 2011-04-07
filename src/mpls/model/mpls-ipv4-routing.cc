@@ -80,7 +80,7 @@ Ipv4Routing::RouteInput (Ptr<const Packet> p, const Ipv4Header &header, Ptr<cons
 
   NS_ASSERT_MSG (m_mpls != 0, "Mpls protocol should be specified");
 
-  // check if we can process packet 
+  // check if we can process the packet 
   Ptr<Interface> iface = m_mpls->GetInterfaceForDevice (idev);
   if (iface != 0 && iface->IsUp ())
     {

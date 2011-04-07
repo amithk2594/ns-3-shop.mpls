@@ -38,14 +38,16 @@ namespace mpls {
 
 NS_OBJECT_ENSURE_REGISTERED (MplsProtocol);
 
+using namespace traces;
+
 TypeId
 MplsProtocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::mpls::MplsProtocol")
     .SetParent<Mpls> ()
     .AddConstructor<MplsProtocol> ()
-    .AddTraceSource ("Tx", "Send packet to outgoing interface.",
-                        MakeTraceSourceAccessor (&MplsProtocol::m_txTrace))
+//    .AddTraceSource ("Tx", "Send packet to outgoing interface.",
+//                        MakeTraceSourceAccessor (&MplsProtocol::m_txTrace))
     .AddTraceSource ("Rx", "Receive packet from incoming interface.",
                         MakeTraceSourceAccessor (&MplsProtocol::m_rxTrace))
     .AddTraceSource ("Drop", "Drop packet",
@@ -202,39 +204,6 @@ MplsProtocol::GetInterfaceForDevice (const Ptr<const NetDevice> &device) const
   return 0;
 }
 
-Ptr<Ipv4Route>
-MplsProtocol::GetNextHopRoute (const Address &address) const
-{
-  NS_LOG_FUNCTION (this << address);
-  
-  if (Ipv4Address::IsMatchingType (address))
-    {
-      if (m_ipv4 == 0)
-        {
-          NS_LOG_WARN ("Could not lookup next-hop --- ipv4 is not installed");
-          return 0;
-        }
-
-      static Ipv4Header header;
-      Socket::SocketErrno sockerr;
-
-      header.SetDestination(Ipv4Address::ConvertFrom (address));
-
-      Ptr<Ipv4RoutingProtocol> routing = m_ipv4->GetRoutingProtocol ();
-      NS_ASSERT_MSG (routing != 0, "Need a ipv4 routing protocol object");
-
-      // XXX: i don't know if we can do this
-      Ptr<Ipv4Route> route = routing->RouteOutput (0, header, 0, sockerr);
-
-      if (route != 0 && route->GetDestination ().Get () != 0)
-        {
-          return route;
-        }
-    }
-
-  return 0;
-}
-
 uint32_t
 MplsProtocol::GetNInterfaces (void) const
 {
@@ -248,19 +217,10 @@ MplsProtocol::ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, 
 
   uint8_t ttl = header.GetTtl ();
   
-  Ptr<Interface> interface = GetInterfaceForDevice (device);
-  
-  uint32_t ifindex = 0;
-
-  if (interface)
-    ifindex = interface->GetIfIndex ();
-
-  // XXX: or is it better to add an assert for the case interface == 0 ?
-
   if (ttl <= 1)
     {
       NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
-      m_dropTrace (packet, DROP_TTL_EXPIRED, ifindex);
+      m_dropTrace (packet, DROP_TTL_EXPIRED, 0);
       return true;
     }
 
@@ -273,7 +233,7 @@ MplsProtocol::ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, 
   if (ftn == 0)
     {
       NS_LOG_DEBUG ("Dropping received packet -- ftn not found");
-      m_dropTrace (packet, DROP_FTN_NOT_FOUND, ifindex);
+      //m_dropTrace (packet, DROP_FTN_NOT_FOUND);
       return false;
     }
 
@@ -304,20 +264,20 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
 
   NS_LOG_DEBUG ("Packet from " << from << " received on node " << m_node->GetId ());
 
+  // interface should exists anyway
   Ptr<Interface> interface = GetInterfaceForDevice (device);
-
-  // XXX shall we add an assert for the case interface == 0 ?
+  int32_t ifIndex = interface->GetIfIndex ();
   
   switch (packetType)
     {
       case NetDevice::PACKET_BROADCAST:
         NS_LOG_DEBUG ("Dropping received packet -- broadcast");
-        m_dropTrace (p, DROP_BROADCAST_NOT_SUPPORTED, interface->GetIfIndex ());
+        m_dropTrace (p, DROP_BROADCAST_NOT_SUPPORTED, ifIndex);
         return;
 
       case NetDevice::PACKET_MULTICAST:
         NS_LOG_DEBUG ("Dropping received packet -- multicast");
-        m_dropTrace (p, DROP_MULTICAST_NOT_SUPPORTED, interface->GetIfIndex ());
+        m_dropTrace (p, DROP_MULTICAST_NOT_SUPPORTED, ifIndex);
         return;
 
       default:
@@ -326,12 +286,12 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
 
   if (interface->IsUp ())
     {
-      m_rxTrace (p, interface->GetIfIndex ());
+      m_rxTrace (p, ifIndex);
     }
   else
     {
-      NS_LOG_DEBUG ("Dropping received packet -- interface " << interface->GetIfIndex () << " is disabled");
-      m_dropTrace (p, DROP_INTERFACE_DOWN, interface->GetIfIndex ());
+      NS_LOG_DEBUG ("Dropping received packet -- interface " << ifIndex << " is disabled");
+      m_dropTrace (p, DROP_INTERFACE_DOWN, ifIndex);
       return;
     }
 
@@ -339,7 +299,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
   LabelStack stack;
   packet->RemoveHeader (stack);
 
-  // XXX Peek causes a segfault if stack is empty. Put an assert ?
+  // XXX: Peek causes a segfault if stack is empty. Put an assert ?
   
   uint32_t sh = stack.Peek ();
   uint8_t ttl = shim::GetTtl (sh);
@@ -349,7 +309,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
   if (ttl <= 1)
     {
       NS_LOG_WARN ("Dropping received packet -- TTL exceeded");
-      m_dropTrace (packet, DROP_TTL_EXPIRED, interface->GetIfIndex ());
+      m_dropTrace (packet, DROP_TTL_EXPIRED, ifIndex);
       return;
     }
 
@@ -365,7 +325,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
           if (!shim::IsBos (label))
             {
               NS_LOG_WARN ("Dropping received packet -- illegal Ipv4 explicit null label");
-              m_dropTrace (packet, DROP_ILLEGAL_IPV4_EXPLICIT_NULL, interface->GetIfIndex ());
+              m_dropTrace (packet, DROP_ILLEGAL_IPV4_EXPLICIT_NULL, ifIndex);
               return;
             }
           NS_LOG_DEBUG ("Ipv4_excplicit_null label was encountered -- ipv4 based forwarding must be used");
@@ -377,12 +337,12 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
           if (!shim::IsBos (label))
             {
               NS_LOG_WARN ("Dropping received packet -- illegal Ipv6 explicit null label");
-              m_dropTrace (packet, DROP_ILLEGAL_IPV6_EXPLICIT_NULL, interface->GetIfIndex ());
+              m_dropTrace (packet, DROP_ILLEGAL_IPV6_EXPLICIT_NULL, ifIndex));
               return;
             }
           // for future research
           NS_LOG_DEBUG ("Dropping received packet -- ipv6 is not supported");
-          m_dropTrace (packet, DROP_IPV6_NOT_SUPPORTED, interface->GetIfIndex ());
+          m_dropTrace (packet, DROP_IPV6_NOT_SUPPORTED, ifIndex);
           return;
         }
       else if (label == Label::ROUTE_ALERT)
@@ -404,19 +364,19 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
 
   if (stack.IsEmpty ()) {
     NS_LOG_WARN ("Dropping received packet -- empty label stack");
-    m_dropTrace (packet, DROP_EMPTY_STACK, interface->GetIfIndex ());
+    m_dropTrace (packet, DROP_EMPTY_STACK, ifIndex);
     return;
   }
 
   NS_LOG_DEBUG ("Searching of label mapping for label " << (Label)label << 
-                " if" << interface->GetIfIndex () << " dev" << device->GetIfIndex ());
+                " if" << ifIndex << " dev" << device->GetIfIndex ());
   
-  Ptr<IncomingLabelMap> ilm = LookupIlm (label, interface->GetIfIndex ());
+  Ptr<IncomingLabelMap> ilm = LookupIlm (label, ifIndex);
 
   if (ilm == 0)
     {
       NS_LOG_DEBUG ("Dropping received packet -- ILM not found");
-      m_dropTrace (packet, DROP_ILM_NOT_FOUND, interface->GetIfIndex ());
+      m_dropTrace (packet, DROP_ILM_NOT_FOUND, ifIndex);
       return;
     }
 
@@ -433,8 +393,7 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
   NS_LOG_FUNCTION (this << packet << fwd << stack << (uint32_t)ttl);
 
   Ptr<Interface> outInterface;
-  Ptr<Ipv4Route> route;
-
+  Mac48Address mac;
   uint32_t stackSize = stack.GetSize ();
 
   NS_LOG_DEBUG ("Search of the suitable nhlfe for " << fwd);
@@ -448,7 +407,7 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
       const Nhlfe& nhlfe = *i;
 
       uint32_t opCode = nhlfe.GetOpCode ();
-      int32_t outIfIndex = nhlfe.GetInterface ();      
+      int32_t outIfIndex = nhlfe.GetInterface ();
       
       if (stackSize == 0 && opCode == OP_POP)
         {
@@ -460,67 +419,64 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
       // nhlfe operation is POP
       if (outIfIndex < 0 && stackSize == 1 && nhlfe.GetOpCode () == OP_POP)
         {
-          const Address &nextHop = nhlfe.GetNextHop ();
-          
-          if (!nextHop.IsInvalid ())
-            {
-              // next hop was specified
-              route = GetNextHopRoute (nextHop);
-              if (route == 0)
-                {
-                  NS_LOG_WARN ("nhlfe " << idx << " " << nhlfe << " -- next-hop is unavailable");
-                  continue;
-                }
-            }
-          else
-            {
-              route = 0;
-            }
           NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " selected (*)");
           NS_LOG_DEBUG ("Stack is empty -- ipv4 based forwarding must be used");
-          IpForward (packet, ttl, 0, route);
+          IpForward (packet, ttl, 0);
           return;
         }
 
+      const Address& nextHop = nhlfe.GetNextHop ();
+      
       if (outIfIndex >= 0)
         {
-          route = 0;
           outInterface = GetInterface (outIfIndex);
           if (outInterface == 0)
             {
               NS_LOG_WARN ("nhlfe " << idx << " " << nhlfe << " -- invalid outgoing interface");
               continue;
             }
+
+          if (nextHop.IsInvalid ())
+            {
+              mac = Mac48Address::GetBroadcast ();
+            }
+          else
+            {
+              if (!outInterface->LookupAddress (nextHop, mac))
+                {
+                  NS_LOG_WARN ("nhlfe " << idx << " " << nhlfe << " -- next-hop is unreachable");
+                  continue;
+                }
+            }
         }
-      else
+      else 
         {
           outInterface = 0;
-          const Address &nextHop = nhlfe.GetNextHop ();
-          
-          route = GetNextHopRoute (nextHop);
-          if (route != 0)
-            {
-              NS_LOG_LOGIC ("Next-hop route dest:" << route->GetDestination () << " "
-                 << "src: " << route->GetSource () << " "
-                 << "gw: " << route->GetGateway ());
+          // lookup address on each interface
+        }
+        
+      if (nextHop != 0)
+        {
+          NS_LOG_LOGIC ("Next-hop route dest:" << route->GetDestination () << " "
+             << "src: " << route->GetSource () << " "
+             << "gw: " << route->GetGateway ());
 
-              outInterface = GetInterfaceForDevice (route->GetOutputDevice ());
-            }
+          outInterface = GetInterfaceForDevice (route->GetOutputDevice ());
+        }
 
-          if (outInterface == 0)
-            {
-              NS_LOG_WARN ("nhlfe " << idx << " " << nhlfe << " -- next-hop is unavailable");
-              continue;
-            }
+      if (outInterface == 0)
+        {
+          NS_LOG_WARN ("nhlfe " << idx << " " << nhlfe << " -- next-hop is unavailable");
+          continue;
         }
 
       if (outInterface->IsUp ())
         {
           NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " selected (*)");
 
-          if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface))
+          if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface, *nextHop))
             {
-              IpForward (packet, ttl, outInterface->GetDevice (), route);
+              IpForward (packet, ttl, outInterface->GetDevice ());
             }
           return;
         }
@@ -531,7 +487,9 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
     }
 
   NS_LOG_DEBUG ("Dropping received packet -- there is no suitable nhlfe");
-  m_dropTrace (packet, DROP_NO_SUITABLE_NHLFE, 0);
+
+  // TODO: move to MplsForward
+  m_dropTrace (packet, DROP_NO_SUITABLE_NHLFE, -1); 
 }
 
 Ptr<IncomingLabelMap>
@@ -649,7 +607,7 @@ MplsProtocol::RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, La
   if (packet->GetSize () > outInterface->GetDevice ()->GetMtu ())
     {
       NS_LOG_LOGIC ("dropping received packet -- MTU size exceeded");
-      m_dropTrace (packet, DROP_MTU_EXCEEDED, outInterface->GetIfIndex ());
+      m_dropTrace (packet, DROP_MTU_EXCEEDED, outInterface);
     }
 
   outInterface->Send (packet, nhlfe.GetNextHop());
@@ -667,7 +625,7 @@ MplsProtocol::IpForward (const Ptr<Packet> &packet, uint8_t ttl, const Ptr<NetDe
   if (m_ipv4 == 0)
     {
       NS_LOG_WARN ("Dropping received packet -- ipv4 is not installed");
-      m_dropTrace (packet, DROP_NO_IPV4, outDev->GetIfIndex ());
+      m_dropTrace (packet, DROP_NO_IPV4, 0);
       return;
     }
 

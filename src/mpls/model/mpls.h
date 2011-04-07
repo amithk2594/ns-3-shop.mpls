@@ -47,6 +47,10 @@ namespace ns3 {
 using namespace mpls;
 
 /**
+ * \defgroup mpls
+ */
+
+/**
  * \ingroup mpls
  * Multiprotocol Label Switching. RFC 3031, 3032.
  */

@@ -60,6 +60,13 @@ public:
    */
   Nhlfe (const Operation& op, const Address& nextHop);
   /**
+   * @brief construct NHLFE with specified operation, next-hop address and outgoing interface
+   * @param op Operation to perform
+   * @param outInterface Outgoing interface index
+   * @param nextHop next-hop
+   */
+  Nhlfe (const Operation& op, int32_t outInterface, const Address& nextHop);
+  /**
    * @brief Destructor
    */
   virtual ~Nhlfe ();

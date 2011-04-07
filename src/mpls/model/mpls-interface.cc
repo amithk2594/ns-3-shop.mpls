@@ -146,65 +146,52 @@ Interface::SetDown ()
 }
 
 void
-Interface::Send (const Ptr<Packet>& packet, const Address &dest)
+Interface::Send (const Ptr<Packet>& packet, const Mac48Address &nextHop)
 {
-  if (Mac48Address::IsMatchingType (dest))
-    {
-      // I believe you know what are you doing      
-      m_device->Send (packet, Mac48Address::ConvertFrom (dest), Mpls::PROT_NUMBER);
-    }
-  else if (!m_device->NeedsArp()) 
+  if (!m_device->NeedsArp()) 
     {
       m_device->Send (packet, m_device->GetBroadcast (), Mpls::PROT_NUMBER);
     }
-  else if (Ipv4Address::IsMatchingType (dest))
+  else
     {
-      Mac48Address* hwaddr = m_addressResolvingTable->Lookup (Ipv4Address::ConvertFrom (dest))
-
-//      NS_LOG_DEBUG ("MplsInterface: needs ARP for " << destination);
-
-//      ipv4if = GetObject<Ipv4Interface> ();
-//      
-//      NS_ASSERT_MSG (ipv4if != 0, "MplsInterface: there is no associated ipv4-interface");
-      
-    }
-  else 
-    {
-      NS_ASSERT_MSG (false,
-                     "MplsInterface: node " << m_node->GetId() << " ifIndex " << m_ifIndex << 
-                     ", needs ARP -- specify next hop address!");    
+      m_device->Send (packet, nextHop, Mpls::PROT_NUMBER);
     }
 }
 
-void
-Interface::Send (const Ptr<Packet>& packet, const Mac48Address &nextHop)
+bool
+Interface::LookupAddress (const Ipv4Address& dest, Mac48Address& mac)
 {
-  m_device->Send (packet, nextHop, Mpls::PROT_NUMBER);
+  if (Ipv4Address::IsMatchingType (dest))
+    {
+      Ipv4TableIterator i = m_ipv4resolving.find (Ipv4Address::ConvertFrom (dest));
+  
+      if (i != m_ipv4resolving.end ())
+        {
+          mac = i.second;
+          return 1;
+        }
+    }
+        
+  return 0;
 }
 
-const Mac48Address*
-Interface::LookupAddress (Ipv4Address& destination)
-{
-  Ipv4TableIterator i = m_ipv4AddressResolvingTable.find (destination);
-  
-  if (i == m_ipv4AddressResolvingTable.end ())
-    return 0;
-  
-  return &(i->second);
-}
-
 void
-Interface::AddAddress (const Ipv4Address& dest, const Mac48Address& mac)
+Interface::AddAddress (const Address& dest, const Mac48Address& mac)
 {
-  m_ipv4AddressResolvingTable.insert (std::pair<Ipv4Address, Mac48Address> (dest, mac));
+  if (Ipv4Address::IsMatchingType (dest))
+    {
+      m_ipv4resolving.insert (std::pair<Ipv4Address, Mac48Address> (Ipv4Address::ConvertFrom (dest), mac));
+    }
 }
 
 void
 Interface::RemoveAddress (const Ipv4Address& dest)
 {
-  m_ipv4AddressResolvingTable.erase (dest);
+  if (Ipv4Address::IsMatchingType (dest))
+    {
+      m_ipv4resolving.erase (Ipv4Address::ConvertFrom (dest));
+    }
 }
-
 
 } // namespace mpls
 } // namespace ns3
