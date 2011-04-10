@@ -26,6 +26,7 @@
 #include "ns3/object-factory.h"
 #include "ns3/node-container.h"
 #include "ns3/packet.h"
+#include "ns3/net-device.h"
 #include "ns3/mpls.h"
 #include "ns3/mpls-ipv4-protocol.h"
 
@@ -85,6 +86,8 @@ public:
     ForEachNode (node, MakeCallback (&MplsInstaller::InstallInternal, this));
   }
 
+  static void PopulateAddressTables (void);
+  
 private:
 
   void Initialize (void);
@@ -94,6 +97,9 @@ private:
     
   static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
   static void Cleanup (void);
+
+  static void PopulateAddresses (const Ptr<Mpls> &mpls);
+  static void UpdateInterfaceAddresses (const Ptr<Interface> &interface, const Ptr<NetDevice> &device);
 };
 
 } // namespace ns3

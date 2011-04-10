@@ -30,7 +30,9 @@
 #include "ns3/string.h"
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
+#include "ns3/channel.h"
 #include "ns3/node.h"
+#include "ns3/node-list.h"
 #include "ns3/core-config.h"
 #include "ns3/arp-l3-protocol.h"
 #include "ns3/ipv4-list-routing-helper.h"
@@ -45,6 +47,8 @@
 NS_LOG_COMPONENT_DEFINE ("MplsInstaller");
 
 namespace ns3 {
+
+using namespace mpls;
 
 MplsInstaller::MplsInstaller ()
   : m_routing (0)
@@ -120,7 +124,7 @@ MplsInstaller::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::st
 void
 MplsInstaller::InstallInternal (Ptr<Node> node) const
 {
-  if (node->GetObject<mpls::MplsProtocol> () != 0)
+  if (node->GetObject<MplsProtocol> () != 0)
     {
       NS_FATAL_ERROR ("MplsInstaller::Install (): Aggregating "
                       "an Mpls to a node with an existing Mpls object");
@@ -141,4 +145,91 @@ MplsInstaller::InstallInternal (Ptr<Node> node) const
   ipv4->SetRoutingProtocol (ipv4Routing);
 }
 
-} // namespace ns3
+void
+MplsInstaller::PopulateAddressTables (void)
+{
+  NS_LOG_FUNCTION_NOARGS ();
+
+  NodeList::Iterator listEnd = NodeList::End ();
+
+  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
+    {
+      Ptr<Node> node = *i;
+      Ptr<Mpls> mpls = node->GetObject<Mpls> ();
+
+      if (mpls != 0)
+        {
+          PopulateAddresses (mpls);
+        }
+    }
+
+}
+
+void
+MplsInstaller::PopulateAddresses (const Ptr<Mpls> &mpls)
+{
+  int32_t nInterfaces = mpls->GetNInterfaces ();
+
+  for (int32_t ifIndex = 0; ifIndex < nInterfaces; ++ifIndex)
+    {
+      Ptr<Interface> mplsIf = mpls->GetInterface (ifIndex);
+      Ptr<NetDevice> device = mplsIf->GetDevice ();
+      Ptr<Channel> channel = device->GetChannel ();
+      
+      mplsIf->RemoveAllAddresses ();
+
+      uint32_t nDevices = channel->GetNDevices ();
+      
+      for (uint32_t idev = 0; idev < nDevices; ++idev)
+        {
+          Ptr<NetDevice> dev = channel->GetDevice (idev);
+          if (device != dev)
+            {
+              UpdateInterfaceAddresses (mplsIf, dev);
+            }
+        }
+    }
+}
+
+void
+MplsInstaller::UpdateInterfaceAddresses (const Ptr<Interface> &interface, const Ptr<NetDevice> &device)
+{
+  Address addr = device->GetAddress ();
+  if (!Mac48Address::IsMatchingType (addr))
+    {
+      return;
+    }
+    
+  Mac48Address hwaddr = Mac48Address::ConvertFrom (addr);
+    
+  Ptr<Node> node = device->GetNode ();
+  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
+  
+  if (mpls == 0)
+    {
+      return;
+    }
+
+  Ptr<Interface> mplsIf = mpls->GetInterfaceForDevice (device);
+  
+  if (mplsIf == 0)
+    {
+      return;
+    }
+    
+  Ptr<Ipv4Interface> ipv4If = mplsIf->GetObject<Ipv4Interface> ();
+
+  if (ipv4If == 0) 
+    {
+      return;
+    }
+    
+  int32_t nAddresses = ipv4If->GetNAddresses ();
+
+  for (int32_t i = 0; i < nAddresses; ++i)
+    {
+      interface->AddAddress (ipv4If->GetAddress (i).GetLocal (), hwaddr);
+    }
+}
+
+}// namespace ns3

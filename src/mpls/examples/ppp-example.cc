@@ -44,14 +44,18 @@ main (int argc, char *argv[])
   NodeContainer hosts;
   NodeContainer routers;
   PointToPointHelper pointToPoint;
+  CsmaHelper csma;  
   Ipv4AddressHelper address;
   NetDeviceContainer devices;
   InternetStackHelper internet;
   MplsInstaller mpls;
-
+  
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("2Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("4ms"));
-
+  
+  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
+  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
+  
   hosts.Create (2);
   routers.Create (3);
 
@@ -100,7 +104,6 @@ main (int argc, char *argv[])
 
   sw1.AddFtn (
       Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
-          Nhlfe (Pop (), Ipv4Address ("10.1.1.2")),     // invalid nhlfe
           Nhlfe (Swap (200), Ipv4Address ("10.1.2.1")), // invalid nhlfe
           Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe
   );
@@ -110,11 +113,10 @@ main (int argc, char *argv[])
 
   MplsSwitch sw3 (routers.Get (2));
   sw3.AddIlm (200, Nhlfe(Pop ()));
-  // we can also use
-  //sw3.AddIlm (200, Nhlfe(Pop (), Ipv4Address ("192.168.4.2")));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-  MplsInstaller::PopulateAddresses ();
+
+  MplsInstaller::PopulateAddressTables ();
 
   mpls.PrintInterfaces (routers);
 
