@@ -114,6 +114,7 @@ main (int argc, char *argv[])
   //sw3.AddIlm (200, Nhlfe(Pop (), Ipv4Address ("192.168.4.2")));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+  MplsInstaller::PopulateAddresses ();
 
   mpls.PrintInterfaces (routers);
 

@@ -94,10 +94,6 @@ public:
    */
   void SetDown ();
   /**
-   * @brier Send packet
-   */
-  void Send (const Ptr<Packet>& packet, const Address &dest);
-  /**
    * @brier Send packet 
    */
   void Send (const Ptr<Packet>& packet, const Mac48Address &dest);
@@ -107,10 +103,11 @@ public:
   int32_t GetIfIndex (void);  
   /**
    * @brief Do lookup in the address resolving table against an ip address
-   * @param destination The destination IPv4 address to lookup the MAC address
+   * @param dest The destination address to lookup the MAC address
+   * @param hwaddr hardware address 
    * @return true if address found
    */
-  bool LookupAddress (const Address &dest, Mac48Address& addr);
+  bool LookupAddress (const Address &dest, Mac48Address& hwaddr);
   /**
    * @brief Add an address to the address resolving table
    */
@@ -119,6 +116,10 @@ public:
    * @brief Remove an address from the address resolving table
    */
   void RemoveAddress (const Address &dest);
+  /**
+   * @brief Remove all addresses
+   */
+  void RemoveAllAddresses (void); 
 
 protected:
   virtual void DoDispose (void);

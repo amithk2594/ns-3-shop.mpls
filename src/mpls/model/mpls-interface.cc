@@ -27,6 +27,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/enum.h"
 
 #include "mpls.h"
 #include "mpls-interface.h"
@@ -56,7 +57,6 @@ Interface::GetTypeId (void)
 Interface::Interface (int32_t ifIndex)
   : m_node (0),
     m_device (0),
-    m_cache (0),
     m_ifup (true),
     m_ifIndex (ifIndex),
     m_addressResolvingMode (AUTO)
@@ -79,6 +79,18 @@ Interface::DoDispose (void)
 }
 
 void
+Interface::SetAddressResolvingMode (Interface::AddressResolvingMode mode)
+{
+  m_addressResolvingMode = mode;
+}
+
+Interface::AddressResolvingMode
+Interface::GetAddressResolvingMode (void) const
+{
+  return m_addressResolvingMode;
+}
+
+void
 Interface::SetNode (const Ptr<Node> &node)
 {
   m_node = node;
@@ -93,12 +105,6 @@ Interface::SetDevice (const Ptr<NetDevice> &device)
 }
 
 void
-Interface::SetArpCache (const Ptr<ArpCache> &cache)
-{
-  m_cache = cache;
-}
-
-void
 Interface::DoSetup ()
 {
   if (m_node == 0 || m_device == 0)
@@ -108,7 +114,7 @@ Interface::DoSetup ()
 }
 
 Ptr<NetDevice>
-Interface::GetDevice (void)
+Interface::GetDevice (void) const
 {
   return m_device;
 }
@@ -148,18 +154,11 @@ Interface::SetDown ()
 void
 Interface::Send (const Ptr<Packet>& packet, const Mac48Address &nextHop)
 {
-  if (!m_device->NeedsArp()) 
-    {
-      m_device->Send (packet, m_device->GetBroadcast (), Mpls::PROT_NUMBER);
-    }
-  else
-    {
-      m_device->Send (packet, nextHop, Mpls::PROT_NUMBER);
-    }
+   m_device->Send (packet, nextHop, Mpls::PROT_NUMBER);
 }
 
 bool
-Interface::LookupAddress (const Ipv4Address& dest, Mac48Address& mac)
+Interface::LookupAddress (const Address& dest, Mac48Address& hwaddr)
 {
   if (Ipv4Address::IsMatchingType (dest))
     {
@@ -167,7 +166,7 @@ Interface::LookupAddress (const Ipv4Address& dest, Mac48Address& mac)
   
       if (i != m_ipv4resolving.end ())
         {
-          mac = i.second;
+          hwaddr = (*i).second;
           return 1;
         }
     }
@@ -185,12 +184,18 @@ Interface::AddAddress (const Address& dest, const Mac48Address& mac)
 }
 
 void
-Interface::RemoveAddress (const Ipv4Address& dest)
+Interface::RemoveAddress (const Address& dest)
 {
   if (Ipv4Address::IsMatchingType (dest))
     {
       m_ipv4resolving.erase (Ipv4Address::ConvertFrom (dest));
     }
+}
+
+void 
+Interface::RemoveAllAddresses (void)
+{
+  m_ipv4resolving.clear ();
 }
 
 } // namespace mpls

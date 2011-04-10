@@ -118,9 +118,13 @@ public:
    */
   bool ReceiveIpv6 (const Ptr<Packet> &packet, const Ipv6Header &header, const Ptr<const NetDevice> &device);
   /**
-   * @brief New interface for specified device is available
+   * @brief New interface for the specified ipv4 interface is available
    */
-  void NotifyNewInterface (const Ptr<NetDevice> &device);
+  void NotifyNewInterface (const Ptr<Ipv4Interface> &ipv4if);
+  /**
+   * @brief New interface for the specified ipv6 interface is available
+   */
+  void NotifyNewInterface (const Ptr<Ipv6Interface> &ipv6if);
 
 protected:
   virtual void DoDispose (void);
@@ -133,10 +137,8 @@ private:
   Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface);
   Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
   bool RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
-                          const Ptr<Interface> &outInterface);
-  void IpForward (const Ptr<Packet> &packet, uint8_t ttl, const Ptr<NetDevice> &outDev, const Ptr<Ipv4Route> &route);
-
-  Ptr<Ipv4Route> GetNextHopRoute (const Address &address) const;
+                          const Ptr<Interface> &outInterface, const Mac48Address &hwaddr);
+  void IpForward (const Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev);
 
   Ptr<Node> m_node;
   Ptr<mpls::Ipv4Protocol> m_ipv4;
