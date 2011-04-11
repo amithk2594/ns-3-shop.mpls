@@ -44,7 +44,6 @@ main (int argc, char *argv[])
   NodeContainer hosts;
   NodeContainer routers;
   PointToPointHelper pointToPoint;
-  CsmaHelper csma;  
   Ipv4AddressHelper address;
   NetDeviceContainer devices;
   InternetStackHelper internet;
@@ -52,9 +51,6 @@ main (int argc, char *argv[])
   
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("2Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("4ms"));
-  
-  csma.SetChannelAttribute ("DataRate", StringValue ("100Mbps"));
-  csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
   
   hosts.Create (2);
   routers.Create (3);
