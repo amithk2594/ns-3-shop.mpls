@@ -396,14 +396,19 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
   uint32_t stackSize = stack.GetSize ();
 
   NS_LOG_DEBUG ("Search of the suitable nhlfe for " << fwd);
-  
-  uint32_t idx = 0;
-  // find first suitable nhlfe
-  for (ForwardingInformation::Iterator i = fwd->Begin (); 
-       i != fwd->End (); 
-       ++i, ++idx)
+    
+  Ptr<NhlfeSelectionPolicy> policy = fwd->GetPolicy ();
+  if (fwd == 0) 
     {
-      const Nhlfe& nhlfe = *i;
+      policy = m_nhlfeSelectionPolicy;
+      fwd->SetPolicy (policy);
+    }
+  
+  // find first suitable nhlfe
+  for (NhlfeSelectionPolicy::Iterator i = policy->Begin (), end = policy->End (); i != end; ++i)
+    {
+      const Nhlfe& nhlfe = i.Get ();
+      uint32_t idx = i.GetIndex ();
 
       uint32_t opCode = nhlfe.GetOpCode ();
       int32_t outIfIndex = nhlfe.GetInterface ();
