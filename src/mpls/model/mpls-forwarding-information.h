@@ -27,11 +27,13 @@
 
 #include "ns3/simple-ref-count.h"
 #include "mpls-nhlfe.h"
+#include "mpls-nhlfe-selection-policy.h"
 
 namespace ns3 {
 namespace mpls {
 
 class Nhlfe;
+class NhlfeSelectionPolicy;
 
 /**
  * \ingroup mpls
@@ -74,12 +76,35 @@ public:
    */
   void SetIndex (uint32_t index);
   /**
+   * @brief Set nhlfe selection policy
+   */
+  void SetPolicy (const Ptr<NhlfeSelectionPolicy> &policy);
+  /**
+   * @brief Set nhlfe selection policy
+   */
+  Ptr<NhlfeSelectionPolicy> GetPolicy (void) const;
+  /**
    * @brief Print NHLFE
    */
   virtual void Print (std::ostream &os) const = 0;
 
   typedef std::vector<Nhlfe> NhlfeVector;
-  typedef NhlfeVector::const_iterator Iterator;
+  
+  class Iterator : public std::iterator<std::forward_iterator_tag, Nhlfe> 
+  {
+  public:
+    Iterator(NhlfeSelectionPolicy *policy);
+    ~Iterator();
+
+    Iterator& operator=(const Iterator& iter);
+    bool operator==(const Iterator& iter);
+    bool operator!=(const Iterator& iter);
+    Iterator& operator++ ();
+    Nhlfe& operator*();
+
+  private:
+    NhlfeSelectionPolicy* m_policy;
+  };
 
   Iterator Begin (void) const;
   Iterator End (void) const;
@@ -88,6 +113,11 @@ protected:
   ForwardingInformation ();
   NhlfeVector m_nhlfe;
   uint32_t m_index;
+  
+  Ptr<NhlfeSelectionPolicy> m_policy;
+  NhlfeSelectionPolicy::Info* m_info;
+
+  friend class NhlfeSelectionPolicy;
 };
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info);

@@ -28,15 +28,36 @@ namespace ns3 {
 namespace mpls {
 
 ForwardingInformation::ForwardingInformation ()
-  : m_index (0)
+  : m_index (0),
+    m_policy (0),
+    m_info (0)
 {
 }
 
 ForwardingInformation::~ForwardingInformation ()
 {
+  delete m_info;
+  m_policy = 0;
   m_nhlfe.clear ();
 }
 
+void 
+ForwardingInformation::SetPolicy (const Ptr<NhlfeSelectionPolicy> &policy)
+{
+  if (m_policy != policy)
+    {
+      m_policy = policy;
+      delete m_info;
+      m_info = policy->CreateInfo ();
+    } 
+}
+
+Ptr<NhlfeSelectionPolicy>
+ForwardingInformation::GetPolicy (void) const
+{
+  return m_policy;
+}
+  
 uint32_t
 ForwardingInformation::AddNhlfe (const Nhlfe& nhlfe)
 {
@@ -68,6 +89,57 @@ void
 ForwardingInformation::SetIndex (uint32_t index)
 {
   m_index = index;
+}
+
+ForwardingInformation::Iterator::Iterator (ForwardingInformation *policy, uint32_t index)
+  : m_policy (policy),
+    m_index (index)
+{
+}
+
+ForwardingInformation::Iterator::~Iterator ()
+{
+}
+
+ForwardingInformation::Iterator&
+ForwardingInformation::Iterator::operator=(const ForwardingInformation::Iterator& iter)
+{
+  m_policy = iter.m_policy;
+  m_index = iter.m_index
+  return(*this);
+}
+
+bool
+ForwardingInformation::Iterator::operator==(const ForwardingInformation::Iterator& iter)
+{
+  return(m_index == iter.m_index);
+}
+
+bool
+ForwardingInformation::Iterator::operator!=(const ForwardingInformation::Iterator& iter)
+{
+  return(m_index != iter.m_index);
+}
+
+ForwardingInformation::Iterator& 
+ForwardingInformation::Iterator::operator++ ()
+{
+  m_index++;
+  return (*this);
+}
+
+ForwardingInformation::Iterator 
+ForwardingInformation::Iterator::operator++ (int)
+{
+  NhlfeSelectionPolicy::Iterator tmp(*this);
+  m_index++;
+  return tmp;
+}
+
+Nhlfe&
+ForwardingInformation::Iterator::operator*()
+{
+   return m_policy->GetNhlfe (m_index);
 }
 
 ForwardingInformation::Iterator
