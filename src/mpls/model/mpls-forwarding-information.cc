@@ -27,10 +27,10 @@
 namespace ns3 {
 namespace mpls {
 
-ForwardingInformation::ForwardingInformation ()
-  : m_index (0),
-    m_policy (0)
+ForwardingInformation::ForwardingInformation (Ptr<NhlfeSelectionPolicy> policy)
+  : m_index (0)
 {
+  SetPolicy (policy);
 }
 
 ForwardingInformation::~ForwardingInformation ()
@@ -42,6 +42,7 @@ ForwardingInformation::~ForwardingInformation ()
 void 
 ForwardingInformation::SetPolicy (const Ptr<NhlfeSelectionPolicy> &policy)
 {
+  NS_ASSERT (policy != 0);
   m_policy = policy;
 }
 
@@ -84,7 +85,7 @@ ForwardingInformation::SetIndex (uint32_t index)
   m_index = index;
 }
 
-ForwardingInformation::Iterator::Iterator (NhlfeSelectionPolicy *policy, NhlfeVector *nhlfe, uint32_t index)
+ForwardingInformation::Iterator::Iterator (const Ptr<NhlfeSelectionPolicy> &policy, const NhlfeVector *nhlfe, uint32_t index)
   : m_policy (policy),
     m_nhlfe (nhlfe),
     m_index (index)
@@ -100,20 +101,20 @@ ForwardingInformation::Iterator::operator=(const ForwardingInformation::Iterator
 {
   m_policy = iter.m_policy;
   m_nhlfe = iter.m_nhlfe;
-  m_index = iter.m_index
+  m_index = iter.m_index;
   return (*this);
 }
 
 bool
 ForwardingInformation::Iterator::operator==(const ForwardingInformation::Iterator& iter)
 {
-  return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe);
+  return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe && m_policy != iter.m_policy);
 }
 
 bool
 ForwardingInformation::Iterator::operator!=(const ForwardingInformation::Iterator& iter)
 {
-  return((m_index != iter.m_index && m_nhlfe != iter.m_nhlfe););
+  return (m_index != iter.m_index || m_nhlfe != iter.m_nhlfe || m_policy != iter.m_policy);
 }
 
 ForwardingInformation::Iterator& 
@@ -123,36 +124,40 @@ ForwardingInformation::Iterator::operator++ ()
   return (*this);
 }
 
-ForwardingInformation::Iterator 
-ForwardingInformation::Iterator::operator++ (int)
-{
-  NhlfeSelectionPolicy::Iterator tmp(*this);
-  m_index++;
-  return tmp;
-}
+//ForwardingInformation::Iterator 
+//ForwardingInformation::Iterator::operator++ (int i)
+//{
+//  NhlfeSelectionPolicy::Iterator tmp(*this);
+//  m_index++;
+//  return tmp;
+//}
 
 const Nhlfe&
 ForwardingInformation::Iterator::operator*()
 {
-   return m_policy->GetNhlfe (m_nhlfe, m_index);
+   return m_policy->GetNhlfe (*m_nhlfe, m_index);
 }
 
 bool
 ForwardingInformation::Iterator::Select (const Ptr<const Packet> &packet)
 {
-  return m_policy->SelectNhlfe (m_nhlfe, m_index, packet);
+  return m_policy->SelectNhlfe (*m_nhlfe, m_index, packet);
 }
 
 ForwardingInformation::Iterator
 ForwardingInformation::Begin (void) const
 {
-  return ForwardingInformation::Iterator(&(*m_policy), m_nhlfe);
+  NS_ASSERT (m_policy != 0);
+
+  return ForwardingInformation::Iterator(m_policy, &m_nhlfe);
 }
 
 ForwardingInformation::Iterator
 ForwardingInformation::End (void) const
 {
-  return ForwardingInformation::Iterator(&(*m_policy), m_nhlfe, m_nhlfe.size())
+  NS_ASSERT (m_policy != 0);
+
+  return ForwardingInformation::Iterator(m_policy, &m_nhlfe, m_nhlfe.size());
 }
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info)

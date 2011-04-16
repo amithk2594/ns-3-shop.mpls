@@ -47,13 +47,13 @@ public:
    * @param label incoming label
    * @param nhlfe NHLFE (at least one NHLFE should be set)
    */
-  IncomingLabelMap (int32_t interface, Label label, const Nhlfe &nhlfe);
+  IncomingLabelMap (int32_t interface, Label label, const Nhlfe &nhlfe, Ptr<NhlfeSelectionPolicy> policy);
   /**
    * @brief Construct ILM for specified incoming label
    * @param label incoming label
    * @param nhlfe NHLFE (at least one NHLFE should be set)
    */
-  IncomingLabelMap (Label label, const Nhlfe &nhlfe);
+  IncomingLabelMap (Label label, const Nhlfe &nhlfe, Ptr<NhlfeSelectionPolicy> policy);
   /**
    * @brief Destuctor
    */

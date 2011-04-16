@@ -46,7 +46,7 @@ public:
    * @param fec forwarding equivalence class
    * @param nhlfe NHLFE (at least one NHLFE should be set)
    */
-  FecToNhlfe (Fec *fec, const Nhlfe &nhlfe);
+  FecToNhlfe (Fec *fec, const Nhlfe &nhlfe, Ptr<NhlfeSelectionPolicy> policy);
   /**
    * @brief Destructor
    */

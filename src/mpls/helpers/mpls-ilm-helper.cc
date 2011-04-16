@@ -78,16 +78,16 @@ MplsIlmHelper::ClearIlmTable ()
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe)
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe, const SelectionPolicyHelper &policy)
 {
-  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe);
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe, policy.CreatePolicy ());
   return GetIlmTable ()->AddIlm (ilm);
 }
 
 uint32_t
 MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2)
 {
-  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1);
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.CreatePolicy ());
   ilm->AddNhlfe (nhlfe2);
   return GetIlmTable ()->AddIlm (ilm);
 }
@@ -96,7 +96,7 @@ uint32_t
 MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
   const mpls::Nhlfe &nhlfe3)
 {
-  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1);
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.CreatePolicy ());
   ilm->AddNhlfe (nhlfe2);
   ilm->AddNhlfe (nhlfe3);
   return GetIlmTable ()->AddIlm (ilm);
@@ -106,7 +106,7 @@ uint32_t
 MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
     const mpls::Nhlfe &nhlfe4)
 {
-  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1);
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.CreatePolicy ());
   ilm->AddNhlfe (nhlfe2);
   ilm->AddNhlfe (nhlfe3);
   ilm->AddNhlfe (nhlfe4);  
@@ -117,7 +117,7 @@ uint32_t
 MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
     const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5)
 {
-  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1);
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.CreatePolicy ());
   ilm->AddNhlfe (nhlfe2);
   ilm->AddNhlfe (nhlfe3);
   ilm->AddNhlfe (nhlfe4);
@@ -129,7 +129,7 @@ uint32_t
 MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
     const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
 {
-  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1);
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.CreatePolicy ());
   ilm->AddNhlfe (nhlfe2);
   ilm->AddNhlfe (nhlfe3);
   ilm->AddNhlfe (nhlfe4);
