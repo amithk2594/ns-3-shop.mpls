@@ -30,21 +30,25 @@ namespace ns3 {
 _MplsNodeHelper::_MplsNodeHelper ()
   : m_node (0)
 {
+  m_nhlfeSelectionPolicy = new NhlfeSelectionPolicyHelper();
 }
 
 _MplsNodeHelper::_MplsNodeHelper (const Ptr<Node> &node)
 {
   SetNode (node);
+  m_nhlfeSelectionPolicy = new NhlfeSelectionPolicyHelper();
 }
 
 _MplsNodeHelper::_MplsNodeHelper (const std::string &node)
 {
   SetNode (node);
+  m_nhlfeSelectionPolicy = new NhlfeSelectionPolicyHelper();
 }
 
 _MplsNodeHelper::~_MplsNodeHelper()
 {
   m_node = 0;
+  delete m_nhlfeSelectionPolicy;
 }
 
 void
@@ -74,6 +78,18 @@ Ptr<Node>
 _MplsNodeHelper::GetNode (void) const
 {
   return m_node;
+}
+
+void
+_MplsNodeHelper::SetSelectionPolicy(const NhlfeSelectionPolicyHelper& policy)
+{
+  m_nhlfeSelectionPolicy = policy->Copy ();
+}
+
+const NhlfeSelectionPolicyHelper&
+_MplsNodeHelper::GetSelectionPolicy (void) const
+{
+  return *m_nhlfeSelectionPolicy;
 }
 
 } // namespace ns3

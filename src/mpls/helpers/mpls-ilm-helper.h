@@ -33,7 +33,7 @@
 #include "ns3/mpls-nhlfe.h"
 
 #include "mpls-node-helper.h"
-
+#include "mpls-nhlfe-selection-policy-helper.h"
 
 namespace ns3 {
 
@@ -58,7 +58,7 @@ public:
   /**
    * @brief Destroy the MplsIlmHelper
    */
-  virtual ~MplsIlmHelper();
+  virtual ~MplsIlmHelper();  
   /**
    * @brief Return ILM table
    */
@@ -101,6 +101,29 @@ public:
                     const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
                     const mpls::Nhlfe &nhlfe6);
   /**
+   * @brief Add a new ILM
+   * @param interface Incoming mpls interface
+   * @param label Incoming label
+   * @param nhlfe NHLFE
+   * @param policy NhlfeSelectionPolicyHelper
+   * @return ILM index
+   */
+  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe, 
+                    const NhlfeSelectionPolicyHelper& policy);
+  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2,
+                    const NhlfeSelectionPolicyHelper& policy);
+  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+                    const mpls::Nhlfe &nhlfe3, const NhlfeSelectionPolicyHelper& policy);
+  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const NhlfeSelectionPolicyHelper& policy);
+  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5,
+                    const NhlfeSelectionPolicyHelper& policy);
+  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+                    const mpls::Nhlfe &nhlfe6, const NhlfeSelectionPolicyHelper& policy);
+
+  /**
    * @brief Add ILM with a single NHLFE (per-system label space)
    * @param label
    * @param nhlfe
@@ -115,7 +138,26 @@ public:
                     const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5);
   uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
                     const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6);
-  
+
+  /**
+   * @brief Add ILM with a single NHLFE (per-system label space)
+   * @param label
+   * @param nhlfe
+   * @param NhlfeSelectionPolicyHelper
+   * @return index of the ILM
+   */
+  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe, const NhlfeSelectionPolicyHelper &policy);
+  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2,
+                    const NhlfeSelectionPolicyHelper &policy);
+  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3,
+                    const NhlfeSelectionPolicyHelper &policy);
+  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+                    const mpls::Nhlfe &nhlfe4, const NhlfeSelectionPolicyHelper &policy);
+  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+                    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const NhlfeSelectionPolicyHelper &policy);
+  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+                    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+                    const NhlfeSelectionPolicyHelper &policy);
 };
 
 } // namespace ns3

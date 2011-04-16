@@ -56,10 +56,6 @@ public:
    */
   virtual bool SelectNhlfe (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
       const Ptr<const Packet> &packet);
-  /**
-   * @brief Copy policy object
-   */
-  virtual Ptr<NhlfeSelectionPolicy> Copy (void) const;
 };
 
 } // namespace mpls

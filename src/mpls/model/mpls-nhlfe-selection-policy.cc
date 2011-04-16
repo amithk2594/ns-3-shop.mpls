@@ -62,11 +62,5 @@ NhlfeSelectionPolicy::SelectNhlfe (const std::vector<Nhlfe> &nhlfe, uint32_t ind
   return true;
 }
 
-Ptr<NhlfeSelectionPolicy>
-NhlfeSelectionPolicy::Copy (void) const
-{
-  return CreateObject<NhlfeSelectionPolicy> ();
-}
-
 } // namespace mpls
 } // namespace ns3
