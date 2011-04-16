@@ -397,18 +397,19 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
 
   NS_LOG_DEBUG ("Search of the suitable nhlfe for " << fwd);
     
-  Ptr<NhlfeSelectionPolicy> policy = fwd->GetPolicy ();
-  if (fwd == 0) 
+  if (fwd->GetPolicy () == 0) 
     {
-      policy = m_nhlfeSelectionPolicy;
-      fwd->SetPolicy (policy);
+      fwd->SetPolicy (m_nhlfeSelectionPolicy);
     }
   
   // find first suitable nhlfe
-  for (NhlfeSelectionPolicy::Iterator i = policy->Begin (), end = policy->End (); i != end; ++i)
+  for (ForwardingInformation::Iterator i = fwd->Begin (), 
+       ForwardingInformation::Iterator j = fwd->End (), 
+       uint32_t idx = 0; 
+       i != j; 
+       ++i, ++idx)
     {
-      const Nhlfe& nhlfe = i.Get ();
-      uint32_t idx = i.GetIndex ();
+      const Nhlfe& nhlfe = *i;
 
       uint32_t opCode = nhlfe.GetOpCode ();
       int32_t outIfIndex = nhlfe.GetInterface ();
