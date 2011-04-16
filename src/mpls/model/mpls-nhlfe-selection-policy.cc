@@ -50,16 +50,22 @@ NhlfeSelectionPolicy::~NhlfeSelectionPolicy ()
 }
 
 const Nhlfe&
-NhlfeSelectionPolicy::GetNhlfe (const std::vector<Nhlfe> &nhlfe, uint32_t index)
+NhlfeSelectionPolicy::Get (const std::vector<Nhlfe> &nhlfe, uint32_t index)
 {
   return nhlfe[index];
 }
 
 bool
-NhlfeSelectionPolicy::SelectNhlfe (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
-    const Ptr<const Packet> &packet)
+NhlfeSelectionPolicy::Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
+  const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
 {
   return true;
+}
+
+void
+NhlfeSelectionPolicy::Print (std::ostream &os) const
+{
+  os << "default policy";
 }
 
 } // namespace mpls
