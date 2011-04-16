@@ -20,6 +20,7 @@ def build(bld):
         'model/mpls-ipv4-protocol.cc',
         'model/mpls-ipv4-routing.cc',
         'model/mpls-nhlfe-selection-policy.cc',
+        'model/mpls-label-space.cc',
         'helpers/mpls-nhlfe-selection-policy-helper.cc',
         'helpers/mpls-enum-helper.cc',        
         'helpers/mpls-interface-helper.cc',
@@ -51,6 +52,7 @@ def build(bld):
         'model/mpls-ipv4-protocol.h',
         'model/mpls-ipv4-routing.h',
         'model/mpls-nhlfe-selection-policy.h',
+        'model/mpls-label-space.h',
         'helpers/mpls-nhlfe-selection-policy-helper.h',
         'helpers/mpls-enum-helper.h',        
         'helpers/mpls-interface-helper.h',
@@ -58,6 +60,6 @@ def build(bld):
         'helpers/mpls-node-helper.h',        
         'helpers/mpls-ftn-helper.h',
         'helpers/mpls-ilm-helper.h',
-        'helpers/mpls-switch.h',        
+        'helpers/mpls-switch.h',
     ]
 
