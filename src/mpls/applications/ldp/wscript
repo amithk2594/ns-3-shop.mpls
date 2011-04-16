@@ -1,0 +1,41 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('ldp', ['node', 'mpls'])
+    module.source = [
+        'protocol-data-unit.cc',
+        'common-hello-params-tlv.cc',
+        'common-session-params-tlv.cc',
+        'status-tlv.cc',
+        'common-tlv.cc',
+        'common-cr-tlv.cc',
+        'fec-tlv.cc',
+        'lsp-tunnel.cc',
+        'ldp-peer.cc',
+        'trunk-utilization.cc',
+        'te-server.cc',
+        'ldp-extension.cc',
+        'ldp-constraint-based-routing.cc',
+        'ldp-protocol.cc',
+    ]
+    headers = bld.new_task_gen('ns3header')
+    headers.module = 'ldp'
+    headers.source = [
+        'identifier-list.h',
+        'sequence-list.h',
+        'protocol-data-unit.h',
+        'ldp-status-codes.h',
+        'common-hello-params-tlv.h',
+        'common-session-params-tlv.h',
+        'status-tlv.h',
+        'fec-tlv.h',
+        'common-tlv.h',
+        'common-cr-tlv.h',
+        'lsp-tunnel.h',
+        'ldp-peer.h',
+        'trunk-utilization.h',
+        'te-server.h',
+        'ldp-extension.h',
+        'ldp-constraint-based-routing.h',
+        'ldp-protocol.h',
+    ]
