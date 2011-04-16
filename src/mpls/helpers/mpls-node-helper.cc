@@ -83,7 +83,7 @@ _MplsNodeHelper::GetNode (void) const
 void
 _MplsNodeHelper::SetSelectionPolicy(const NhlfeSelectionPolicyHelper& policy)
 {
-  m_nhlfeSelectionPolicy = policy->Copy ();
+  m_nhlfeSelectionPolicy = policy.Copy ();
 }
 
 const NhlfeSelectionPolicyHelper&
