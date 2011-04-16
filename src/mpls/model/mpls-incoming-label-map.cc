@@ -24,15 +24,17 @@
 namespace ns3 {
 namespace mpls {
 
-IncomingLabelMap::IncomingLabelMap (Label label, const Nhlfe &nhlfe)
-  : m_interface (-1),
+IncomingLabelMap::IncomingLabelMap (Label label, const Nhlfe &nhlfe, Ptr<NhlfeSelectionPolicy> policy)
+  : ForwardingInformation (policy),
+    m_interface (-1),
     m_label (label)
 {
   AddNhlfe (nhlfe);
 }
 
-IncomingLabelMap::IncomingLabelMap (int32_t interface, Label label, const Nhlfe &nhlfe)
-  : m_interface (interface),
+IncomingLabelMap::IncomingLabelMap (int32_t interface, Label label, const Nhlfe &nhlfe, Ptr<NhlfeSelectionPolicy> policy)
+  : ForwardingInformation (policy),
+    m_interface (interface),
     m_label (label)
 {
   AddNhlfe (nhlfe);

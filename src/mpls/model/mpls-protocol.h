@@ -50,10 +50,12 @@
 #include "mpls-ipv4-protocol.h"
 #include "mpls-packet-demux.h"
 #include "mpls-traces.h"
+#include "mpls-nhlfe-selection-policy.h"
 
 namespace ns3 {
 namespace mpls {
 
+class NhlfeSelectionPolicy;
 class Nhlfe;
 class ForwardingInformation;
 class Ipv4Protocol;
@@ -144,7 +146,6 @@ private:
   Ptr<mpls::Ipv4Protocol> m_ipv4;
   Ptr<IlmTable> m_ilmTable;
   Ptr<FtnTable> m_ftnTable;
-
   InterfaceList m_interfaces;
   bool m_interfaceAutoInstall;
 

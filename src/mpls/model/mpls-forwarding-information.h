@@ -93,27 +93,27 @@ public:
   class Iterator : public std::iterator<std::input_iterator_tag, Nhlfe> 
   {
   public:
-    Iterator(NhlfeSelectionPolicy *policy, NhlfeVector *nhlfe, uint32_t index=0);
+    Iterator(const Ptr<NhlfeSelectionPolicy> &policy, const NhlfeVector *nhlfe, uint32_t index=0);
     ~Iterator();
 
     Iterator& operator=(const Iterator& iter);
     bool operator==(const Iterator& iter);
     bool operator!=(const Iterator& iter);
     Iterator& operator++ ();
-    Nhlfe& operator*();
+    const Nhlfe& operator*();
     bool Select (const Ptr<const Packet> &packet);
 
   private:
-    NhlfeSelectionPolicy* m_policy;
-    NhlfeVector *vector;
+    Ptr<NhlfeSelectionPolicy> m_policy;
+    const NhlfeVector *m_nhlfe;
     uint32_t m_index;
   };
 
   Iterator Begin (void) const;
   Iterator End (void) const;
 
-protected:
-  ForwardingInformation ();
+protected: 
+  ForwardingInformation (Ptr<NhlfeSelectionPolicy> policy);
   NhlfeVector m_nhlfe;
   uint32_t m_index;
   

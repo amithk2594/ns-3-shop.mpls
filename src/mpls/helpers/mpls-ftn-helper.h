@@ -108,7 +108,7 @@ template<class T>
 uint32_t 
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe, 0);
   return GetFtnTable ()->AddFtn (ftn);
 }
 
@@ -116,7 +116,7 @@ template<class T>
 uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
   ftn->AddNhlfe (nhlfe2);
   return GetFtnTable ()->AddFtn (ftn);
 }
@@ -125,7 +125,7 @@ template<class T>
 uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
   ftn->AddNhlfe (nhlfe2);
   ftn->AddNhlfe (nhlfe3);  
   return GetFtnTable ()->AddFtn (ftn);
@@ -136,7 +136,7 @@ uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
                   const mpls::Nhlfe &nhlfe4)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
   ftn->AddNhlfe (nhlfe2);
   ftn->AddNhlfe (nhlfe3);  
   ftn->AddNhlfe (nhlfe4);  
@@ -148,7 +148,7 @@ uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
                   const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
   ftn->AddNhlfe (nhlfe2);
   ftn->AddNhlfe (nhlfe3);  
   ftn->AddNhlfe (nhlfe4);  
@@ -161,7 +161,7 @@ uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
                   const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
   ftn->AddNhlfe (nhlfe2);
   ftn->AddNhlfe (nhlfe3);  
   ftn->AddNhlfe (nhlfe4);  

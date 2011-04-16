@@ -24,8 +24,9 @@
 namespace ns3 {
 namespace mpls {
 
-FecToNhlfe::FecToNhlfe (Fec* fec, const Nhlfe &nhlfe)
-  : m_fec (fec)
+FecToNhlfe::FecToNhlfe (Fec* fec, const Nhlfe &nhlfe, Ptr<NhlfeSelectionPolicy> policy)
+  : ForwardingInformation (policy),
+    m_fec (fec)
 {
   NS_ASSERT (fec != 0);
 
