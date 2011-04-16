@@ -477,7 +477,7 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
         {
           if (!i.Select(packet)) 
             {
-              NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " ommited by the policy");
+              NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- ommited by the policy");
             }
            else 
             {
