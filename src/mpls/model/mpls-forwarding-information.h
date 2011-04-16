@@ -93,7 +93,7 @@ public:
   class Iterator : public std::iterator<std::forward_iterator_tag, Nhlfe> 
   {
   public:
-    Iterator(NhlfeSelectionPolicy *policy);
+    Iterator(NhlfeSelectionPolicy *policy, NhlfeVector *nhlfe, uint32_t index=0);
     ~Iterator();
 
     Iterator& operator=(const Iterator& iter);
@@ -104,6 +104,8 @@ public:
 
   private:
     NhlfeSelectionPolicy* m_policy;
+    NhlfeVector *vector;
+    uint32_t m_index;
   };
 
   Iterator Begin (void) const;
@@ -115,9 +117,6 @@ protected:
   uint32_t m_index;
   
   Ptr<NhlfeSelectionPolicy> m_policy;
-  NhlfeSelectionPolicy::Info* m_info;
-
-  friend class NhlfeSelectionPolicy;
 };
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info);
