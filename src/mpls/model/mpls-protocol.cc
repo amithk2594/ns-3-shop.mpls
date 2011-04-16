@@ -475,16 +475,21 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
 
       if (outInterface->IsUp ())
         {
-          NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " selected (*)");
-          
-          if (i.Select(packet)) 
+          if (!i.Select(packet)) 
             {
+              NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " ommited by the policy");
+            }
+           else 
+            {
+              NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " selected (*)");
+
               if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface, hwaddr))
                 {
                   IpForward (packet, ttl, outInterface->GetDevice ());
                 }
+                
+              return;
             }
-          return;
         }
       else
         {
