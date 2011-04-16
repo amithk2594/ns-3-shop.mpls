@@ -91,8 +91,9 @@ ForwardingInformation::SetIndex (uint32_t index)
   m_index = index;
 }
 
-ForwardingInformation::Iterator::Iterator (ForwardingInformation *policy, uint32_t index)
+ForwardingInformation::Iterator::Iterator (NhlfeSelectionPolicy *policy, NhlfeVector *nhlfe, uint32_t index)
   : m_policy (policy),
+    m_nhlfe (nhlfe),
     m_index (index)
 {
 }
@@ -105,20 +106,21 @@ ForwardingInformation::Iterator&
 ForwardingInformation::Iterator::operator=(const ForwardingInformation::Iterator& iter)
 {
   m_policy = iter.m_policy;
+  m_nhlfe = iter.m_nhlfe;
   m_index = iter.m_index
-  return(*this);
+  return (*this);
 }
 
 bool
 ForwardingInformation::Iterator::operator==(const ForwardingInformation::Iterator& iter)
 {
-  return(m_index == iter.m_index);
+  return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe);
 }
 
 bool
 ForwardingInformation::Iterator::operator!=(const ForwardingInformation::Iterator& iter)
 {
-  return(m_index != iter.m_index);
+  return((m_index != iter.m_index && m_nhlfe != iter.m_nhlfe););
 }
 
 ForwardingInformation::Iterator& 
@@ -139,19 +141,19 @@ ForwardingInformation::Iterator::operator++ (int)
 Nhlfe&
 ForwardingInformation::Iterator::operator*()
 {
-   return m_policy->GetNhlfe (m_index);
+   return m_policy->GetNhlfe (m_nhlfe, m_index);
 }
 
 ForwardingInformation::Iterator
 ForwardingInformation::Begin (void) const
 {
-  return m_nhlfe.begin ();
+  return ForwardingInformation::Iterator(m_policy, m_nhlfe);
 }
 
 ForwardingInformation::Iterator
 ForwardingInformation::End (void) const
 {
-  return m_nhlfe.end ();
+  return ForwardingInformation::Iterator(m_policy, m_nhlfe, m_nhlfe.size())
 }
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info)
