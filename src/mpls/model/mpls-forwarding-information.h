@@ -90,7 +90,7 @@ public:
 
   typedef std::vector<Nhlfe> NhlfeVector;
   
-  class Iterator : public std::iterator<std::forward_iterator_tag, Nhlfe> 
+  class Iterator : public std::iterator<std::input_iterator_tag, Nhlfe> 
   {
   public:
     Iterator(NhlfeSelectionPolicy *policy, NhlfeVector *nhlfe, uint32_t index=0);

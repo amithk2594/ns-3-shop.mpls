@@ -29,14 +29,12 @@ namespace mpls {
 
 ForwardingInformation::ForwardingInformation ()
   : m_index (0),
-    m_policy (0),
-    m_info (0)
+    m_policy (0)
 {
 }
 
 ForwardingInformation::~ForwardingInformation ()
 {
-  delete m_info;
   m_policy = 0;
   m_nhlfe.clear ();
 }
@@ -44,12 +42,7 @@ ForwardingInformation::~ForwardingInformation ()
 void 
 ForwardingInformation::SetPolicy (const Ptr<NhlfeSelectionPolicy> &policy)
 {
-  if (m_policy != policy)
-    {
-      m_policy = policy;
-      delete m_info;
-      m_info = policy->CreateInfo ();
-    } 
+  m_policy = policy;
 }
 
 Ptr<NhlfeSelectionPolicy>
@@ -138,7 +131,7 @@ ForwardingInformation::Iterator::operator++ (int)
   return tmp;
 }
 
-Nhlfe&
+const Nhlfe&
 ForwardingInformation::Iterator::operator*()
 {
    return m_policy->GetNhlfe (m_nhlfe, m_index);
