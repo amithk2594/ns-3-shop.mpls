@@ -22,10 +22,12 @@
 #ifndef MPLS_NHLFE_SELECTION_POLICY_H
 #define MPLS_NHLFE_SELECTION_POLICY_H
 
+#include <ostream>
 #include <vector>
 #include "ns3/object.h"
 #include "ns3/packet.h"
 #include "mpls-nhlfe.h"
+#include "mpls-interface.h"
 
 namespace ns3 {
 namespace mpls {
