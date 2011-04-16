@@ -85,6 +85,12 @@ ForwardingInformation::SetIndex (uint32_t index)
   m_index = index;
 }
 
+void
+ForwardingInformation::Print (std::ostream &os) const
+{
+  os << "policy [" << m_policy->GetInstanceTypeId ().GetName () << "]";
+}
+
 ForwardingInformation::Iterator::Iterator (const Ptr<NhlfeSelectionPolicy> &policy, const NhlfeVector *nhlfe, uint32_t index)
   : m_policy (policy),
     m_nhlfe (nhlfe),
