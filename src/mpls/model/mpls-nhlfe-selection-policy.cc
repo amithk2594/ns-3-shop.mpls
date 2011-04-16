@@ -42,46 +42,19 @@ NhlfeSelectionPolicy::GetTypeId (void)
   return tid;
 }
 
-NhlfeSelectionPolicy::Info::Info ()
-{
-}
-
-NhlfeSelectionPolicy::Info::~Info ()
-{
-}
-
-
-
 NhlfeSelectionPolicy::NhlfeSelectionPolicy ()
-  : m_fwd (0)
 {
-  NS_LOG_FUNCTION (this);
 }
 
 NhlfeSelectionPolicy::~NhlfeSelectionPolicy ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
 }
 
-void
-NhlfeSelectionPolicy::DoDispose (void)
+const Nhlfe&
+NhlfeSelectionPolicy::GetNhlfe (const ForwardingInformation::NhlfeVector &nhlfe, uint32_t index)
 {
-  m_fwd = 0;
-  
-  Object::DoDispose ();
-}
-  
-Nhlfe*
-NhlfeSelectionPolicy::GetNhlfe (uint32_t index)
-{
-  return &(m_fwd->m_nhlfe[index]);
+  return m_nhlfe[index];
 }
 
-uint32_t 
-NhlfeSelectionPolicy::GetNNhlfe (void)
-{
-  return m_fwd->m_nhlfe.size ();
-}
-  
 } // namespace mpls
 } // namespace ns3

@@ -37,30 +37,13 @@ class NhlfeSelectionPolicy : public Object
 public:
   static TypeId GetTypeId (void);
   
-  class Info 
-  {
-  public:
-    Info ();
-    virtual ~Info ();
-  };
-  
   NhlfeSelectionPolicy ();
   virtual ~NhlfeSelectionPolicy ();
   
   /**
    * @return NHLFE for specified index (called by the Iterator)
    */
-  virtual Nhlfe& GetNhlfe (uint32_t index);
-  /**
-   * @return New policy information object (called by the ForwardingInformation)
-   */
-  virtual Info* CreatePolicyInfo ();
-  
-  Iterator Begin ();
-  Iterator End ();
-  
-protected:
-  virtual void DoDispose (void);
+  virtual const Nhlfe& GetNhlfe (const ForwardingInformation::NhlfeVector &nhlfe, uint32_t index);
 };
 
 } // namespace mpls
