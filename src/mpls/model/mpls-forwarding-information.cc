@@ -88,7 +88,9 @@ ForwardingInformation::SetIndex (uint32_t index)
 void
 ForwardingInformation::Print (std::ostream &os) const
 {
-  os << "policy [" << m_policy->GetInstanceTypeId ().GetName () << "]";
+  os << "[";
+  m_policy->Print (os);
+  os << "]";
 }
 
 ForwardingInformation::Iterator::Iterator (const Ptr<NhlfeSelectionPolicy> &policy, const NhlfeVector *nhlfe, uint32_t index)
@@ -103,7 +105,7 @@ ForwardingInformation::Iterator::~Iterator ()
 }
 
 ForwardingInformation::Iterator&
-ForwardingInformation::Iterator::operator=(const ForwardingInformation::Iterator& iter)
+ForwardingInformation::Iterator::operator= (const ForwardingInformation::Iterator& iter)
 {
   m_policy = iter.m_policy;
   m_nhlfe = iter.m_nhlfe;
@@ -112,13 +114,13 @@ ForwardingInformation::Iterator::operator=(const ForwardingInformation::Iterator
 }
 
 bool
-ForwardingInformation::Iterator::operator==(const ForwardingInformation::Iterator& iter)
+ForwardingInformation::Iterator::operator== (const ForwardingInformation::Iterator& iter)
 {
   return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe && m_policy != iter.m_policy);
 }
 
 bool
-ForwardingInformation::Iterator::operator!=(const ForwardingInformation::Iterator& iter)
+ForwardingInformation::Iterator::operator!= (const ForwardingInformation::Iterator& iter)
 {
   return (m_index != iter.m_index || m_nhlfe != iter.m_nhlfe || m_policy != iter.m_policy);
 }
@@ -130,39 +132,27 @@ ForwardingInformation::Iterator::operator++ ()
   return (*this);
 }
 
-//ForwardingInformation::Iterator 
-//ForwardingInformation::Iterator::operator++ (int i)
-//{
-//  NhlfeSelectionPolicy::Iterator tmp(*this);
-//  m_index++;
-//  return tmp;
-//}
-
 const Nhlfe&
-ForwardingInformation::Iterator::operator*()
+ForwardingInformation::Iterator::operator* ()
 {
-   return m_policy->GetNhlfe (*m_nhlfe, m_index);
+   return m_policy->Get (*m_nhlfe, m_index);
 }
 
 bool
-ForwardingInformation::Iterator::Select (const Ptr<const Packet> &packet)
+ForwardingInformation::Iterator::select (const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
 {
-  return m_policy->SelectNhlfe (*m_nhlfe, m_index, packet);
+  return m_policy->Select (*m_nhlfe, m_index, interface, packet);
 }
 
 ForwardingInformation::Iterator
 ForwardingInformation::Begin (void) const
 {
-  NS_ASSERT (m_policy != 0);
-
   return ForwardingInformation::Iterator(m_policy, &m_nhlfe);
 }
 
 ForwardingInformation::Iterator
 ForwardingInformation::End (void) const
 {
-  NS_ASSERT (m_policy != 0);
-
   return ForwardingInformation::Iterator(m_policy, &m_nhlfe, m_nhlfe.size());
 }
 

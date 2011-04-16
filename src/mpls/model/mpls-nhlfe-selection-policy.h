@@ -47,15 +47,20 @@ public:
   /**
    * @brief Returns NHLFE for specified index (called by the Iterator)
    */
-  virtual const Nhlfe& GetNhlfe (const std::vector<Nhlfe> &nhlfe, uint32_t index);
+  virtual const Nhlfe& Get (const std::vector<Nhlfe> &nhlfe, uint32_t index);
   /**
+   * @brief Returns true if nhlfe can be selected
    * @param nhlfe Nhlfe vector
    * @param index Nhlfe index
+   * @param iface Outgoing interface
    * @param packet Packet
-   * @return True if nhlfe can be selected
    */
-  virtual bool SelectNhlfe (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
-      const Ptr<const Packet> &packet);
+  virtual bool Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
+      const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
+  /**
+   * @brief Print policy 
+   */
+  virtual void Print (std::ostream &os) const;
 };
 
 } // namespace mpls

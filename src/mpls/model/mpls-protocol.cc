@@ -467,28 +467,29 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
           continue;
         }
 
-      if (outInterface->IsUp ())
-        {
-          if (!i.Select(packet)) 
-            {
-              NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- ommited by the policy");
-            }
-           else 
-            {
-              NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " selected (*)");
-
-              if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface, hwaddr))
-                {
-                  IpForward (packet, ttl, outInterface->GetDevice ());
-                }
-                
-              return;
-            }
-        }
-      else
+      if (!outInterface->IsUp ())
         {
           NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- mpls interface disabled");
         }
+      else if (!outInterface->GetDevice ()->IsLinkUp ()) 
+        {
+          NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- link down");
+        }
+      else if (!i.select(outInterface, packet)) 
+        {
+          NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- ommited by the policy");
+        }
+      else 
+        {
+          NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- selected (*)");
+
+          if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface, hwaddr))
+            {
+              IpForward (packet, ttl, outInterface->GetDevice ());
+            }
+            
+          return;
+        }    
     }
 
   NS_LOG_DEBUG ("Dropping received packet -- there is no suitable nhlfe");
