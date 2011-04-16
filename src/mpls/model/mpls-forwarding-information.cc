@@ -147,13 +147,13 @@ ForwardingInformation::Iterator::operator*()
 ForwardingInformation::Iterator
 ForwardingInformation::Begin (void) const
 {
-  return ForwardingInformation::Iterator(m_policy, m_nhlfe);
+  return ForwardingInformation::Iterator(&(*m_policy), m_nhlfe);
 }
 
 ForwardingInformation::Iterator
 ForwardingInformation::End (void) const
 {
-  return ForwardingInformation::Iterator(m_policy, m_nhlfe, m_nhlfe.size())
+  return ForwardingInformation::Iterator(&(*m_policy), m_nhlfe, m_nhlfe.size())
 }
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info)
