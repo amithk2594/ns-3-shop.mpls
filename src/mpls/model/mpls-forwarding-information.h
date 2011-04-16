@@ -101,6 +101,7 @@ public:
     bool operator!=(const Iterator& iter);
     Iterator& operator++ ();
     Nhlfe& operator*();
+    bool Select (const Ptr<const Packet> &packet);
 
   private:
     NhlfeSelectionPolicy* m_policy;

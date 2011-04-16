@@ -41,9 +41,21 @@ public:
   virtual ~NhlfeSelectionPolicy ();
   
   /**
-   * @return NHLFE for specified index (called by the Iterator)
+   * @brief Returns NHLFE for specified index (called by the Iterator)
    */
   virtual const Nhlfe& GetNhlfe (const ForwardingInformation::NhlfeVector &nhlfe, uint32_t index);
+  /**
+   * @param nhlfe Nhlfe vector
+   * @param index Nhlfe index
+   * @param packet Packet
+   * @return True if nhlfe can be selected
+   */
+  virtual bool SelectNhlfe (const ForwardingInformation::NhlfeVector &nhlfe, uint32_t index, 
+      const Ptr<const Packet> &packet);
+  /**
+   * @brief Copy policy object
+   */
+  virtual Ptr<NhlfeSelectionPolicy> Copy (void) const;
 };
 
 } // namespace mpls

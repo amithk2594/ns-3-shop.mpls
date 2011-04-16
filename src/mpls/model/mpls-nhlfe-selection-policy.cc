@@ -50,10 +50,23 @@ NhlfeSelectionPolicy::~NhlfeSelectionPolicy ()
 {
 }
 
+Ptr<NhlfeSelectionPolicy> 
+NhlfeSelectionPolicy::Copy (void) const
+{
+  return CreateObject<NhlfeSelectionPolicy> ();
+}
+
 const Nhlfe&
 NhlfeSelectionPolicy::GetNhlfe (const ForwardingInformation::NhlfeVector &nhlfe, uint32_t index)
 {
   return nhlfe[index];
+}
+
+bool
+NhlfeSelectionPolicy::SelectNhlfe (const ForwardingInformation::NhlfeVector &nhlfe, uint32_t index, 
+    const Ptr<const Packet> &packet)
+{
+  return true;
 }
 
 } // namespace mpls
