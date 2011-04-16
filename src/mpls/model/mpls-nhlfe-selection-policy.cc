@@ -53,7 +53,7 @@ NhlfeSelectionPolicy::~NhlfeSelectionPolicy ()
 const Nhlfe&
 NhlfeSelectionPolicy::GetNhlfe (const ForwardingInformation::NhlfeVector &nhlfe, uint32_t index)
 {
-  return m_nhlfe[index];
+  return nhlfe[index];
 }
 
 } // namespace mpls
