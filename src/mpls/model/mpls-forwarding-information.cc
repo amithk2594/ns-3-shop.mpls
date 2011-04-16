@@ -137,6 +137,12 @@ ForwardingInformation::Iterator::operator*()
    return m_policy->GetNhlfe (m_nhlfe, m_index);
 }
 
+bool
+ForwardingInformation::Iterator::Select (const Ptr<const Packet> &packet)
+{
+  return m_policy->SelectNhlfe (m_nhlfe, m_index, packet);
+}
+
 ForwardingInformation::Iterator
 ForwardingInformation::Begin (void) const
 {

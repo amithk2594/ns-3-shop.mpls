@@ -476,10 +476,13 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
       if (outInterface->IsUp ())
         {
           NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " selected (*)");
-
-          if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface, hwaddr))
+          
+          if (i.Select(packet)) 
             {
-              IpForward (packet, ttl, outInterface->GetDevice ());
+              if (!RealMplsForward (packet, nhlfe, stack, ttl, outInterface, hwaddr))
+                {
+                  IpForward (packet, ttl, outInterface->GetDevice ());
+                }
             }
           return;
         }
