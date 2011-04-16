@@ -32,6 +32,7 @@
 #include "ns3/mpls-fec.h"
 #include "ns3/mpls-nhlfe.h"
 #include "mpls-node-helper.h"
+#include "mpls-nhlfe-selection-policy-helper.h"
 
 namespace ns3 {
 
@@ -101,6 +102,31 @@ public:
   template<class T>                    
   uint32_t AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
                     const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6);
+  /**
+   * @brief Add a new FTN
+   * @param fec FEC
+   * @param nhlfe NHLFE
+   * @param Nhlfe selection policy
+   * @return FTN index
+   */
+  template<class T>
+  uint32_t AddFtn (const T &fec, const mpls::Nhlfe &nhlfe, const NhlfeSelectionPolicyHelper& policy);
+  template<class T>  
+  uint32_t AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2,
+                    const NhlfeSelectionPolicyHelper& policy);
+  template<class T>  
+  uint32_t AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3,
+                    const NhlfeSelectionPolicyHelper& policy);
+  template<class T>  
+  uint32_t AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+                    const mpls::Nhlfe &nhlfe4, const NhlfeSelectionPolicyHelper& policy);
+  template<class T>                    
+  uint32_t AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+                    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const NhlfeSelectionPolicyHelper& policy);
+  template<class T>                    
+  uint32_t AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+                    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+                    const NhlfeSelectionPolicyHelper& policy);
 
 };
 
@@ -108,27 +134,21 @@ template<class T>
 uint32_t 
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe, 0);
-  return GetFtnTable ()->AddFtn (ftn);
+  return AddFtn (fec, nhlfe, GetSelectionPolicy ());
 }
 
 template<class T>  
 uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
-  ftn->AddNhlfe (nhlfe2);
-  return GetFtnTable ()->AddFtn (ftn);
+  return AddFtn (fec, nhlfe1, nhlfe2, GetSelectionPolicy ());
 }
 
 template<class T>  
 uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
-  ftn->AddNhlfe (nhlfe2);
-  ftn->AddNhlfe (nhlfe3);  
-  return GetFtnTable ()->AddFtn (ftn);
+  return AddFtn (fec, nhlfe1, nhlfe2, nhlfe3, GetSelectionPolicy ());
 }
 
 template<class T>  
@@ -136,11 +156,7 @@ uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
                   const mpls::Nhlfe &nhlfe4)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
-  ftn->AddNhlfe (nhlfe2);
-  ftn->AddNhlfe (nhlfe3);  
-  ftn->AddNhlfe (nhlfe4);  
-  return GetFtnTable ()->AddFtn (ftn);
+  return AddFtn (fec, nhlfe1, nhlfe2, nhlfe3, nhlfe4, GetSelectionPolicy ());
 }
 
 template<class T>                    
@@ -148,7 +164,65 @@ uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
                   const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
+  return AddFtn (fec, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, GetSelectionPolicy ());
+}
+
+template<class T>                    
+uint32_t
+MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+                  const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
+{
+  return AddFtn (fec, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, GetSelectionPolicy ());
+}
+
+
+template<class T>
+uint32_t 
+MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe, const NhlfeSelectionPolicyHelper& policy)
+{
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe, policy.CreatePolicy ());
+  return GetFtnTable ()->AddFtn (ftn);
+}
+
+template<class T>  
+uint32_t
+MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2,
+  const NhlfeSelectionPolicyHelper& policy)
+{
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, policy.CreatePolicy ());
+  ftn->AddNhlfe (nhlfe2);
+  return GetFtnTable ()->AddFtn (ftn);
+}
+
+template<class T>  
+uint32_t
+MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3,
+  const NhlfeSelectionPolicyHelper& policy)
+{
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, policy.CreatePolicy ());
+  ftn->AddNhlfe (nhlfe2);
+  ftn->AddNhlfe (nhlfe3);  
+  return GetFtnTable ()->AddFtn (ftn);
+}
+
+template<class T>  
+uint32_t
+MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+  const mpls::Nhlfe &nhlfe4, const NhlfeSelectionPolicyHelper& policy)
+{
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, policy.CreatePolicy ());
+  ftn->AddNhlfe (nhlfe2);
+  ftn->AddNhlfe (nhlfe3);  
+  ftn->AddNhlfe (nhlfe4);  
+  return GetFtnTable ()->AddFtn (ftn);
+}
+
+template<class T>                    
+uint32_t
+MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
+  const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const NhlfeSelectionPolicyHelper& policy)
+{
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, policy.CreatePolicy ());
   ftn->AddNhlfe (nhlfe2);
   ftn->AddNhlfe (nhlfe3);  
   ftn->AddNhlfe (nhlfe4);  
@@ -159,9 +233,10 @@ MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlf
 template<class T>                    
 uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-                  const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
+  const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+  const NhlfeSelectionPolicyHelper& policy)
 {
-  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, 0);
+  Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, policy.CreatePolicy ());
   ftn->AddNhlfe (nhlfe2);
   ftn->AddNhlfe (nhlfe3);  
   ftn->AddNhlfe (nhlfe4);  
@@ -169,6 +244,7 @@ MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlf
   ftn->AddNhlfe (nhlfe6);
   return GetFtnTable ()->AddFtn (ftn);
 }
+
 
 } // namespace ns3
 

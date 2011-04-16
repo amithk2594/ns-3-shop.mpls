@@ -26,6 +26,7 @@
 #include "ns3/ptr.h"
 #include "ns3/node.h"
 #include "ns3/mpls.h"
+#include "mpls-nhlfe-selection-policy-helper.h"
 
 namespace ns3 {
 
@@ -59,13 +60,16 @@ public:
    * @brief Assign node
    */
   void SetNode (const std::string &node);  
+  void SetSelectionPolicy(const NhlfeSelectionPolicyHelper& policy);
 
-protected:
+  protected:
   Ptr<Mpls> GetMpls (void) const;
   Ptr<Node> GetNode (void) const;
-  
+  const NhlfeSelectionPolicyHelper& GetSelectionPolicy (void) const;
+
 private:
   Ptr<Node> m_node;
+  NhlfeSelectionPolicyHelper* m_nhlfeSelectionPolicy;
 };
 
 } // namespace ns3
