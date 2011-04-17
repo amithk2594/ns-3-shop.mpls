@@ -116,7 +116,7 @@ ForwardingInformation::Iterator::operator= (const ForwardingInformation::Iterato
 bool
 ForwardingInformation::Iterator::operator== (const ForwardingInformation::Iterator& iter)
 {
-  return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe && m_policy != iter.m_policy);
+  return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe && m_policy == iter.m_policy);
 }
 
 bool
