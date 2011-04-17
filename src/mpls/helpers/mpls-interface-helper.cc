@@ -20,11 +20,9 @@
  */
 
 #include <iomanip>
-#include <ostream>
 
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/names.h"
 #include "ns3/string.h"
 #include "ns3/mpls-interface.h"
 #include "ns3/ipv4-address.h"
@@ -32,55 +30,31 @@
 #include "ns3/mac48-address.h"
 
 #include "mpls-interface-helper.h"
-#include "mpls-node-helper.h"
-
-
-NS_LOG_COMPONENT_DEFINE ("MplsInterfaceHelper");
 
 namespace ns3 {
 
 MplsInterfaceHelper::MplsInterfaceHelper ()
 {
-  m_stream = Create<OutputStreamWrapper> (&std::cout);
-}
-
-MplsInterfaceHelper::MplsInterfaceHelper (const Ptr<OutputStreamWrapper> &stream)
-  : m_stream (stream)
-{
 }
 
 MplsInterfaceHelper::~MplsInterfaceHelper ()
 {
-  m_stream = 0;
 }
 
 void
-MplsInterfaceHelper::SetOutputStream (const Ptr<OutputStreamWrapper> &stream)
+MplsInterfaceHelper::ShowConfig (void) const
 {
-  NS_ASSERT_MSG (stream != 0, "MplsInterfaceHelper::SetOutputStream (): invalid stream");
-  m_stream = stream;
+  const NodeContainer& nodes = GetNetworkNodes ();
+  for (NodeContainer::Iterator node = nodes.Begin (), end = nodes.End (); node != end; ++node)
+    {
+      PrintInterfacesInternal (*node);
+    }
 }
-
+  
 void
-MplsInterfaceHelper::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
+MplsInterfaceHelper::PrintInterfacesInternal (const Ptr<Node> &node) const
 {
-  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->EnableNewInterfaceNotification (true);
-}
-
-void
-MplsInterfaceHelper::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
-{
-  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->EnableNewInterfaceNotification (false);
-}
-
-void
-MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
-{
-  std::ostream &os = *(m_stream->GetStream ());
+  std::ostream &os = *(GetOutputStream ()->GetStream ());
 
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
@@ -109,17 +83,18 @@ MplsInterfaceHelper::PrintInterfacesInternal (Ptr<Node> node) const
         
       os << std::endl;
 
+      if (ipv4 != 0)
+        { 
+          PrintIpv4Info (os, dev, ipv4);
+        }
+
       if (mpls != 0)
         {
           PrintMplsInfo (os, dev, mpls);
         }
 
-      if (ipv4 != 0)
-        { 
-          PrintIpv4Info (os, dev, ipv4);
-        }
-        
       PrintDeviceInfo (os, dev);
+      
       os << std::endl;
     }
 }
@@ -132,7 +107,7 @@ MplsInterfaceHelper::PrintMplsInfo (std::ostream &os, const Ptr<NetDevice> &dev,
     {
       os << std::setw (9) << " " 
          << "mpls:" << (iface->IsUp () ? "enabled" : "disabled") << "  "
-         << "Interface: " << iface->GetIfIndex ()
+         << "Interface:" << iface->GetIfIndex ()
          << std::endl;
     }  
 }

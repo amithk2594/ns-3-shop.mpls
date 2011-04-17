@@ -19,46 +19,25 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#include "ns3/assert.h"
-#include "ns3/log.h"
+#ifndef MPLS_NETWORK_HELPER_BASE_H
+#define MPLS_NETWORK_HELPER_BASE_H
 
-#include "mpls-ftn-helper.h"
+#include "ns3/ptr.h"
+#include "ns3/node.h"
+#include "ns3/node-container.h"
+#include "ns3/output-stream-wrapper.h"
 
 namespace ns3 {
 
-MplsFtnHelper::~MplsFtnHelper()
+class MplsNetworkHelperBase
 {
-}
+public:
+  virtual ~MplsNetworkHelperBase (void);
 
-Ptr<mpls::FtnTable>
-MplsFtnHelper::GetFtnTable (void) const
-{
-  return GetMpls ()->GetFtnTable ();
-}
+  virtual const NodeContainer& GetNetworkNodes (void) const = 0;
+  virtual const Ptr<OutputStreamWrapper>& GetOutputStream (void) const = 0;
+};
 
-void 
-MplsFtnHelper::SetFtnTable (const Ptr<mpls::FtnTable> &table)
-{
-  NS_ASSERT (table != 0);
-  GetMpls ()->SetFtnTable (table);  
-}
+} // namespace ns3
 
-Ptr<mpls::FecToNhlfe> 
-MplsFtnHelper::GetFtn (const uint32_t index) const
-{
-  return GetFtnTable ()->GetFtn (index);
-}
-
-void
-MplsFtnHelper::RemoveFtn (const uint32_t index)
-{
-  GetFtnTable ()->RemoveFtn (index);
-}
-
-void 
-MplsFtnHelper::ClearFtnTable ()
-{
-  GetFtnTable ()->Clear ();
-}
-
-} // namespace mpls
+#endif /* MPLS_NETWORK_HELPER_BASE_H */

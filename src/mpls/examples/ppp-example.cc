@@ -38,6 +38,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("mpls::MplsProtocol", LOG_LEVEL_DEBUG);
   LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
+  LogComponentEnable ("MplsMacResolver", LOG_LEVEL_DEBUG);  
 
 //  LogComponentEnable ("mpls::LabelStack", LOG_LEVEL_ALL);
 
@@ -47,7 +48,7 @@ main (int argc, char *argv[])
   Ipv4AddressHelper address;
   NetDeviceContainer devices;
   InternetStackHelper internet;
-  MplsInstaller mpls;
+  MplsNetworkConfigurator network;
   
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("2Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("4ms"));
@@ -56,7 +57,7 @@ main (int argc, char *argv[])
   routers.Create (3);
 
   internet.Install (hosts);
-  mpls.Install (routers);
+  network.Install (routers);
 
   // Hosts applications
   uint16_t port = 9;
@@ -86,7 +87,7 @@ main (int argc, char *argv[])
   address.Assign(devices);
 
   // Routers configuration
-  mpls.EnableInterfaceAutoInstall (routers);
+  network.EnableInterfaceAutoInstall (routers);
 
   devices = pointToPoint.Install (routers.Get(0), routers.Get(1));
   address.SetBase ("10.1.1.0", "255.255.255.0");
@@ -111,10 +112,12 @@ main (int argc, char *argv[])
   sw3.AddIlm (200, Nhlfe(Pop ()));
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+  
+  network.ShowConfig ();
+  network.ConfigureMacResolvers ();
 
-  MplsInstaller::PopulateAddressTables ();
-
-  mpls.PrintInterfaces (routers);
+  //TunnelId tunnel = network.CreateTunnel (TunnelNode("10.1.1.2") >> TunnelNode("10.1.2.2"));
+  
 
   Simulator::Run ();
   Simulator::Destroy ();

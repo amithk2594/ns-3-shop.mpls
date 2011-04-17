@@ -19,42 +19,43 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#ifndef MPLS_INTERFACE_HELPER_H
-#define MPLS_INTERFACE_HELPER_H
+#ifndef MPLS_NETWORK_CONFIGURATOR_H
+#define MPLS_NETWORK_CONFIGURATOR_H
 
-#include <ostream>
-
-#include "ns3/ptr.h"
-#include "ns3/node.h"
-#include "ns3/mpls.h"
-#include "ns3/ipv4.h"
-#include "ns3/ipv6.h"
-
-#include "mpls-network-helper-base.h"
+#include "ns3/mpls-installer.h"
+#include "ns3/mpls-interface-helper.h"
+#include "ns3/mpls-mac-resolver.h"
+#include "ns3/mpls-tunnel-helper.h"
 
 namespace ns3 {
+
 /**
- * \brief Mpls interface helper
+ * \brief Mpls network configurator
  */
-class MplsInterfaceHelper : public MplsNetworkHelperBase
+class MplsNetworkConfigurator : public MplsInstaller, public MplsMacResolver, public MplsTunnelHelper,
+        public MplsInterfaceHelper
 {
 public:
-  MplsInterfaceHelper ();
-  virtual ~MplsInterfaceHelper ();
-
   /**
-   * @brief Show MPLS interfaces
+   * @brief Create mpls network configurator
    */
-  void ShowConfig (void) const;
+  MplsNetworkConfigurator();
+  /**
+   * @brief Destroy object
+   */
+  virtual ~MplsNetworkConfigurator(void);
 
+  MplsNetworkConfigurator (const MplsNetworkConfigurator &o);
+  MplsNetworkConfigurator& operator= (const MplsNetworkConfigurator &o);
+
+  void SetOutputStream (const Ptr<OutputStreamWrapper> &stream);
+  virtual const Ptr<OutputStreamWrapper>& GetOutputStream (void) const;
+  virtual const NodeContainer& GetNetworkNodes (void) const;
+  
 private:
-  void PrintInterfacesInternal (const Ptr<Node> &node) const;
-  void PrintMplsInfo (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Mpls> &mpls) const;
-  void PrintIpv4Info (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Ipv4> &ipv4) const;
-  void PrintIpv6Info (std::ostream &os, const Ptr<NetDevice> &dev, const Ptr<Ipv6> &ipv6) const;
-  void PrintDeviceInfo (std::ostream &os, const Ptr<NetDevice> &dev) const;
+  Ptr<OutputStreamWrapper> m_stream;
 };
 
 } // namespace ns3
 
-#endif /* MPLS_INTERFACE_HELPER_H */
+#endif /* MPLS_NETWORK_CONFIGURATOR_H */

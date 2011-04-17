@@ -19,46 +19,30 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#include "ns3/assert.h"
-#include "ns3/log.h"
+#ifndef MPLS_NODE_HELPER_BASE_H
+#define MPLS_NODE_HELPER_BASE_H
 
-#include "mpls-ftn-helper.h"
+#include "ns3/ptr.h"
+#include "ns3/node.h"
+#include "ns3/mpls.h"
+#include "mpls-nhlfe-selection-policy-helper.h"
 
 namespace ns3 {
 
-MplsFtnHelper::~MplsFtnHelper()
+/**
+ * \brief Mpls switch configurator
+ */
+class MplsNodeHelperBase
 {
-}
+public:
+  virtual ~MplsNodeHelperBase();
 
-Ptr<mpls::FtnTable>
-MplsFtnHelper::GetFtnTable (void) const
-{
-  return GetMpls ()->GetFtnTable ();
-}
+  virtual const Ptr<Mpls>& GetMpls (void) const = 0;
+  virtual const Ptr<Node>& GetNode (void) const = 0;
+  virtual const NhlfeSelectionPolicyHelper& GetSelectionPolicy (void) const = 0;
+};
 
-void 
-MplsFtnHelper::SetFtnTable (const Ptr<mpls::FtnTable> &table)
-{
-  NS_ASSERT (table != 0);
-  GetMpls ()->SetFtnTable (table);  
-}
+} // namespace ns3
 
-Ptr<mpls::FecToNhlfe> 
-MplsFtnHelper::GetFtn (const uint32_t index) const
-{
-  return GetFtnTable ()->GetFtn (index);
-}
+#endif /* MPLS_NODE_HELPER_BASE_H*/
 
-void
-MplsFtnHelper::RemoveFtn (const uint32_t index)
-{
-  GetFtnTable ()->RemoveFtn (index);
-}
-
-void 
-MplsFtnHelper::ClearFtnTable ()
-{
-  GetFtnTable ()->Clear ();
-}
-
-} // namespace mpls

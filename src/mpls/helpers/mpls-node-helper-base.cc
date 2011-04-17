@@ -19,46 +19,12 @@
  *         Stefano Avallone <stavallo@gmail.com>
  */
 
-#include "ns3/assert.h"
-#include "ns3/log.h"
-
-#include "mpls-ftn-helper.h"
+#include "mpls-node-helper-base.h"
 
 namespace ns3 {
 
-MplsFtnHelper::~MplsFtnHelper()
+MplsNodeHelperBase::~MplsNodeHelperBase ()
 {
 }
 
-Ptr<mpls::FtnTable>
-MplsFtnHelper::GetFtnTable (void) const
-{
-  return GetMpls ()->GetFtnTable ();
-}
-
-void 
-MplsFtnHelper::SetFtnTable (const Ptr<mpls::FtnTable> &table)
-{
-  NS_ASSERT (table != 0);
-  GetMpls ()->SetFtnTable (table);  
-}
-
-Ptr<mpls::FecToNhlfe> 
-MplsFtnHelper::GetFtn (const uint32_t index) const
-{
-  return GetFtnTable ()->GetFtn (index);
-}
-
-void
-MplsFtnHelper::RemoveFtn (const uint32_t index)
-{
-  GetFtnTable ()->RemoveFtn (index);
-}
-
-void 
-MplsFtnHelper::ClearFtnTable ()
-{
-  GetFtnTable ()->Clear ();
-}
-
-} // namespace mpls
+} // namespace ns3

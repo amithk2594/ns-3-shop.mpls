@@ -28,9 +28,6 @@
 #include "ns3/config.h"
 #include "ns3/simulator.h"
 #include "ns3/string.h"
-#include "ns3/net-device.h"
-#include "ns3/callback.h"
-#include "ns3/channel.h"
 #include "ns3/node.h"
 #include "ns3/node-list.h"
 #include "ns3/core-config.h"
@@ -44,21 +41,12 @@
 
 #include "mpls-installer.h"
 
-NS_LOG_COMPONENT_DEFINE ("MplsInstaller");
-
 namespace ns3 {
 
 using namespace mpls;
 
 MplsInstaller::MplsInstaller ()
   : m_routing (0)
-{
-  Initialize ();
-}
-
-// private method called by both constructor and Reset ()
-void
-MplsInstaller::Initialize ()
 {
   SetTcp ("ns3::TcpL4Protocol");
   Ipv4StaticRoutingHelper staticRouting;
@@ -76,27 +64,27 @@ MplsInstaller::~MplsInstaller ()
 
 MplsInstaller::MplsInstaller (const MplsInstaller &o)
 {
+  m_networkNodes = o.m_networkNodes;
   m_routing = o.m_routing->Copy ();
   m_tcpFactory = o.m_tcpFactory;
 }
 
-MplsInstaller &
-MplsInstaller::operator = (const MplsInstaller &o)
+MplsInstaller&
+MplsInstaller::operator= (const MplsInstaller &o)
 {
   if (this == &o)
     {
       return *this;
     }
+  m_networkNodes = o.m_networkNodes;
   m_routing = o.m_routing->Copy ();
   return *this;
 }
 
-void
-MplsInstaller::Reset (void)
+const NodeContainer& 
+MplsInstaller::GetNetworkNodes (void) const
 {
-  delete m_routing;
-  m_routing = 0;
-  Initialize ();
+  return m_networkNodes;
 }
 
 void
@@ -122,7 +110,7 @@ MplsInstaller::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::st
 }
 
 void
-MplsInstaller::InstallInternal (Ptr<Node> node) const
+MplsInstaller::InstallInternal (Ptr<Node> node)
 {
   if (node->GetObject<MplsProtocol> () != 0)
     {
@@ -136,6 +124,7 @@ MplsInstaller::InstallInternal (Ptr<Node> node) const
   CreateAndAggregateObjectFromTypeId (node, "ns3::ArpL3Protocol");
   CreateAndAggregateObjectFromTypeId (node, "ns3::Icmpv4L4Protocol");
   CreateAndAggregateObjectFromTypeId (node, "ns3::UdpL4Protocol");
+
   node->AggregateObject (m_tcpFactory.Create<Object> ());
   Ptr<PacketSocketFactory> factory = CreateObject<PacketSocketFactory> ();
   node->AggregateObject (factory);
@@ -143,93 +132,24 @@ MplsInstaller::InstallInternal (Ptr<Node> node) const
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   Ptr<Ipv4RoutingProtocol> ipv4Routing = m_routing->Create (node);
   ipv4->SetRoutingProtocol (ipv4Routing);
+  
+  m_networkNodes.Add (node);
 }
 
 void
-MplsInstaller::PopulateAddressTables (void)
+MplsInstaller::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
 {
-  NS_LOG_FUNCTION_NOARGS ();
-
-  NodeList::Iterator listEnd = NodeList::End ();
-
-  for (NodeList::Iterator i = NodeList::Begin (); i != listEnd; i++)
-    {
-      Ptr<Node> node = *i;
-      Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-
-      if (mpls != 0)
-        {
-          PopulateAddresses (mpls);
-        }
-    }
-
-}
-
-void
-MplsInstaller::PopulateAddresses (const Ptr<Mpls> &mpls)
-{
-  int32_t nInterfaces = mpls->GetNInterfaces ();
-
-  for (int32_t ifIndex = 0; ifIndex < nInterfaces; ++ifIndex)
-    {
-      Ptr<Interface> mplsIf = mpls->GetInterface (ifIndex);
-      Ptr<NetDevice> device = mplsIf->GetDevice ();
-      Ptr<Channel> channel = device->GetChannel ();
-      
-      mplsIf->RemoveAllAddresses ();
-
-      uint32_t nDevices = channel->GetNDevices ();
-      
-      for (uint32_t idev = 0; idev < nDevices; ++idev)
-        {
-          Ptr<NetDevice> dev = channel->GetDevice (idev);
-          if (device != dev)
-            {
-              UpdateInterfaceAddresses (mplsIf, dev);
-            }
-        }
-    }
-}
-
-void
-MplsInstaller::UpdateInterfaceAddresses (const Ptr<Interface> &interface, const Ptr<NetDevice> &device)
-{
-  Address addr = device->GetAddress ();
-  if (!Mac48Address::IsMatchingType (addr))
-    {
-      return;
-    }
-    
-  Mac48Address hwaddr = Mac48Address::ConvertFrom (addr);
-    
-  Ptr<Node> node = device->GetNode ();
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-  
-  if (mpls == 0)
-    {
-      return;
-    }
+  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
+  mpls->EnableNewInterfaceNotification (true);
+}
 
-  Ptr<Interface> mplsIf = mpls->GetInterfaceForDevice (device);
-  
-  if (mplsIf == 0)
-    {
-      return;
-    }
-    
-  Ptr<Ipv4Interface> ipv4If = mplsIf->GetObject<Ipv4Interface> ();
-
-  if (ipv4If == 0) 
-    {
-      return;
-    }
-    
-  int32_t nAddresses = ipv4If->GetNAddresses ();
-
-  for (int32_t i = 0; i < nAddresses; ++i)
-    {
-      interface->AddAddress (ipv4If->GetAddress (i).GetLocal (), hwaddr);
-    }
+void
+MplsInstaller::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
+{
+  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
+  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
+  mpls->EnableNewInterfaceNotification (false);
 }
 
 }// namespace ns3

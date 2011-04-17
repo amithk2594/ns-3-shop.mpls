@@ -22,7 +22,6 @@
 #ifndef MPLS_FTN_HELPER_H
 #define MPLS_FTN_HELPER_H
 
-#include "ns3/string.h"
 #include "ns3/ptr.h"
 #include "ns3/node.h"
 #include "ns3/mpls.h"
@@ -31,32 +30,17 @@
 #include "ns3/mpls-fec-to-nhlfe.h"
 #include "ns3/mpls-fec.h"
 #include "ns3/mpls-nhlfe.h"
-#include "mpls-node-helper.h"
-#include "mpls-nhlfe-selection-policy-helper.h"
+
+#include "mpls-node-helper-base.h"
 
 namespace ns3 {
 
 /**
  * \brief Mpls ftn table helper
  */
-class MplsFtnHelper : public _MplsNodeHelper
+class MplsFtnHelper : public MplsNodeHelperBase
 {
 public:
-  /**
-   * @brief Create a new MplsFtnHelper object
-   */
-  MplsFtnHelper();
-  /**
-   * @brief Create a new MplsFtnHelper object
-   */
-  MplsFtnHelper(const Ptr<Node> &node);
-  /**
-   * @brief Create a new MplsFtnHelper object
-   */
-  MplsFtnHelper(const std::string &node);  
-  /**
-   * @brief Destroy the MplsFtnHelper
-   */
   virtual ~MplsFtnHelper();
   /**
    * @brief Return FTN table

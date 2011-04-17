@@ -31,38 +31,63 @@ NS_LOG_COMPONENT_DEFINE ("MplsSwitch");
 
 namespace ns3 {
 
-MplsSwitch::MplsSwitch ()
-{
-}
-
 MplsSwitch::MplsSwitch (const Ptr<Node> &node)
-  : MplsFtnHelper (node), MplsIlmHelper (node)
+  : m_node (node)
 {
+  NS_ASSERT (node != 0);
+  
+  m_mpls = node->GetObject<Mpls> ();
+  
+  NS_ASSERT_MSG (m_mpls != 0, "There is no mpls installed on specified node");
+
+  m_nhlfeSelectionPolicy = new NhlfeSelectionPolicyHelper();
 }
 
 MplsSwitch::MplsSwitch (const std::string &node)
-  : MplsFtnHelper (node), MplsIlmHelper (node)
 {
+  MplsSwitch (Names::Find<Node> (node));
 }
 
 MplsSwitch::~MplsSwitch ()
 {
+  delete m_nhlfeSelectionPolicy;
+}
+
+MplsSwitch::MplsSwitch (const MplsSwitch &o)
+{
+  m_mpls = o.m_mpls;
+  m_node = o.m_node;
+  m_nhlfeSelectionPolicy = (*o.m_nhlfeSelectionPolicy).Copy ();
+}
+
+MplsSwitch& 
+MplsSwitch::operator= (const MplsSwitch &o)
+{
+  if (this == &o)
+    {
+      return *this;
+    }
+
+  m_mpls = o.m_mpls;
+  m_node = o.m_node;
+  m_nhlfeSelectionPolicy = (*o.m_nhlfeSelectionPolicy).Copy ();
+  return *this;
 }
 
 void
 MplsSwitch::AddInterface (uint32_t devIfIndex)
 {
-  Ptr<NetDevice> dev = MplsFtnHelper::GetNode ()->GetDevice (devIfIndex);
+  Ptr<NetDevice> dev = m_node->GetDevice (devIfIndex);
   NS_ASSERT_MSG (dev != 0, "MplsSwitch::AddInterface (): Bad device");
-  NS_ASSERT_MSG (MplsFtnHelper::GetMpls ()->GetInterfaceForDevice (dev) == 0, 
+  NS_ASSERT_MSG (m_mpls->GetInterfaceForDevice (dev) == 0, 
                   "MplsSwitch::AddInterface (): Interface for device already added");
-  MplsFtnHelper::GetMpls ()->AddInterface (dev);
+  m_mpls->AddInterface (dev);
 }
 
 bool
 MplsSwitch::IsUp (uint32_t i) const
 {
-  Ptr<mpls::Interface> iface = MplsFtnHelper::GetMpls ()->GetInterface (i);
+  Ptr<mpls::Interface> iface = m_mpls->GetInterface (i);
   NS_ASSERT_MSG (iface != 0, "MplsSwitch::IsUp (): Bad index of interface");
   return iface->IsUp ();
 }
@@ -70,7 +95,7 @@ MplsSwitch::IsUp (uint32_t i) const
 void
 MplsSwitch::SetUp (uint32_t i)
 {
-  Ptr<mpls::Interface> iface = MplsFtnHelper::GetMpls ()->GetInterface (i);
+  Ptr<mpls::Interface> iface = m_mpls->GetInterface (i);
   NS_ASSERT_MSG (iface != 0, "MplsSwitch::IsUp (): Bad index of interface");
   return iface->SetUp ();
 }
@@ -78,9 +103,33 @@ MplsSwitch::SetUp (uint32_t i)
 void
 MplsSwitch::SetDown (uint32_t i)
 {
-  Ptr<mpls::Interface> iface = MplsFtnHelper::GetMpls ()->GetInterface (i);
+  Ptr<mpls::Interface> iface = m_mpls->GetInterface (i);
   NS_ASSERT_MSG (iface != 0, "MplsSwitch::IsUp (): Bad index of interface");
   return iface->SetDown ();
+}
+
+const Ptr<Mpls>&
+MplsSwitch::GetMpls (void) const
+{
+  return m_mpls;
+}
+
+const Ptr<Node>&
+MplsSwitch::GetNode (void) const
+{
+  return m_node;
+}
+
+void
+MplsSwitch::SetSelectionPolicy(const NhlfeSelectionPolicyHelper& policy)
+{
+  m_nhlfeSelectionPolicy = policy.Copy ();
+}
+
+const NhlfeSelectionPolicyHelper&
+MplsSwitch::GetSelectionPolicy (void) const
+{
+  return *m_nhlfeSelectionPolicy;
 }
 
 } // namespace mpls

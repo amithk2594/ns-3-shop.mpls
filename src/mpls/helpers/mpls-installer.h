@@ -25,13 +25,12 @@
 #include "ns3/ptr.h"
 #include "ns3/object-factory.h"
 #include "ns3/node-container.h"
-#include "ns3/packet.h"
-#include "ns3/net-device.h"
+#include "ns3/callback.h"
 #include "ns3/mpls.h"
 #include "ns3/mpls-ipv4-protocol.h"
 
 #include "mpls-enum-helper.h"
-#include "mpls-interface-helper.h"
+#include "mpls-network-helper-base.h"
 
 namespace ns3 {
 
@@ -39,9 +38,9 @@ class Node;
 class Ipv4RoutingHelper;
 
 /**
- * \brief aggregate MPLS/IP/TCP/UDP functionality to existing Nodes.
+ * \brief Aggregate MPLS/IP/TCP/UDP functionality to existing Nodes.
  */
-class MplsInstaller: public MplsInterfaceHelper
+class MplsInstaller : public MplsNetworkHelperBase
 {
 public:
   /**
@@ -53,16 +52,12 @@ public:
    * @brief Destroy the MplsInstaller
    */
   virtual ~MplsInstaller(void);
+
   MplsInstaller (const MplsInstaller &);
   MplsInstaller &operator = (const MplsInstaller &o);
 
   /**
-   * @brief Return helper internal state to that of a newly constructed one
-   */
-  void Reset (void);
-
-  /**
-   * @param routing a new routing helper
+   * @param routing A new routing helper
    *
    * Set the routing helper to use during Install.
    */
@@ -81,25 +76,50 @@ public:
    * @param node node, node name or node container
    */
   template <class T>
-  void Install (T node) const
+  void Install (T node)
   {
     ForEachNode (node, MakeCallback (&MplsInstaller::InstallInternal, this));
   }
-
-  static void PopulateAddressTables (void);
   
-private:
+  /**
+   * @brief Enable MPLS interfaces auto install onto the provided node.
+   *
+   * @param node node name, node or container
+   */
+  template <class T>
+  void EnableInterfaceAutoInstall (T node) const
+  {
+    ForEachNode (node, MakeCallback (&MplsInstaller::EnableInterfaceAutoInstallInternal, this));
+  }
 
+  /**
+   * @brief Disable MPLS interfaces auto install onto the provided node.
+   *
+   * @param node node name, node or container
+   */
+  template <class T>
+  void DisableInterfaceAutoInstall (T node) const
+  {
+    ForEachNode (node, MakeCallback (&MplsInstaller::DisableInterfaceAutoInstallInternal, this));
+  }
+
+  /**
+   * @brief Returns all nodes with MPLS installed
+   */
+  virtual const NodeContainer& GetNetworkNodes (void) const;
+
+private:
   void Initialize (void);
+  void InstallInternal (Ptr<Node> node);
+  void EnableInterfaceAutoInstallInternal (Ptr<Node> node) const;
+  void DisableInterfaceAutoInstallInternal (Ptr<Node> node) const;
+
+  static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
+  
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;
-  void InstallInternal (Ptr<Node> node) const;
-    
-  static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
-  static void Cleanup (void);
-
-  static void PopulateAddresses (const Ptr<Mpls> &mpls);
-  static void UpdateInterfaceAddresses (const Ptr<Interface> &interface, const Ptr<NetDevice> &device);
+  
+  NodeContainer m_networkNodes;
 };
 
 } // namespace ns3

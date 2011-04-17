@@ -20,27 +20,9 @@
  */
 
 #include "ns3/assert.h"
-#include "ns3/log.h"
-#include "ns3/object.h"
 #include "mpls-ilm-helper.h"
 
-NS_LOG_COMPONENT_DEFINE ("MplsIlmHelper");
-
 namespace ns3 {
-
-MplsIlmHelper::MplsIlmHelper ()
-{
-}
-
-MplsIlmHelper::MplsIlmHelper (const Ptr<Node> &node)
-  : _MplsNodeHelper (node)
-{
-}
-
-MplsIlmHelper::MplsIlmHelper (const std::string &node)
-  : _MplsNodeHelper (node)
-{
-}
 
 MplsIlmHelper::~MplsIlmHelper()
 {

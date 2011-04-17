@@ -39,10 +39,6 @@ public:
   /**
    * @brief Create a new MplsSwitch object
    */
-  MplsSwitch ();
-  /**
-   * @brief Create a new MplsSwitch object
-   */
   MplsSwitch (const Ptr<Node> &node);
   /**
    * @brief Create a new MplsSwitch object
@@ -52,6 +48,10 @@ public:
    * @brief Destroy the MplsSwitch
    */
   virtual ~MplsSwitch ();
+
+  MplsSwitch (const MplsSwitch &o);
+  MplsSwitch& operator= (const MplsSwitch &o);
+  
   /**
    * @brief Add mpls interface for specified device
    * @param devIfIndex Device index
@@ -69,6 +69,19 @@ public:
    * @brief Disable interface
    */
   void SetDown (uint32_t i);
+  /**
+   * @brief Set NHLFE selection policy helper
+   */
+  void SetSelectionPolicy(const NhlfeSelectionPolicyHelper& policy);
+
+  virtual const Ptr<Mpls>& GetMpls (void) const;
+  virtual const Ptr<Node>& GetNode (void) const;
+  virtual const NhlfeSelectionPolicyHelper& GetSelectionPolicy (void) const;
+  
+private:
+  Ptr<Node> m_node;
+  Ptr<Mpls> m_mpls;  
+  NhlfeSelectionPolicyHelper* m_nhlfeSelectionPolicy;
 };
 
 } // namespace ns3
