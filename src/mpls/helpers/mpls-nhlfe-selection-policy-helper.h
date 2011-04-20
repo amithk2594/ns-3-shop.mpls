@@ -34,6 +34,9 @@ namespace ns3 {
  */
 class NhlfeSelectionPolicyHelper
 {
+protected:
+  static std::string GetPolicyTypeId (void);
+  
 public:
   /**
    * @brief Create a new NhlfeSelectionPolicyHelper object
@@ -41,8 +44,11 @@ public:
   NhlfeSelectionPolicyHelper();
   virtual ~NhlfeSelectionPolicyHelper();
   
-  virtual Ptr<mpls::NhlfeSelectionPolicy> CreatePolicy (void) const;
-  virtual NhlfeSelectionPolicyHelper* Copy (void) const;
+  Ptr<mpls::NhlfeSelectionPolicy> Create (void) const;
+  void SetAttribute (std::string name, const AttributeValue &value);
+
+private:
+  ObjectFactory m_factory;
 };
 
 } // namespace ns3

@@ -21,6 +21,7 @@
 
 #include "ns3/log.h"
 #include "ns3/assert.h"
+#include "ns3/uinteger.h"
 
 #include "mpls-nhlfe-selection-policy.h"
 
@@ -37,12 +38,12 @@ NhlfeSelectionPolicy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::mpls::NhlfeSelectionPolicy")
     .SetParent<Object> ()
     .AddConstructor<NhlfeSelectionPolicy> () 
-    .AddAttribute ("MaxPackets", 
+    .AddAttribute ("MaxPacketsInTxQueue", 
                    "The maximum number of packets in Queue",
                    UintegerValue (0),
                    MakeUintegerAccessor (&NhlfeSelectionPolicy::m_maxPackets),
                    MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("MaxBytes", 
+    .AddAttribute ("MaxBytesInTxQueue", 
                    "The maximum number of bytes in Queue.",
                    UintegerValue (0),
                    MakeUintegerAccessor (&NhlfeSelectionPolicy::m_maxBytes),
@@ -71,14 +72,23 @@ bool
 NhlfeSelectionPolicy::Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
   const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
 {
-  if (m_maxPackets)
+  std::cout << "***" << std::endl;
+  std::cout << interface->GetDevice ()->GetQueue () << std::endl;
+  
+  Ptr<Queue> queue = interface->GetDevice ()->GetQueue ();
+  
+  if (queue != 0)
     {
-      // interface->GetDevice ()->GetQueue ()-
-      // XXX: NetDevice has no queue?
+      if (m_maxPackets && queue->GetNPackets () > m_maxPackets)
+        {
+          return false;
+        }
+      if (m_maxBytes && queue->GetNBytes () > m_maxBytes)
+        {
+          return false;
+        }
     }
-  if (m_maxBytes)
-    {
-    }
+    
   return DoSelect (nhlfe, index, interface, packet);
 }
 

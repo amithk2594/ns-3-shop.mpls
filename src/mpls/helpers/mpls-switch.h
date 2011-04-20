@@ -81,7 +81,7 @@ public:
 private:
   Ptr<Node> m_node;
   Ptr<Mpls> m_mpls;  
-  NhlfeSelectionPolicyHelper* m_nhlfeSelectionPolicy;
+  NhlfeSelectionPolicyHelper m_nhlfeSelectionPolicy;
 };
 
 } // namespace ns3
