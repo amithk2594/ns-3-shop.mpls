@@ -32,15 +32,14 @@ NS_LOG_COMPONENT_DEFINE ("MplsSwitch");
 namespace ns3 {
 
 MplsSwitch::MplsSwitch (const Ptr<Node> &node)
-  : m_node (node)
+  : m_node (node),
+    m_nhlfeSelectionPolicy ()
 {
   NS_ASSERT (node != 0);
   
   m_mpls = node->GetObject<Mpls> ();
   
   NS_ASSERT_MSG (m_mpls != 0, "There is no mpls installed on specified node");
-
-  m_nhlfeSelectionPolicy = new NhlfeSelectionPolicyHelper();
 }
 
 MplsSwitch::MplsSwitch (const std::string &node)
@@ -50,14 +49,13 @@ MplsSwitch::MplsSwitch (const std::string &node)
 
 MplsSwitch::~MplsSwitch ()
 {
-  delete m_nhlfeSelectionPolicy;
 }
 
 MplsSwitch::MplsSwitch (const MplsSwitch &o)
 {
   m_mpls = o.m_mpls;
   m_node = o.m_node;
-  m_nhlfeSelectionPolicy = (*o.m_nhlfeSelectionPolicy).Copy ();
+  m_nhlfeSelectionPolicy = o.m_nhlfeSelectionPolicy;
 }
 
 MplsSwitch& 
@@ -70,7 +68,7 @@ MplsSwitch::operator= (const MplsSwitch &o)
 
   m_mpls = o.m_mpls;
   m_node = o.m_node;
-  m_nhlfeSelectionPolicy = (*o.m_nhlfeSelectionPolicy).Copy ();
+  m_nhlfeSelectionPolicy = o.m_nhlfeSelectionPolicy;
   return *this;
 }
 
@@ -123,13 +121,13 @@ MplsSwitch::GetNode (void) const
 void
 MplsSwitch::SetSelectionPolicy(const NhlfeSelectionPolicyHelper& policy)
 {
-  m_nhlfeSelectionPolicy = policy.Copy ();
+  m_nhlfeSelectionPolicy = policy;
 }
 
 const NhlfeSelectionPolicyHelper&
 MplsSwitch::GetSelectionPolicy (void) const
 {
-  return *m_nhlfeSelectionPolicy;
+  return m_nhlfeSelectionPolicy;
 }
 
 } // namespace mpls

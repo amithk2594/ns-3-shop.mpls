@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2010-2011 Andrey Churin, Stefano Avallone
+ * Copyright (c) 2005,2006 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,41 +15,38 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Andrey Churin <aachurin@gmail.com>
- *         Stefano Avallone <stavallo@gmail.com>
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/assert.h"
+#include "ns3/object.h"
 #include "ns3/log.h"
-#include "mpls-nhlfe-selection-policy-helper.h"
+#include "ns3/uinteger.h"
+#include "net-device.h"
+
+NS_LOG_COMPONENT_DEFINE ("NetDevice");
 
 namespace ns3 {
 
-NhlfeSelectionPolicyHelper::NhlfeSelectionPolicyHelper ()
+NS_OBJECT_ENSURE_REGISTERED (NetDevice);
+
+TypeId NetDevice::GetTypeId (void)
 {
-  m_factory.SetTypeId (GetPolicyTypeId ());
+  static TypeId tid = TypeId ("ns3::NetDevice")
+    .SetParent<Object> ()
+    ;
+  return tid;
 }
 
-NhlfeSelectionPolicyHelper::~NhlfeSelectionPolicyHelper()
+NetDevice::~NetDevice ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
-std::string
-NhlfeSelectionPolicyHelper::GetPolicyTypeId (void)
+Ptr<Queue>
+NetDevice::GetQueue (void) const
 {
-  return "ns3::mpls::NhlfeSelectionPolicy";
-}
-
-void 
-NhlfeSelectionPolicyHelper::SetAttribute (std::string name, const AttributeValue &value)
-{
-  m_factory.Set (name, value);
-}
-
-Ptr<mpls::NhlfeSelectionPolicy> 
-NhlfeSelectionPolicyHelper::Create (void) const
-{
-  return m_factory.Create<mpls::NhlfeSelectionPolicy> ();
+  NS_LOG_FUNCTION_NOARGS ();
+  return 0;
 }
 
 } // namespace ns3
