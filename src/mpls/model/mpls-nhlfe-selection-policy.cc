@@ -36,12 +36,24 @@ NhlfeSelectionPolicy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::mpls::NhlfeSelectionPolicy")
     .SetParent<Object> ()
-    .AddConstructor<NhlfeSelectionPolicy> ()
+    .AddConstructor<NhlfeSelectionPolicy> () 
+    .AddAttribute ("MaxPackets", 
+                   "The maximum number of packets in Queue",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&NhlfeSelectionPolicy::m_maxPackets),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MaxBytes", 
+                   "The maximum number of bytes in Queue.",
+                   UintegerValue (0),
+                   MakeUintegerAccessor (&NhlfeSelectionPolicy::m_maxBytes),
+                   MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
 
 NhlfeSelectionPolicy::NhlfeSelectionPolicy ()
+  : m_maxPackets (0),
+    m_maxBytes (0)
 {
 }
 
@@ -52,11 +64,32 @@ NhlfeSelectionPolicy::~NhlfeSelectionPolicy ()
 const Nhlfe&
 NhlfeSelectionPolicy::Get (const std::vector<Nhlfe> &nhlfe, uint32_t index)
 {
-  return nhlfe[index];
+  return DoGet (nhlfe, index);
 }
 
 bool
 NhlfeSelectionPolicy::Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
+  const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
+{
+  if (m_maxPackets)
+    {
+      // interface->GetDevice ()->GetQueue ()-
+      // XXX: NetDevice has no queue?
+    }
+  if (m_maxBytes)
+    {
+    }
+  return DoSelect (nhlfe, index, interface, packet);
+}
+
+const Nhlfe&
+NhlfeSelectionPolicy::DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index)
+{
+  return nhlfe[index];
+}
+
+bool
+NhlfeSelectionPolicy::DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
   const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
 {
   return true;
