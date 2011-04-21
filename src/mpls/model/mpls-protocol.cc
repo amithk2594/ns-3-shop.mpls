@@ -401,9 +401,9 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
   // find first suitable nhlfe
   for (ForwardingInformation::Iterator i = fwd->Begin (), j = fwd->End (); 
        i != j; 
-       ++i, ++idx)
+       ++idx)
     {
-      const Nhlfe& nhlfe = *i;
+      const Nhlfe& nhlfe = i.get ();
 
       uint32_t opCode = nhlfe.GetOpCode ();
       int32_t outIfIndex = nhlfe.GetInterface ();
