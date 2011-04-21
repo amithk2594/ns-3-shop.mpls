@@ -99,8 +99,7 @@ public:
     Iterator& operator=(const Iterator& iter);
     bool operator==(const Iterator& iter);
     bool operator!=(const Iterator& iter);
-    Iterator& operator++ ();
-    const Nhlfe& operator*();
+    const Nhlfe& get (void);
     bool select (const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);
 
   private:
