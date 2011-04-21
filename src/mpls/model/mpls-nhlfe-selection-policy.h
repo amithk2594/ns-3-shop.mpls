@@ -122,6 +122,33 @@ private:
   
 };
 
+/**
+ * \ingroup mpls
+ * \brief NHLFE Weighted selection policy
+ */
+class WeightedSelectionPolicy : public NhlfeSelectionPolicy
+{
+public:
+  static TypeId GetTypeId (void);
+  
+  WeightedSelectionPolicy ();
+  virtual ~WeightedSelectionPolicy ();
+  virtual void Print (std::ostream &os) const;
+  
+  void AddWeights (const std::vector<double>& weights);
+  
+protected:
+  virtual void DoStart (uint32_t size);
+  virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
+  virtual bool Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
+      const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
+  
+private:
+  uint32_t m_Bmin;
+  uint32_t m_Bmax;
+    
+};
+
 } // namespace mpls
 } // namespace ns3
 

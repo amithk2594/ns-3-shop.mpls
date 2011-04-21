@@ -41,8 +41,8 @@ public:
   /**
    * @brief Create a new NhlfeSelectionPolicyHelper object
    */
-  NhlfeSelectionPolicyHelper();
-  virtual ~NhlfeSelectionPolicyHelper();
+  NhlfeSelectionPolicyHelper ();
+  virtual ~NhlfeSelectionPolicyHelper ();
   
   Ptr<mpls::NhlfeSelectionPolicy> Create (void) const;
   void SetAttribute (std::string name, const AttributeValue &value);
@@ -50,6 +50,70 @@ public:
 private:
   ObjectFactory m_factory;
 };
+
+/**
+ * \brief Mpls round robin policy helper
+ */
+class RoundRobinPolicyHelper : public NhlfeSelectionPolicyHelper
+{
+protected:
+  static std::string GetPolicyTypeId (void);
+  
+public:
+  /**
+   * @brief Create a new RoundRobinPolicyHelper object
+   */
+  RoundRobinPolicyHelper ();
+  virtual ~RoundRobinPolicyHelper ();
+};
+
+/**
+ * \brief Mpls Sta round robin policy helper
+ */
+class StaRoundRobinPolicyHelper : public NhlfeSelectionPolicyHelper
+{
+protected:
+  static std::string GetPolicyTypeId (void);
+  
+public:
+  /**
+   * @brief Create a new StaRoundRobinPolicyHelper object
+   */
+  StaRoundRobinPolicyHelper ();
+  virtual ~StaRoundRobinPolicyHelper ();
+};
+
+/**
+ * \brief Mpls weighted selection policy helper
+ */
+class WeightedSelectionPolicyHelper : public NhlfeSelectionPolicyHelper
+{
+protected:
+  static std::string GetPolicyTypeId (void);
+  
+public:
+  /**
+   * @brief Create a new WeightedSelectionPolicyHelper object
+   */
+  WeightedSelectionPolicyHelper ();
+  virtual ~WeightedSelectionPolicyHelper ();
+
+  Ptr<mpls::NhlfeSelectionPolicy> Create (void) const;
+  
+  /**
+   * @brief Add weights to be associated with the Nhlfes
+   */
+  void AddWeight (double w);
+  void AddWeight (double w1, double w2);
+  void AddWeight (double w1, double w2, double w3);
+  void AddWeight (double w1, double w2, double w3, double w4);
+  void AddWeight (double w1, double w2, double w3, double w4, double w5);
+  void AddWeight (double w1, double w2, double w3, double w4, double w5, double w6);  
+  
+private:
+  std::vector<double> m_weight;
+};
+
 
 } // namespace ns3
 
