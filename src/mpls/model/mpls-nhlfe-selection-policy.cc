@@ -22,6 +22,7 @@
 #include "ns3/log.h"
 #include "ns3/assert.h"
 #include "ns3/uinteger.h"
+#include "ns3/integer.h"
 
 #include "mpls-nhlfe-selection-policy.h"
 
@@ -40,21 +41,21 @@ NhlfeSelectionPolicy::GetTypeId (void)
     .AddConstructor<NhlfeSelectionPolicy> () 
     .AddAttribute ("MaxPacketsInTxQueue", 
                    "The maximum number of packets in Queue",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&NhlfeSelectionPolicy::m_maxPackets),
-                   MakeUintegerChecker<uint32_t> ())
+                   IntegerValue (-1),
+                   MakeIntegerAccessor (&NhlfeSelectionPolicy::m_maxPackets),
+                   MakeIntegerChecker<int32_t> ())
     .AddAttribute ("MaxBytesInTxQueue", 
                    "The maximum number of bytes in Queue.",
-                   UintegerValue (0),
-                   MakeUintegerAccessor (&NhlfeSelectionPolicy::m_maxBytes),
-                   MakeUintegerChecker<uint32_t> ())
+                   IntegerValue (-1),
+                   MakeIntegerAccessor (&NhlfeSelectionPolicy::m_maxBytes),
+                   MakeIntegerChecker<int32_t> ())
   ;
   return tid;
 }
 
 NhlfeSelectionPolicy::NhlfeSelectionPolicy ()
-  : m_maxPackets (0),
-    m_maxBytes (0)
+  : m_maxPackets (-1),
+    m_maxBytes (-1)
 {
 }
 
@@ -81,11 +82,11 @@ NhlfeSelectionPolicy::Select (const std::vector<Nhlfe> &nhlfe, uint32_t index,
   
   if (queue != 0)
     {
-      if (m_maxPackets && queue->GetNPackets () > m_maxPackets)
+      if (m_maxPackets >=0 && queue->GetNPackets () > (uint32_t)m_maxPackets)
         {
           return false;
         }
-      if (m_maxBytes && queue->GetNBytes () > m_maxBytes)
+      if (m_maxBytes >=0 && queue->GetNBytes () > (uint32_t)m_maxBytes)
         {
           return false;
         }
@@ -201,7 +202,7 @@ StaRoundRobinPolicy::DoGet (const std::vector<Nhlfe>& nhlfe, uint32_t index)
   
   if (m_iter == m_mapping.end ())
     {
-      m_iter = m_mapping.begin ()
+      m_iter = m_mapping.begin ();
     }
 
   return nhlfe[index];
@@ -232,7 +233,7 @@ TypeId
 WeightedSelectionPolicy::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::mpls::WeightedSelectionPolicy")
-    .SetParent<NhlfeSelectionPolicy()> ()
+    .SetParent<NhlfeSelectionPolicy> ()
     .AddConstructor<WeightedSelectionPolicy> () 
     .AddAttribute ("Bmin", 
                    "The minimum number of bytes of the byte counter.",
@@ -260,6 +261,11 @@ void
 WeightedSelectionPolicy::Print (std::ostream& os) const
 {
   os << "weighted selection policy";
+}
+
+void 
+WeightedSelectionPolicy::AddWeights (const std::vector<double>& weights)
+{
 }
 
 } // namespace mpls

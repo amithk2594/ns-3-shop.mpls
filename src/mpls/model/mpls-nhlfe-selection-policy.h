@@ -58,7 +58,7 @@ public:
    * @param packet Packet
    */
   bool Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
-      const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
+                const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
   /**
    * @brief Print policy 
    */
@@ -68,11 +68,11 @@ protected:
   virtual void DoStart (uint32_t size);
   virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
   virtual bool DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
-      const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
+                          const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
   
 private:
-  uint32_t m_maxPackets;
-  uint32_t m_maxBytes;
+  int32_t m_maxPackets;
+  int32_t m_maxBytes;
 };
 
 /**
@@ -89,10 +89,8 @@ public:
   virtual void Print (std::ostream &os) const;
 
 protected:
-  virtual void DoStart (uint32_t size);
   virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
-  virtual bool DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
-      const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
+
 private:
   uint32_t m_index;
 };
@@ -113,7 +111,7 @@ public:
 protected:
   virtual void DoStart (uint32_t size);
   virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
-  virtual bool Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
+  virtual bool DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
       const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
   
 private:
@@ -138,10 +136,11 @@ public:
   void AddWeights (const std::vector<double>& weights);
   
 protected:
-  virtual void DoStart (uint32_t size);
-  virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
-  virtual bool Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
-      const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
+  // commented for compiling
+  //virtual void DoStart (uint32_t size);
+  //virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
+  //virtual bool DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
+  //    const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
   
 private:
   uint32_t m_Bmin;

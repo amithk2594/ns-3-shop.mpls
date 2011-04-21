@@ -24,6 +24,7 @@
 
 #include "ns3/string.h"
 #include "ns3/ptr.h"
+#include "ns3/object-factory.h"
 
 #include "ns3/mpls-nhlfe-selection-policy.h"
 
@@ -32,7 +33,7 @@ namespace ns3 {
 /**
  * \brief Mpls nhlfe selection policy helper
  */
-class NhlfeSelectionPolicyHelper
+class NhlfeSelectionPolicyHelper: private ObjectFactory
 {
 protected:
   static std::string GetPolicyTypeId (void);
@@ -44,11 +45,8 @@ public:
   NhlfeSelectionPolicyHelper ();
   virtual ~NhlfeSelectionPolicyHelper ();
   
-  Ptr<mpls::NhlfeSelectionPolicy> Create (void) const;
+  virtual Ptr<mpls::NhlfeSelectionPolicy> Create (void) const;
   void SetAttribute (std::string name, const AttributeValue &value);
-
-private:
-  ObjectFactory m_factory;
 };
 
 /**
