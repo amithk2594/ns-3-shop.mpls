@@ -125,17 +125,10 @@ ForwardingInformation::Iterator::operator!= (const ForwardingInformation::Iterat
   return (m_index != iter.m_index || m_nhlfe != iter.m_nhlfe || m_policy != iter.m_policy);
 }
 
-ForwardingInformation::Iterator& 
-ForwardingInformation::Iterator::operator++ ()
-{
-  m_index++;
-  return (*this);
-}
-
 const Nhlfe&
-ForwardingInformation::Iterator::operator* ()
+ForwardingInformation::Iterator::get ()
 {
-   return m_policy->Get (*m_nhlfe, m_index);
+   return m_policy->Get (*m_nhlfe, m_index++);
 }
 
 bool
