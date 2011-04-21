@@ -113,40 +113,40 @@ ForwardingInformation::Iterator::operator= (const ForwardingInformation::Iterato
   return (*this);
 }
 
-bool
-ForwardingInformation::Iterator::operator== (const ForwardingInformation::Iterator& iter)
-{
-  return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe && m_policy == iter.m_policy);
-}
+//bool
+//ForwardingInformation::Iterator::operator== (const ForwardingInformation::Iterator& iter)
+//{
+//  return (m_index == iter.m_index && m_nhlfe == iter.m_nhlfe && m_policy == iter.m_policy);
+//}
 
-bool
-ForwardingInformation::Iterator::operator!= (const ForwardingInformation::Iterator& iter)
-{
-  return (m_index != iter.m_index || m_nhlfe != iter.m_nhlfe || m_policy != iter.m_policy);
-}
+//bool
+//ForwardingInformation::Iterator::operator!= (const ForwardingInformation::Iterator& iter)
+//{
+//  return (m_index != iter.m_index || m_nhlfe != iter.m_nhlfe || m_policy != iter.m_policy);
+//}
 
 const Nhlfe&
-ForwardingInformation::Iterator::get ()
+ForwardingInformation::Iterator::Get ()
 {
    return m_policy->Get (*m_nhlfe, m_index++);
 }
 
 bool
-ForwardingInformation::Iterator::select (const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
+ForwardingInformation::Iterator::Select (const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
 {
   return m_policy->Select (*m_nhlfe, m_index, interface, packet);
 }
 
-ForwardingInformation::Iterator
-ForwardingInformation::Begin (void) const
+bool
+ForwardingInformation::Iterator::HasNext (void) const
 {
-  return ForwardingInformation::Iterator(m_policy, &m_nhlfe);
+  return m_index < m_nhlfe->size (); 
 }
 
 ForwardingInformation::Iterator
-ForwardingInformation::End (void) const
+ForwardingInformation::GetIterator (void) const
 {
-  return ForwardingInformation::Iterator(m_policy, &m_nhlfe, m_nhlfe.size());
+  return ForwardingInformation::Iterator(m_policy, &m_nhlfe);
 }
 
 std::ostream& operator<< (std::ostream& os, const Ptr<ForwardingInformation>& info)
