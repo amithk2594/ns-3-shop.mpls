@@ -27,7 +27,7 @@ namespace ns3 {
 
 NhlfeSelectionPolicyHelper::NhlfeSelectionPolicyHelper ()
 {
-  m_factory.SetTypeId (GetPolicyTypeId ());
+  ObjectFactory::SetTypeId (GetPolicyTypeId ());
 }
 
 NhlfeSelectionPolicyHelper::~NhlfeSelectionPolicyHelper()
@@ -43,13 +43,13 @@ NhlfeSelectionPolicyHelper::GetPolicyTypeId (void)
 void 
 NhlfeSelectionPolicyHelper::SetAttribute (std::string name, const AttributeValue &value)
 {
-  m_factory.Set (name, value);
+  ObjectFactory::Set (name, value);
 }
 
 Ptr<mpls::NhlfeSelectionPolicy> 
 NhlfeSelectionPolicyHelper::Create (void) const
 {
-  return m_factory.Create<mpls::NhlfeSelectionPolicy> ();
+  return ObjectFactory::Create<mpls::NhlfeSelectionPolicy> ();
 }
 
 RoundRobinPolicyHelper::RoundRobinPolicyHelper ()
@@ -96,7 +96,7 @@ std::string WeightedSelectionPolicyHelper::GetPolicyTypeId (void)
 Ptr<mpls::NhlfeSelectionPolicy>
 WeightedSelectionPolicyHelper::Create (void) const
 {
-  Ptr<mpls::NhlfeSelectionPolicy> policy = m_factory.Create<mpls::NhlfeSelectionPolicy> ();
+  Ptr<mpls::NhlfeSelectionPolicy> policy = NhlfeSelectionPolicyHelper::Create ();
   
   policy->GetObject<mpls::WeightedSelectionPolicy> ()->AddWeights (m_weight);
   

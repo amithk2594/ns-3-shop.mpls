@@ -50,8 +50,8 @@ main (int argc, char *argv[])
   InternetStackHelper internet;
   MplsNetworkConfigurator network;
   
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("2Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("4ms"));
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("50ms"));
   
   hosts.Create (2);
   routers.Create (3);
@@ -64,11 +64,11 @@ main (int argc, char *argv[])
   UdpEchoServerHelper server (port);
   ApplicationContainer apps = server.Install (hosts.Get(1));
   apps.Start (Seconds (0.01));
-  apps.Stop (Seconds (2.0));
+  apps.Stop (Seconds (10.0));
 
   uint32_t packetSize = 1024;
-  uint32_t maxPacketCount = 1;
-  Time interPacketInterval = Seconds (1.);
+  uint32_t maxPacketCount = 4;
+  Time interPacketInterval = MilliSeconds (0.01);
   UdpEchoClientHelper client ("192.168.4.2", port);
   client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
   client.SetAttribute ("Interval", TimeValue (interPacketInterval));
@@ -81,6 +81,9 @@ main (int argc, char *argv[])
   devices = pointToPoint.Install (hosts.Get(0), routers.Get(0));
   address.SetBase ("192.168.1.0", "255.255.255.0");
   address.Assign (devices);
+
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("1Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("1000ms"));
 
   devices = pointToPoint.Install (routers.Get(2), hosts.Get(1));
   address.SetBase ("192.168.4.0", "255.255.255.0");
@@ -98,7 +101,7 @@ main (int argc, char *argv[])
   address.Assign (devices);
 
   NhlfeSelectionPolicyHelper policy;
-  policy.SetAttribute ("MaxBytesInTxQueue", UintegerValue (10));
+  policy.SetAttribute ("MaxPacketsInTxQueue", IntegerValue (0));
   
   MplsSwitch sw1 (routers.Get (0));
   sw1.SetSelectionPolicy (policy);
