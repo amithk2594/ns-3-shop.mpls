@@ -65,6 +65,11 @@ NhlfeSelectionPolicy::~NhlfeSelectionPolicy ()
 const Nhlfe&
 NhlfeSelectionPolicy::Get (const std::vector<Nhlfe> &nhlfe, uint32_t index)
 {
+  if (index == 0) 
+    {
+        DoStart (nhlfe.size ());
+    }
+
   return DoGet (nhlfe, index);
 }
 
@@ -72,9 +77,6 @@ bool
 NhlfeSelectionPolicy::Select (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
   const Ptr<const Interface> &interface, const Ptr<const Packet> &packet)
 {
-  std::cout << "***" << std::endl;
-  std::cout << interface->GetDevice ()->GetQueue () << std::endl;
-  
   Ptr<Queue> queue = interface->GetDevice ()->GetQueue ();
   
   if (queue != 0)
@@ -90,6 +92,11 @@ NhlfeSelectionPolicy::Select (const std::vector<Nhlfe> &nhlfe, uint32_t index,
     }
     
   return DoSelect (nhlfe, index, interface, packet);
+}
+
+void
+NhlfeSelectionPolicy::DoStart (uint32_t size)
+{
 }
 
 const Nhlfe&
@@ -109,6 +116,115 @@ void
 NhlfeSelectionPolicy::Print (std::ostream &os) const
 {
   os << "default policy";
+}
+
+
+TypeId
+RoundRobinPolicy::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::mpls::RoundRobinPolicy")
+    .SetParent<NhlfeSelectionPolicy> ()
+    .AddConstructor<RoundRobinPolicy> ()
+  ;
+  return tid;
+}
+
+RoundRobinPolicy::RoundRobinPolicy ()
+  : m_index (0)
+{
+}
+
+RoundRobinPolicy::~RoundRobinPolicy ()
+{
+}
+
+const Nhlfe&
+RoundRobinPolicy::DoGet (const std::vector<Nhlfe>& nhlfe, uint32_t index)
+{
+  index = m_index++;
+
+  if (nhlfe.size () >= m_index)
+    {
+      m_index = 0;
+    }
+
+  return nhlfe[index];
+}
+
+void
+RoundRobinPolicy::Print (std::ostream& os) const
+{
+  os << "round robin policy";
+}
+
+TypeId
+StaRoundRobinPolicy::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::mpls::StaRoundRobinPolicy")
+    .SetParent<NhlfeSelectionPolicy> ()
+    .AddConstructor<StaRoundRobinPolicy> ()
+  ;
+  return tid;
+}
+
+StaRoundRobinPolicy::StaRoundRobinPolicy ()
+  : m_mapping ()
+{
+  m_iter = m_mapping.begin ();
+}
+
+StaRoundRobinPolicy::~StaRoundRobinPolicy ()
+{
+}
+
+void
+StaRoundRobinPolicy::DoStart (uint32_t size)
+{
+  if (m_mapping.size () != size)
+    {
+      m_mapping.resize (size);
+      uint32_t idx = 0;
+      for (std::list<uint32_t>::iterator i = m_mapping.begin (); i != m_mapping.end (); ++i, ++idx)
+        {
+          *i = idx;
+        }
+    }
+  m_iter = m_mapping.begin ();    
+}
+
+const Nhlfe&
+StaRoundRobinPolicy::DoGet (const std::vector<Nhlfe>& nhlfe, uint32_t index)
+{
+  index = *m_iter;
+  
+  ++m_iter;
+  
+  if (m_iter == m_mapping.end ())
+    {
+      m_iter = m_mapping.begin ()
+    }
+
+  return nhlfe[index];
+}
+
+bool 
+StaRoundRobinPolicy::DoSelect (const std::vector<Nhlfe>& nhlfe, uint32_t index,
+  const Ptr<const Interface>& interface, const Ptr<const Packet>& packet)
+{
+  if (m_iter != m_mapping.begin ())
+    {
+      --m_iter;
+      m_mapping.push_back (*m_iter);
+      m_mapping.erase (m_iter);
+    }
+
+  return true;
+}
+
+void
+StaRoundRobinPolicy::Print (std::ostream& os) const
+{
+  os << "sta round robin policy";
 }
 
 } // namespace mpls
