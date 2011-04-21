@@ -399,11 +399,10 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
     
   uint32_t idx = 0;
   // find first suitable nhlfe
-  for (ForwardingInformation::Iterator i = fwd->Begin (), j = fwd->End (); 
-       i != j; 
-       ++idx)
+  ForwardingInformation::Iterator i = fwd->GetIterator ();
+  while (i.HasNext ())
     {
-      const Nhlfe& nhlfe = i.get ();
+      const Nhlfe& nhlfe = i.Get ();
 
       uint32_t opCode = nhlfe.GetOpCode ();
       int32_t outIfIndex = nhlfe.GetInterface ();
@@ -471,11 +470,12 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
         {
           NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- mpls interface disabled");
         }
-      else if (!outInterface->GetDevice ()->IsLinkUp ()) 
-        {
-          NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- link down");
-        }
-      else if (!i.select(outInterface, packet)) 
+      // XXX: never happens
+      // else if (!outInterface->GetDevice ()->IsLinkUp ()) 
+      //  {
+      //    NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- link down");
+      //  }
+      else if (!i.Select(outInterface, packet)) 
         {
           NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- omitted by the policy");
         }
@@ -489,7 +489,9 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
             }
             
           return;
-        }    
+        }
+
+      ++idx;
     }
 
   NS_LOG_DEBUG ("Dropping received packet -- there is no suitable nhlfe");

@@ -90,17 +90,18 @@ public:
 
   typedef std::vector<Nhlfe> NhlfeVector;
   
-  class Iterator : public std::iterator<std::input_iterator_tag, Nhlfe> 
+  class Iterator// : public std::iterator<std::input_iterator_tag, Nhlfe> 
   {
   public:
     Iterator(const Ptr<NhlfeSelectionPolicy> &policy, const NhlfeVector *nhlfe, uint32_t index=0);
     ~Iterator();
 
     Iterator& operator=(const Iterator& iter);
-    bool operator==(const Iterator& iter);
-    bool operator!=(const Iterator& iter);
-    const Nhlfe& get (void);
-    bool select (const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);
+//    bool operator==(const Iterator& iter);
+//    bool operator!=(const Iterator& iter);
+    bool HasNext (void) const;
+    const Nhlfe& Get (void);
+    bool Select (const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);
 
   private:
     Ptr<NhlfeSelectionPolicy> m_policy;
@@ -108,8 +109,7 @@ public:
     uint32_t m_index;
   };
 
-  Iterator Begin (void) const;
-  Iterator End (void) const;
+  Iterator GetIterator (void) const;
 
 protected: 
   ForwardingInformation (Ptr<NhlfeSelectionPolicy> policy);
