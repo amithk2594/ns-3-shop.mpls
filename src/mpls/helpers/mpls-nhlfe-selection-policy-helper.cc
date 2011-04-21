@@ -52,4 +52,102 @@ NhlfeSelectionPolicyHelper::Create (void) const
   return m_factory.Create<mpls::NhlfeSelectionPolicy> ();
 }
 
+RoundRobinPolicyHelper::RoundRobinPolicyHelper ()
+{
+}
+
+RoundRobinPolicyHelper::~RoundRobinPolicyHelper ()
+{
+}
+
+std::string
+RoundRobinPolicyHelper::GetPolicyTypeId (void)
+{
+  return "ns3::mpls::RoundRobinPolicy";
+}
+
+StaRoundRobinPolicyHelper::StaRoundRobinPolicyHelper ()
+{
+}
+
+StaRoundRobinPolicyHelper::~StaRoundRobinPolicyHelper ()
+{
+}
+
+std::string
+StaRoundRobinPolicyHelper::GetPolicyTypeId (void)
+{
+  return "ns3::mpls::StaRoundRobinPolicy";
+}
+
+WeightedSelectionPolicyHelper::WeightedSelectionPolicyHelper ()
+{
+}
+
+WeightedSelectionPolicyHelper::~WeightedSelectionPolicyHelper ()
+{
+}
+
+std::string WeightedSelectionPolicyHelper::GetPolicyTypeId (void)
+{
+  return "ns3::mpls::WeightedSelectionPolicy";
+}
+
+Ptr<mpls::NhlfeSelectionPolicy>
+WeightedSelectionPolicyHelper::Create (void) const
+{
+  Ptr<mpls::NhlfeSelectionPolicy> policy = m_factory.Create<mpls::NhlfeSelectionPolicy> ();
+  
+  policy->GetObject<mpls::WeightedSelectionPolicy> ()->AddWeights (m_weight);
+  
+  return policy;
+}
+
+
+void WeightedSelectionPolicyHelper::AddWeight(double w)
+{
+  m_weight.push_back (w);
+}
+
+void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2)
+{
+  m_weight.push_back (w1);
+  m_weight.push_back (w2);
+}
+
+void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3)
+{
+  m_weight.push_back (w1);
+  m_weight.push_back (w2);
+  m_weight.push_back (w3);
+}
+
+void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, double w4)
+{
+  m_weight.push_back (w1);
+  m_weight.push_back (w2);
+  m_weight.push_back (w3);
+  m_weight.push_back (w4);
+}
+
+void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, double w4, double w5)
+{
+  m_weight.push_back (w1);
+  m_weight.push_back (w2);
+  m_weight.push_back (w3);
+  m_weight.push_back (w4);
+  m_weight.push_back (w5);
+}
+
+void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, double w4, double w5, double w6)
+{
+  m_weight.push_back (w1);
+  m_weight.push_back (w2);
+  m_weight.push_back (w3);
+  m_weight.push_back (w4);
+  m_weight.push_back (w5);
+  m_weight.push_back (w6);
+}
+
+
 } // namespace ns3

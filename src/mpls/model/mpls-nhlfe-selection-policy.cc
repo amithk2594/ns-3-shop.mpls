@@ -227,5 +227,40 @@ StaRoundRobinPolicy::Print (std::ostream& os) const
   os << "sta round robin policy";
 }
 
+
+TypeId
+WeightedSelectionPolicy::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::mpls::WeightedSelectionPolicy")
+    .SetParent<NhlfeSelectionPolicy()> ()
+    .AddConstructor<WeightedSelectionPolicy> () 
+    .AddAttribute ("Bmin", 
+                   "The minimum number of bytes of the byte counter.",
+                   UintegerValue (1000),
+                   MakeUintegerAccessor (&WeightedSelectionPolicy::m_Bmin),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Bmax", 
+                   "The maximum number of bytes of the byte counter.",
+                   UintegerValue (1000000),
+                   MakeUintegerAccessor (&WeightedSelectionPolicy::m_Bmax),
+                   MakeUintegerChecker<uint32_t> ())
+  ;
+  return tid;
+}
+
+WeightedSelectionPolicy::WeightedSelectionPolicy ()
+{
+}
+
+WeightedSelectionPolicy::~WeightedSelectionPolicy ()
+{
+}
+
+void
+WeightedSelectionPolicy::Print (std::ostream& os) const
+{
+  os << "weighted selection policy";
+}
+
 } // namespace mpls
 } // namespace ns3
