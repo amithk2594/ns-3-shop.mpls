@@ -39,6 +39,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("mpls::MplsProtocol", LOG_LEVEL_DEBUG);
   LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
+  LogComponentEnable ("MplsMacResolver", LOG_LEVEL_DEBUG);  
 
 //  LogComponentEnable ("mpls::LabelStack", LOG_LEVEL_ALL);
 
@@ -49,7 +50,7 @@ main (int argc, char *argv[])
   Ipv4AddressHelper address;
   NetDeviceContainer devices;
   InternetStackHelper internet;
-  MplsInstaller mpls;
+  MplsNetworkConfigurator network;
   
   pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("2Mbps"));
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("4ms"));
@@ -61,7 +62,7 @@ main (int argc, char *argv[])
   routers.Create (3);
 
   internet.Install (hosts);
-  mpls.Install (routers);
+  network.Install (routers);
 
   // Hosts applications
   uint16_t port = 9;
@@ -91,7 +92,7 @@ main (int argc, char *argv[])
   address.Assign(devices);
 
   // Routers configuration
-  mpls.EnableInterfaceAutoInstall (routers);
+  network.EnableInterfaceAutoInstall (routers);
 
   NetDeviceContainer csmaDevices;
   devices = csma.Install (routers);
@@ -99,7 +100,11 @@ main (int argc, char *argv[])
   address.SetBase ("10.1.1.0", "255.255.255.0");
   address.Assign (devices);
 
+  NhlfeSelectionPolicyHelper policy;
+  policy.SetAttribute ("MaxPacketsInTxQueue", IntegerValue (0));
+  
   MplsSwitch sw1 (routers.Get (0));
+  sw1.SetSelectionPolicy (policy);
 
   sw1.AddFtn (
       Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
@@ -115,10 +120,9 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-  MplsInstaller::PopulateAddressTables ();
-
-  mpls.PrintInterfaces (routers);
-
+  network.ShowConfig ();
+  network.ConfigureMacResolvers ();
+  
   Simulator::Run ();
   Simulator::Destroy ();
 
