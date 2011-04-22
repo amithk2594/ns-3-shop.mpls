@@ -133,19 +133,32 @@ public:
   virtual ~WeightedSelectionPolicy ();
   virtual void Print (std::ostream &os) const;
   
-  void AddWeights (const std::vector<double>& weights);
+  void SetWeights (const std::vector<double>& weights);
+  
+  class NhlfeInfo
+  {
+  public:
+    uint32_t m_index;
+    double m_currentRatio;
+    double m_requiredRatio;
+    
+    bool DecreasingDiffOrder (const NhlfeInfo& y) const;
+  };
   
 protected:
-  // commented for compiling
-  //virtual void DoStart (uint32_t size);
-  //virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
-  //virtual bool DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
-  //    const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
+  virtual void DoStart (uint32_t size);
+  virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
+  virtual bool DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
+     const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
   
 private:
+  uint32_t m_Btot;
   uint32_t m_Bmin;
   uint32_t m_Bmax;
+  std::vector<double> m_weights;
     
+  std::list<NhlfeInfo> m_mapping;
+  std::list<NhlfeInfo>::iterator m_iter;
 };
 
 } // namespace mpls

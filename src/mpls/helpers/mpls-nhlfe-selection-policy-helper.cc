@@ -98,7 +98,7 @@ WeightedSelectionPolicyHelper::Create (void) const
 {
   Ptr<mpls::NhlfeSelectionPolicy> policy = NhlfeSelectionPolicyHelper::Create ();
   
-  policy->GetObject<mpls::WeightedSelectionPolicy> ()->AddWeights (m_weight);
+  policy->GetObject<mpls::WeightedSelectionPolicy> ()->SetWeights (m_weight);
   
   return policy;
 }
