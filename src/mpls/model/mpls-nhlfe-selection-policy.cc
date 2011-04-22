@@ -145,7 +145,7 @@ RoundRobinPolicy::DoGet (const std::vector<Nhlfe>& nhlfe, uint32_t index)
 {
   index = m_index++;
 
-  if (nhlfe.size () >= m_index)
+  if (m_index >= nhlfe.size ())
     {
       m_index = 0;
     }
@@ -283,12 +283,13 @@ WeightedSelectionPolicy::DoStart (uint32_t size)
 const Nhlfe&
 WeightedSelectionPolicy::DoGet (const std::vector< Nhlfe >& nhlfe, uint32_t index)
 {
-    return nhlfe[m_iter->m_index];
+    return nhlfe[(m_iter++)->m_index];
 }
 
 bool WeightedSelectionPolicy::DoSelect(const std::vector< Nhlfe >& nhlfe, uint32_t index,
   const Ptr< const Interface >& interface, const Ptr< const Packet >& packet)
 {
+  --m_iter;
   for (std::list<NhlfeInfo>::iterator i = m_mapping.begin (); i != m_mapping.end (); ++i)
   {
     if (i != m_iter)
