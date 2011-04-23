@@ -24,7 +24,7 @@
 
 #include "ns3/mpls-installer.h"
 #include "ns3/mpls-interface-helper.h"
-#include "ns3/mpls-mac-resolver.h"
+#include "ns3/mpls-network-discoverer.h"
 #include "ns3/mpls-tunnel-helper.h"
 
 namespace ns3 {
@@ -32,7 +32,7 @@ namespace ns3 {
 /**
  * \brief Mpls network configurator
  */
-class MplsNetworkConfigurator : public MplsInstaller, public MplsMacResolver, public MplsTunnelHelper,
+class MplsNetworkConfigurator : public MplsInstaller, public MplsNetworkDiscoverer, public MplsTunnelHelper,
         public MplsInterfaceHelper
 {
 public:

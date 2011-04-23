@@ -41,6 +41,7 @@ MplsNetworkConfigurator::~MplsNetworkConfigurator ()
 
 MplsNetworkConfigurator::MplsNetworkConfigurator (const MplsNetworkConfigurator &o)
   : MplsInstaller (o), 
+    MplsNetworkDiscoverer (o),
     MplsTunnelHelper (o)
 {
   m_stream = o.m_stream;
@@ -56,6 +57,7 @@ MplsNetworkConfigurator::operator= (const MplsNetworkConfigurator &o)
 
   MplsInstaller::operator= (o);
   MplsTunnelHelper::operator= (o);
+  MplsNetworkDiscoverer::operator= (o);
 
   m_stream = o.m_stream;
   
