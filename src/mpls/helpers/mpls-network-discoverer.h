@@ -87,7 +87,7 @@ private:
   };
   
   bool AddVertexes (const Ptr<Interface> &mplsIf, const Ptr<MplsNetworkDiscoverer::Vertex>& vertex);
-  void UpdateVertexes (const Ptr<Node> &node, const Ptr<Vertex> &vertex, const Ptr<Ipv4Interface> &ipv4If);
+  void UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<NetDevice> &dev2, const Ptr<Vertex> &vertex);
 
   Ptr<Vertexes> m_vertexes;
 };
