@@ -26,7 +26,7 @@
 #include "ns3/ipv4-interface.h"
 #include "ns3/mpls-protocol.h"
 
-#include "mpls-network-discover.h"
+#include "mpls-network-discoverer.h"
 
 NS_LOG_COMPONENT_DEFINE ("MplsNetworkDiscoverer");
 
@@ -35,7 +35,7 @@ namespace ns3 {
 using namespace mpls;
 
 MplsNetworkDiscoverer::MplsNetworkDiscoverer ()
-  m_vertexes (Create<MplsNetworkDiscoverer::Vertexes> ())
+  : m_vertexes (Create<MplsNetworkDiscoverer::Vertexes> ())
 {
 }
 
@@ -61,8 +61,7 @@ MplsNetworkDiscoverer::operator= (const MplsNetworkDiscoverer &o)
 }
 
 MplsNetworkDiscoverer::Vertexes::Vertexes ()
-  : m_vertexes (),
-    m_node (0)
+  : m_vertexes ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -79,16 +78,17 @@ MplsNetworkDiscoverer::Vertexes::Add (const Ipv4Address& addr, const Ptr<MplsNet
 }
 
 const Ptr<MplsNetworkDiscoverer::Vertex>& 
-MplsNetworkDiscoverer::Vertexes::Get (const Ipv4Address &addr) const
+MplsNetworkDiscoverer::Vertexes::Get (const Ipv4Address &addr)
 {
   return m_vertexes[addr];
 }
 
+void
 MplsNetworkDiscoverer::Vertexes::Clear ()
 {
   for (Iterator i = m_vertexes.begin (); i != m_vertexes.end (); ++i)
     {
-      (*i)->Clear ();
+      (*i).second->Clear ();
     }
     
   m_vertexes.clear ();
@@ -127,15 +127,15 @@ MplsNetworkDiscoverer::Vertex::GetInterface (void) const
 }
 
 const Ptr<MplsNetworkDiscoverer::Vertex>&
-MplsNetworkDiscoverer::Vertex::GetVertex (const Ipv4Address &addr) const
+MplsNetworkDiscoverer::Vertex::GetVertex (const Ipv4Address &addr)
 {
-  return m_vertextes.Get (addr);
+  return m_vertexes->Get (addr);
 }
 
-const Ptr<Vertexes>& GetVertexes
+const Ptr<MplsNetworkDiscoverer::Vertexes>&
 MplsNetworkDiscoverer::Vertex::GetVertexes (void)
 {
-  return m_vertextes;
+  return m_vertexes;
 }
 
 void
@@ -170,7 +170,7 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
     
   for (std::list<Ptr<Vertex> >::iterator i = cache.begin (), k = cache.end (); i != k; ++i)
     {
-      Ptr<Device> device = (*i)->GetInterface ()->GetDevice ();
+      Ptr<NetDevice> device = (*i)->GetInterface ()->GetDevice ();
       Ptr<Channel> channel = device->GetChannel ();
       uint32_t nDevices = channel->GetNDevices ();
       
@@ -204,7 +204,7 @@ MplsNetworkDiscoverer::AddVertexes (const Ptr<Interface> &mplsIf, const Ptr<Mpls
   Ptr<Ipv4Interface> ipv4If = mplsIf->GetObject<Ipv4Interface> ();
   if (ipv4If == 0) 
     {
-      return;
+      return 0;
     }
   
   int32_t nAddresses = ipv4If->GetNAddresses ();
@@ -237,17 +237,17 @@ MplsNetworkDiscoverer::UpdateVertexes (const Ptr<Node> &node, const Ptr<Vertex> 
   for (int32_t i = 0; i < nAddresses; ++i)
     {
       Ipv4Address addr = ipv4If->GetAddress (i).GetLocal ();
-      Ptr<Vertex> target = m_vertexes[addr];
+      Ptr<Vertex> target = m_vertexes->Get(addr);
       
       NS_ASSERT_MSG (target != 0 && target != vertex, "Should never happen");
       
       vertexes->Add (addr, target);
       NS_LOG_DEBUG ("[node " << node->GetId() << "] found link from " << 
-                    vertex->GetHwAddr () << " to " << target->GetHwAddr () << ", next-hop " << addr << ")");
+                    vertex->GetHwAddr () << " to " << target->GetHwAddr () << ", next-hop: " << addr);
     }
 }
 
-void
+/*void
 MplsNetworkDiscoverer::UpdateNodeAddresses (const Ptr<Node> &node)
 {
   NS_LOG_DEBUG ("[node " << node->GetId() << "] configuring mac resolver");
@@ -319,5 +319,6 @@ MplsNetworkDiscoverer::UpdateInterfaceAddresses (const Ptr<Interface> &interface
       NS_LOG_DEBUG ("[node " << node->GetId() << "] adding explicitly defined address " << hwaddr << " for " << addr);
     }
 }
+*/
 
 }// namespace ns3
