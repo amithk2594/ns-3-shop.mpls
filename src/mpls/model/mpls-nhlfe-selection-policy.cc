@@ -27,8 +27,6 @@
 
 #include "mpls-nhlfe-selection-policy.h"
 
-NS_LOG_COMPONENT_DEFINE ("mpls::NhlfeSelectionPolicy");
-
 namespace ns3 {
 namespace mpls {
 
@@ -120,6 +118,7 @@ NhlfeSelectionPolicy::Print (std::ostream &os) const
   os << "default policy";
 }
 
+NS_OBJECT_ENSURE_REGISTERED (RoundRobinPolicy);
 
 TypeId
 RoundRobinPolicy::GetTypeId (void)
@@ -158,6 +157,8 @@ RoundRobinPolicy::Print (std::ostream& os) const
 {
   os << "round robin policy";
 }
+
+NS_OBJECT_ENSURE_REGISTERED (StaRoundRobinPolicy);
 
 TypeId
 StaRoundRobinPolicy::GetTypeId (void)
@@ -229,28 +230,29 @@ StaRoundRobinPolicy::Print (std::ostream& os) const
   os << "sta round robin policy";
 }
 
+NS_OBJECT_ENSURE_REGISTERED (WeightedPolicy);
 
 TypeId
-WeightedSelectionPolicy::GetTypeId (void)
+WeightedPolicy::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ns3::mpls::WeightedSelectionPolicy")
+  static TypeId tid = TypeId ("ns3::mpls::WeightedPolicy")
     .SetParent<NhlfeSelectionPolicy> ()
-    .AddConstructor<WeightedSelectionPolicy> () 
+    .AddConstructor<WeightedPolicy> () 
     .AddAttribute ("Bmin", 
                    "The minimum number of bytes of the byte counter.",
                    UintegerValue (1000),
-                   MakeUintegerAccessor (&WeightedSelectionPolicy::m_Bmin),
+                   MakeUintegerAccessor (&WeightedPolicy::m_Bmin),
                    MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("Bmax", 
                    "The maximum number of bytes of the byte counter.",
                    UintegerValue (1000000),
-                   MakeUintegerAccessor (&WeightedSelectionPolicy::m_Bmax),
+                   MakeUintegerAccessor (&WeightedPolicy::m_Bmax),
                    MakeUintegerChecker<uint32_t> ())
   ;
   return tid;
 }
 
-WeightedSelectionPolicy::WeightedSelectionPolicy ()
+WeightedPolicy::WeightedPolicy ()
   : m_Btot (0),
     m_Bmin (1000),
     m_Bmax (1000000),
@@ -259,12 +261,12 @@ WeightedSelectionPolicy::WeightedSelectionPolicy ()
 {
 }
 
-WeightedSelectionPolicy::~WeightedSelectionPolicy ()
+WeightedPolicy::~WeightedPolicy ()
 {
 }
 
 void
-WeightedSelectionPolicy::DoStart (uint32_t size)
+WeightedPolicy::DoStart (uint32_t size)
 {
   if (m_mapping.size () != size)
     {
@@ -281,12 +283,13 @@ WeightedSelectionPolicy::DoStart (uint32_t size)
 }
 
 const Nhlfe&
-WeightedSelectionPolicy::DoGet (const std::vector< Nhlfe >& nhlfe, uint32_t index)
+WeightedPolicy::DoGet (const std::vector< Nhlfe >& nhlfe, uint32_t index)
 {
     return nhlfe[(m_iter++)->m_index];
 }
 
-bool WeightedSelectionPolicy::DoSelect(const std::vector< Nhlfe >& nhlfe, uint32_t index,
+bool 
+WeightedPolicy::DoSelect(const std::vector< Nhlfe >& nhlfe, uint32_t index,
   const Ptr< const Interface >& interface, const Ptr< const Packet >& packet)
 {
   --m_iter;
@@ -310,19 +313,19 @@ bool WeightedSelectionPolicy::DoSelect(const std::vector< Nhlfe >& nhlfe, uint32
 
 
 void
-WeightedSelectionPolicy::Print (std::ostream& os) const
+WeightedPolicy::Print (std::ostream& os) const
 {
-  os << "weighted selection policy";
+  os << "weighted policy";
 }
 
 void 
-WeightedSelectionPolicy::SetWeights (const std::vector<double>& weights)
+WeightedPolicy::SetWeights (const std::vector<double>& weights)
 {
   m_weights = weights;
 }
 
 bool
-WeightedSelectionPolicy::NhlfeInfo::DecreasingDiffOrder (const WeightedSelectionPolicy::NhlfeInfo& y) const
+WeightedPolicy::NhlfeInfo::DecreasingDiffOrder (const WeightedPolicy::NhlfeInfo& y) const
 {
   return m_requiredRatio - m_currentRatio > y.m_requiredRatio - y.m_currentRatio;
 }
