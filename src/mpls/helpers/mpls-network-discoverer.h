@@ -60,13 +60,17 @@ private:
   class Vertexes : public SimpleRefCount<Vertexes>
   {
   public:
+    typedef sgi::hash_map<Ipv4Address, Ptr<Vertex>, Ipv4AddressHash>::iterator Iterator;
+    
     Vertexes ();
     ~Vertexes ();
     void Add (const Ipv4Address &addr, const Ptr<Vertex> &vertex);
     const Ptr<Vertex>& Get (const Ipv4Address &addr);
     void Clear (void);
+    
+    Iterator Begin (void);
+    Iterator End (void);
   private:
-    typedef sgi::hash_map<Ipv4Address, Ptr<Vertex>, Ipv4AddressHash>::iterator Iterator;
     sgi::hash_map<Ipv4Address, Ptr<Vertex>, Ipv4AddressHash> m_vertexes;
   };
   

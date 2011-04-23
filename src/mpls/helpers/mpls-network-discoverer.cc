@@ -94,7 +94,19 @@ MplsNetworkDiscoverer::Vertexes::Clear ()
     
   m_vertexes.clear ();
 }
-  
+
+MplsNetworkDiscoverer::Vertexes::Iterator
+MplsNetworkDiscoverer::Vertexes::Begin (void)
+{
+  return m_vertexes.begin ();
+}
+
+MplsNetworkDiscoverer::Vertexes::Iterator
+MplsNetworkDiscoverer::Vertexes::End (void)
+{
+  return m_vertexes.end ();
+}
+
 MplsNetworkDiscoverer::Vertex::Vertex (const Mac48Address& hwaddr, const Ptr<Interface> &interface)
   : m_hwaddr (hwaddr),
     m_interface (interface),
@@ -185,6 +197,19 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
           UpdateVertexes (mplsIf, dev1, dev2, *i);
         }
     }
+
+  // configure mac resolvers
+  for (std::list<Ptr<Vertex> >::iterator i = cache.begin (), k = cache.end (); i != k; ++i)
+    {
+      Ptr<Interface> mplsIf = (*i)->GetInterface ();
+      Ptr<Vertexes> vertexes = (*i)->GetVertexes ();
+      mplsIf->RemoveAllAddresses ();
+      
+      for (Vertexes::Iterator j = vertexes->Begin (), l = vertexes->End (); j != l; ++j)
+        {
+          mplsIf->AddAddress ((*i)->GetHwAddr (), (*j).second->GetHwAddr ());
+        }
+    }  
 }
 
 bool
@@ -211,8 +236,8 @@ MplsNetworkDiscoverer::AddVertexes (const Ptr<Interface> &mplsIf, const Ptr<Mpls
 }
 
 void
-MplsNetworkDiscoverer::UpdateVertexes (const Ptr<Interface> &iface, const Ptr<NetDevice> &dev1, 
-  const Ptr<NetDevice> &dev2, const Ptr<Vertex> &vertex)
+MplsNetworkDiscoverer::UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<NetDevice> &dev2, 
+  const Ptr<Vertex> &vertex)
 {
   Ptr<Node> node = dev2->GetNode ();
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
@@ -227,8 +252,6 @@ MplsNetworkDiscoverer::UpdateVertexes (const Ptr<Interface> &iface, const Ptr<Ne
 
   if (ipv4If == 0) return;
 
-  iface->RemoveAllAddresses ();
-          
   int32_t nAddresses = ipv4If->GetNAddresses ();
 
   if (nAddresses <= 0) return;
@@ -243,7 +266,6 @@ MplsNetworkDiscoverer::UpdateVertexes (const Ptr<Interface> &iface, const Ptr<Ne
       NS_ASSERT_MSG (target != 0 && target != vertex, "Should never happen");
       
       vertexes->Add (addr, target);
-      iface->AddAddress (addr, target->GetHwAddr ());
 
       NS_LOG_DEBUG ("NetworkDiscoverer: found link " <<
                     "from node" << dev1->GetNode()->GetId() << ":dev" << dev1->GetIfIndex () << " " << vertex->GetHwAddr () << 
