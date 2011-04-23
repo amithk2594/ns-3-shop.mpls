@@ -28,6 +28,7 @@
 #include "ns3/net-device.h"
 #include "ns3/mpls.h"
 #include "ns3/mpls-interface.h"
+#include "ns3/sgi-hashmap.h"
 
 #include "mpls-network-helper-base.h"
 
@@ -58,10 +59,11 @@ private:
   
   class Vertexes : public SimpleRefCount<Vertexes>
   {
+  public:
     Vertexes ();
     ~Vertexes ();
     void Add (const Ipv4Address &addr, const Ptr<Vertex> &vertex);
-    const Ptr<Vertex>& Get (const Ipv4Address &addr) const;
+    const Ptr<Vertex>& Get (const Ipv4Address &addr);
     void Clear (void);
   private:
     typedef sgi::hash_map<Ipv4Address, Ptr<Vertex>, Ipv4AddressHash>::iterator Iterator;
@@ -75,7 +77,7 @@ private:
     ~Vertex ();
     const Mac48Address& GetHwAddr (void) const;
     const Ptr<mpls::Interface>& GetInterface (void) const;
-    const Ptr<Vertex>& GetVertex (const Ipv4Address &addr) const;
+    const Ptr<Vertex>& GetVertex (const Ipv4Address &addr);
     const Ptr<Vertexes>& GetVertexes (void);
     void Clear (void);
   private:
