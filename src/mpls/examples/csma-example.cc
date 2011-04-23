@@ -39,7 +39,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
   LogComponentEnable ("mpls::MplsProtocol", LOG_LEVEL_DEBUG);
   LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
-  LogComponentEnable ("MplsMacResolver", LOG_LEVEL_DEBUG);  
+  LogComponentEnable ("MplsNetworkDiscoverer", LOG_LEVEL_DEBUG);  
 
 //  LogComponentEnable ("mpls::LabelStack", LOG_LEVEL_ALL);
 
@@ -121,7 +121,7 @@ main (int argc, char *argv[])
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
   network.ShowConfig ();
-  network.ConfigureMacResolvers ();
+  network.DiscoverNetwork ();
   
   Simulator::Run ();
   Simulator::Destroy ();
