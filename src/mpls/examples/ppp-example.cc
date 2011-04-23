@@ -40,7 +40,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
   LogComponentEnable ("MplsNetworkDiscoverer", LOG_LEVEL_DEBUG);  
 
-//  LogComponentEnable ("mpls::LabelStack", LOG_LEVEL_ALL);
+  LogComponentEnable ("mpls::Interface", LOG_LEVEL_ALL);
 
   NodeContainer hosts;
   NodeContainer routers;

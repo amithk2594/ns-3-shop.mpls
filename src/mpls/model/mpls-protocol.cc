@@ -450,7 +450,7 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
       else 
         {
           outInterface = 0;
-          for (InterfaceList::iterator i = m_interfaces.begin (); i < m_interfaces.end (); ++i)
+          for (InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
             {
               if ((*i)->LookupAddress (nextHop, hwaddr)) 
                 {
@@ -465,7 +465,7 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
           NS_LOG_WARN ("nhlfe " << idx << " " << nhlfe << " -- next-hop is unavailable");
           continue;
         }
-
+      
       if (!outInterface->IsUp ())
         {
           NS_LOG_DEBUG ("nhlfe " << idx << " " << nhlfe << " -- mpls interface disabled");

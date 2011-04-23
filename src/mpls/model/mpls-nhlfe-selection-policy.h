@@ -69,7 +69,7 @@ protected:
   virtual const Nhlfe& DoGet (const std::vector<Nhlfe> &nhlfe, uint32_t index);
   virtual bool DoSelect (const std::vector<Nhlfe> &nhlfe, uint32_t index, 
                           const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
-  
+  //template <class T> Ptr<Queue> GetQueue (const Ptr<T> &device) { return device->GetQueue (); };
 private:
   int32_t m_maxPackets;
   int32_t m_maxBytes;

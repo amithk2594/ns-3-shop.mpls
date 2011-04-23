@@ -170,7 +170,7 @@ Interface::LookupAddress (const Address& dest, Mac48Address& hwaddr)
           return 1;
         }
     }
-        
+
   return 0;
 }
 
@@ -179,7 +179,7 @@ Interface::AddAddress (const Address& dest, const Mac48Address& mac)
 {
   if (Ipv4Address::IsMatchingType (dest))
     {
-      m_ipv4resolving.insert (std::pair<Ipv4Address, Mac48Address> (Ipv4Address::ConvertFrom (dest), mac));
+      m_ipv4resolving[Ipv4Address::ConvertFrom (dest)] = mac;
     }
 }
 
