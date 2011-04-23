@@ -124,13 +124,13 @@ private:
  * \ingroup mpls
  * \brief NHLFE Weighted selection policy
  */
-class WeightedSelectionPolicy : public NhlfeSelectionPolicy
+class WeightedPolicy : public NhlfeSelectionPolicy
 {
 public:
   static TypeId GetTypeId (void);
   
-  WeightedSelectionPolicy ();
-  virtual ~WeightedSelectionPolicy ();
+  WeightedPolicy ();
+  virtual ~WeightedPolicy ();
   virtual void Print (std::ostream &os) const;
   
   void SetWeights (const std::vector<double>& weights);

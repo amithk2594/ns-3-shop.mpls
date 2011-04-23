@@ -100,11 +100,11 @@ main (int argc, char *argv[])
   address.SetBase ("10.1.1.0", "255.255.255.0");
   address.Assign (devices);
 
-  NhlfeSelectionPolicyHelper policy;
+  WeightedPolicyHelper policy;
   policy.SetAttribute ("MaxPacketsInTxQueue", IntegerValue (0));
-  
+
   MplsSwitch sw1 (routers.Get (0));
-  //sw1.SetSelectionPolicy (policy);
+  sw1.SetSelectionPolicy (policy);
 
   sw1.AddFtn (
       Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),

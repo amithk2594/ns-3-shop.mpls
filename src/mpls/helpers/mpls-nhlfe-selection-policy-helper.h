@@ -36,8 +36,8 @@ namespace ns3 {
 class NhlfeSelectionPolicyHelper: private ObjectFactory
 {
 protected:
-  static std::string GetPolicyTypeId (void);
-  
+  using ObjectFactory::Create;
+  NhlfeSelectionPolicyHelper (const std::string &id);
 public:
   /**
    * @brief Create a new NhlfeSelectionPolicyHelper object
@@ -54,9 +54,6 @@ public:
  */
 class RoundRobinPolicyHelper : public NhlfeSelectionPolicyHelper
 {
-protected:
-  static std::string GetPolicyTypeId (void);
-  
 public:
   /**
    * @brief Create a new RoundRobinPolicyHelper object
@@ -70,9 +67,6 @@ public:
  */
 class StaRoundRobinPolicyHelper : public NhlfeSelectionPolicyHelper
 {
-protected:
-  static std::string GetPolicyTypeId (void);
-  
 public:
   /**
    * @brief Create a new StaRoundRobinPolicyHelper object
@@ -84,17 +78,14 @@ public:
 /**
  * \brief Mpls weighted selection policy helper
  */
-class WeightedSelectionPolicyHelper : public NhlfeSelectionPolicyHelper
+class WeightedPolicyHelper : public NhlfeSelectionPolicyHelper
 {
-protected:
-  static std::string GetPolicyTypeId (void);
-  
 public:
   /**
    * @brief Create a new WeightedSelectionPolicyHelper object
    */
-  WeightedSelectionPolicyHelper ();
-  virtual ~WeightedSelectionPolicyHelper ();
+  WeightedPolicyHelper ();
+  virtual ~WeightedPolicyHelper ();
 
   Ptr<mpls::NhlfeSelectionPolicy> Create (void) const;
   

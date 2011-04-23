@@ -27,17 +27,16 @@ namespace ns3 {
 
 NhlfeSelectionPolicyHelper::NhlfeSelectionPolicyHelper ()
 {
-  ObjectFactory::SetTypeId (GetPolicyTypeId ());
+  ObjectFactory::SetTypeId ("ns3::mpls::NhlfeSelectionPolicy");
+}
+
+NhlfeSelectionPolicyHelper::NhlfeSelectionPolicyHelper (const std::string &id)
+{
+  ObjectFactory::SetTypeId (id);
 }
 
 NhlfeSelectionPolicyHelper::~NhlfeSelectionPolicyHelper()
 {
-}
-
-std::string
-NhlfeSelectionPolicyHelper::GetPolicyTypeId (void)
-{
-  return "ns3::mpls::NhlfeSelectionPolicy";
 }
 
 void 
@@ -53,6 +52,7 @@ NhlfeSelectionPolicyHelper::Create (void) const
 }
 
 RoundRobinPolicyHelper::RoundRobinPolicyHelper ()
+  : NhlfeSelectionPolicyHelper ("ns3::mpls::RoundRobinPolicy")
 {
 }
 
@@ -60,13 +60,8 @@ RoundRobinPolicyHelper::~RoundRobinPolicyHelper ()
 {
 }
 
-std::string
-RoundRobinPolicyHelper::GetPolicyTypeId (void)
-{
-  return "ns3::mpls::RoundRobinPolicy";
-}
-
 StaRoundRobinPolicyHelper::StaRoundRobinPolicyHelper ()
+  : NhlfeSelectionPolicyHelper ("ns3::mpls::StaRoundRobinPolicy") 
 {
 }
 
@@ -74,55 +69,45 @@ StaRoundRobinPolicyHelper::~StaRoundRobinPolicyHelper ()
 {
 }
 
-std::string
-StaRoundRobinPolicyHelper::GetPolicyTypeId (void)
-{
-  return "ns3::mpls::StaRoundRobinPolicy";
-}
-
-WeightedSelectionPolicyHelper::WeightedSelectionPolicyHelper ()
+WeightedPolicyHelper::WeightedPolicyHelper ()
+  : NhlfeSelectionPolicyHelper ("ns3::mpls::WeightedPolicy")
 {
 }
 
-WeightedSelectionPolicyHelper::~WeightedSelectionPolicyHelper ()
+WeightedPolicyHelper::~WeightedPolicyHelper ()
 {
-}
-
-std::string WeightedSelectionPolicyHelper::GetPolicyTypeId (void)
-{
-  return "ns3::mpls::WeightedSelectionPolicy";
 }
 
 Ptr<mpls::NhlfeSelectionPolicy>
-WeightedSelectionPolicyHelper::Create (void) const
+WeightedPolicyHelper::Create (void) const
 {
-  Ptr<mpls::NhlfeSelectionPolicy> policy = NhlfeSelectionPolicyHelper::Create ();
-  
-  policy->GetObject<mpls::WeightedSelectionPolicy> ()->SetWeights (m_weight);
+  Ptr<mpls::WeightedPolicy> policy = NhlfeSelectionPolicyHelper::Create<mpls::WeightedPolicy> ();
+ 
+  policy->SetWeights (m_weight);
   
   return policy;
 }
 
 
-void WeightedSelectionPolicyHelper::AddWeight(double w)
+void WeightedPolicyHelper::AddWeight(double w)
 {
   m_weight.push_back (w);
 }
 
-void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2)
+void WeightedPolicyHelper::AddWeight(double w1, double w2)
 {
   m_weight.push_back (w1);
   m_weight.push_back (w2);
 }
 
-void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3)
+void WeightedPolicyHelper::AddWeight(double w1, double w2, double w3)
 {
   m_weight.push_back (w1);
   m_weight.push_back (w2);
   m_weight.push_back (w3);
 }
 
-void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, double w4)
+void WeightedPolicyHelper::AddWeight(double w1, double w2, double w3, double w4)
 {
   m_weight.push_back (w1);
   m_weight.push_back (w2);
@@ -130,7 +115,7 @@ void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, d
   m_weight.push_back (w4);
 }
 
-void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, double w4, double w5)
+void WeightedPolicyHelper::AddWeight(double w1, double w2, double w3, double w4, double w5)
 {
   m_weight.push_back (w1);
   m_weight.push_back (w2);
@@ -139,7 +124,7 @@ void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, d
   m_weight.push_back (w5);
 }
 
-void WeightedSelectionPolicyHelper::AddWeight(double w1, double w2, double w3, double w4, double w5, double w6)
+void WeightedPolicyHelper::AddWeight(double w1, double w2, double w3, double w4, double w5, double w6)
 {
   m_weight.push_back (w1);
   m_weight.push_back (w2);
