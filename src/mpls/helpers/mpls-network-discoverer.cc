@@ -69,6 +69,7 @@ MplsNetworkDiscoverer::Vertexes::Vertexes ()
 MplsNetworkDiscoverer::Vertexes::~Vertexes ()
 {
   NS_LOG_FUNCTION (this);
+  Clear ();
 }
 
 void 
@@ -170,7 +171,8 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
     
   for (std::list<Ptr<Vertex> >::iterator i = cache.begin (), k = cache.end (); i != k; ++i)
     {
-      Ptr<NetDevice> dev1 = (*i)->GetInterface ()->GetDevice ();
+      Ptr<Interface> mplsIf = (*i)->GetInterface ();
+      Ptr<NetDevice> dev1 = mplsIf->GetDevice ();
       Ptr<Channel> channel = dev1->GetChannel ();
       uint32_t nDevices = channel->GetNDevices ();
       
@@ -180,7 +182,7 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
 
           if (dev1 == dev2) continue;
 
-          UpdateVertexes (dev1, dev2, *i);
+          UpdateVertexes (mplsIf, dev1, dev2, *i);
         }
     }
 }
@@ -209,28 +211,27 @@ MplsNetworkDiscoverer::AddVertexes (const Ptr<Interface> &mplsIf, const Ptr<Mpls
 }
 
 void
-MplsNetworkDiscoverer::UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<NetDevice> &dev2, 
-  const Ptr<Vertex> &vertex)
+MplsNetworkDiscoverer::UpdateVertexes (const Ptr<Interface> &iface, const Ptr<NetDevice> &dev1, 
+  const Ptr<NetDevice> &dev2, const Ptr<Vertex> &vertex)
 {
   Ptr<Node> node = dev2->GetNode ();
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
 
-  if (mpls == 0) continue;
+  if (mpls == 0) return;
   
   Ptr<Interface> mplsIf = mpls->GetInterfaceForDevice (dev2);
 
-  if (mplsIf == 0) continue;
+  if (mplsIf == 0) return;
 
   Ptr<Ipv4Interface> ipv4If = mplsIf->GetObject<Ipv4Interface> ();
 
-  if (ipv4If == 0) continue;
+  if (ipv4If == 0) return;
+
+  iface->RemoveAllAddresses ();
           
   int32_t nAddresses = ipv4If->GetNAddresses ();
 
-  if (nAddresses <= 0)
-    {
-      return;
-    }
+  if (nAddresses <= 0) return;
   
   Ptr<Vertexes> vertexes = vertex->GetVertexes ();  
   
@@ -242,9 +243,11 @@ MplsNetworkDiscoverer::UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<Net
       NS_ASSERT_MSG (target != 0 && target != vertex, "Should never happen");
       
       vertexes->Add (addr, target);
-      NS_LOG_DEBUG ("[node " << dev1->GetNode()->GetId() << "] found link" <<
-                    " from dev" << dev1->GetIfIndex () << " " << vertex->GetHwAddr () << 
-                    " to dev" << dev2->GetIfIndex () << " " target->GetHwAddr () << 
+      iface->AddAddress (addr, target->GetHwAddr ());
+
+      NS_LOG_DEBUG ("NetworkDiscoverer: found link " <<
+                    "from node" << dev1->GetNode()->GetId() << ":dev" << dev1->GetIfIndex () << " " << vertex->GetHwAddr () << 
+                    " to node" << dev2->GetNode()->GetId() << ":dev" << dev2->GetIfIndex () << " " << target->GetHwAddr () << 
                     ", next-hop: " << addr);
     }
 }
