@@ -66,13 +66,13 @@ Interface::Interface (int32_t ifIndex)
 
 Interface::~Interface ()
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
 }
 
 void
 Interface::DoDispose (void)
 {
-  NS_LOG_FUNCTION_NOARGS ();
+  NS_LOG_FUNCTION (this);
   m_node = 0;
   m_device = 0;
   Object::DoDispose ();
