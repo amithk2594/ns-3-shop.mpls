@@ -183,8 +183,7 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
     
   for (std::list<Ptr<Vertex> >::iterator i = cache.begin (), k = cache.end (); i != k; ++i)
     {
-      Ptr<Interface> mplsIf = (*i)->GetInterface ();
-      Ptr<NetDevice> dev1 = mplsIf->GetDevice ();
+      Ptr<NetDevice> dev1 = (*i)->GetInterface ()->GetDevice ();
       Ptr<Channel> channel = dev1->GetChannel ();
       uint32_t nDevices = channel->GetNDevices ();
       
@@ -194,7 +193,7 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
 
           if (dev1 == dev2) continue;
 
-          UpdateVertexes (mplsIf, dev1, dev2, *i);
+          UpdateVertexes (dev1, dev2, *i);
         }
     }
 
@@ -207,7 +206,7 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
       
       for (Vertexes::Iterator j = vertexes->Begin (), l = vertexes->End (); j != l; ++j)
         {
-          mplsIf->AddAddress ((*i)->GetHwAddr (), (*j).second->GetHwAddr ());
+          mplsIf->AddAddress ((*j).first, (*j).second->GetHwAddr ());
         }
     }  
 }
@@ -273,79 +272,5 @@ MplsNetworkDiscoverer::UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<Net
                     ", next-hop: " << addr);
     }
 }
-
-/*void
-MplsNetworkDiscoverer::UpdateNodeAddresses (const Ptr<Node> &node)
-{
-  NS_LOG_DEBUG ("[node " << node->GetId() << "] configuring mac resolver");
-
-  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-
-  int32_t nInterfaces = mpls->GetNInterfaces ();
-  
-  for (int32_t ifIndex = 0; ifIndex < nInterfaces; ++ifIndex)
-    {
-      Ptr<Interface> mplsIf = mpls->GetInterface (ifIndex);
-      Ptr<NetDevice> device = mplsIf->GetDevice ();
-      Ptr<Channel> channel = device->GetChannel ();
-      
-      mplsIf->RemoveAllAddresses ();
-      
-      uint32_t nDevices = channel->GetNDevices ();
-      
-      for (uint32_t idev = 0; idev < nDevices; ++idev)
-        {
-          Ptr<NetDevice> dev = channel->GetDevice (idev);
-          if (device != dev)
-            {
-              UpdateInterfaceAddresses (mplsIf, dev);
-            }
-        }
-    }
-}
-
-void
-MplsNetworkDiscoverer::UpdateInterfaceAddresses (const Ptr<Interface> &interface, const Ptr<NetDevice> &device)
-{
-  Address addr = device->GetAddress ();
-  if (!Mac48Address::IsMatchingType (addr))
-    {
-      return;
-    }
-    
-  Mac48Address hwaddr = Mac48Address::ConvertFrom (addr);
-    
-  Ptr<Node> node = device->GetNode ();
-  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-  
-  if (mpls == 0)
-    {
-      return;
-    }
-
-  Ptr<Interface> mplsIf = mpls->GetInterfaceForDevice (device);
-  
-  if (mplsIf == 0)
-    {
-      return;
-    }
-    
-  Ptr<Ipv4Interface> ipv4If = mplsIf->GetObject<Ipv4Interface> ();
-
-  if (ipv4If == 0) 
-    {
-      return;
-    }
-    
-  int32_t nAddresses = ipv4If->GetNAddresses ();
-
-  for (int32_t i = 0; i < nAddresses; ++i)
-    {
-      Ipv4Address addr = ipv4If->GetAddress (i).GetLocal ();
-      interface->AddAddress (addr, hwaddr);
-      NS_LOG_DEBUG ("[node " << node->GetId() << "] adding explicitly defined address " << hwaddr << " for " << addr);
-    }
-}
-*/
 
 }// namespace ns3

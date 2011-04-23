@@ -41,7 +41,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
   LogComponentEnable ("MplsNetworkDiscoverer", LOG_LEVEL_DEBUG);  
 
-//  LogComponentEnable ("mpls::LabelStack", LOG_LEVEL_ALL);
+  LogComponentEnable ("mpls::Interface", LOG_LEVEL_ALL);
 
   NodeContainer hosts;
   NodeContainer routers;
@@ -104,7 +104,7 @@ main (int argc, char *argv[])
   policy.SetAttribute ("MaxPacketsInTxQueue", IntegerValue (0));
   
   MplsSwitch sw1 (routers.Get (0));
-  sw1.SetSelectionPolicy (policy);
+  //sw1.SetSelectionPolicy (policy);
 
   sw1.AddFtn (
       Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
