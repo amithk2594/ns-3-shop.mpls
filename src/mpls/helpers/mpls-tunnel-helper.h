@@ -53,6 +53,50 @@ private:
   friend class MplsTunnelHelper;
 };
 
+
+class Lsp;
+
+class LspNode 
+{
+public:
+  LspNode (const char* addr);
+  LspNode (const Ipv4Address &addr);
+  LspNode (const Ptr<Node> &node);
+  ~LspNode ();
+  
+  Lsp operator+ (const LspNode &x) const;
+  
+  const Ipv4Address& GetAddress (void) const;
+  const Ptr<Node>& GetNode (void) const;
+
+private:
+  Ipv4Address m_address;
+  Ptr<Node> m_node;
+};
+
+
+class Lsp
+{
+public:
+  Lsp ();
+  Lsp (const Lsp &lsp);
+  ~Lsp ();
+  
+  Lsp& Add (const LspNode &node);
+  Lsp& operator= (const Lsp &lsp);
+  Lsp operator+ (const LspNode &node) const;
+  Lsp operator+ (const Lsp &lsp) const;
+  
+  typedef std::list<LspNode>::const_iterator Iterator;
+
+  Iterator Begin (void) const;
+  Iterator End (void) const;  
+
+private:
+  std::list<LspNode> m_nodes;
+};
+
+
 /**
  * \brief 
  */
