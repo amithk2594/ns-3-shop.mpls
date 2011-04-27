@@ -42,6 +42,109 @@ TunnelId::Hash::operator() (TunnelId const &x) const
   return x.m_id;
 }
 
+
+LspNode::LspNode (const char* addr)
+  : m_address (Ipv4Address(addr)),
+    m_node (0)
+{
+}
+
+
+LspNode::LspNode (const Ipv4Address &addr)
+  : m_address (addr),
+    m_node (0)
+{
+}
+
+
+LspNode::LspNode (const Ptr<Node> &node)
+  : m_address (),
+    m_node (node)
+{
+}
+
+LspNode::~LspNode ()
+{
+  m_node = 0;
+}
+    
+Lsp
+LspNode::operator+ (const LspNode &x) const
+{
+  return Lsp().Add (*this).Add (x);
+}
+
+const Ipv4Address& 
+LspNode::GetAddress (void) const
+{
+  return m_address;
+}
+
+const Ptr<Node>& 
+LspNode::GetNode (void) const
+{
+  return m_node;
+}
+
+
+Lsp::Lsp ()
+{
+}
+
+Lsp::Lsp (const Lsp &lsp)
+{
+  m_nodes = lsp.m_nodes;
+}
+
+Lsp::~Lsp ()
+{
+}
+
+Lsp&
+Lsp::Add (const LspNode &node)
+{
+  m_nodes.push_back (node);
+  return *this;
+}
+
+Lsp&
+Lsp::operator= (const Lsp &lsp)
+{
+  if (this == &lsp)
+    {
+      return *this;
+    }
+  m_nodes = lsp.m_nodes;
+  return *this;
+}
+
+Lsp
+Lsp::operator+ (const LspNode &node) const
+{
+  Lsp tmp (*this);
+  return tmp.Add (node);
+}
+
+Lsp
+Lsp::operator+ (const Lsp &lsp) const
+{
+  Lsp tmp (*this);
+  tmp.m_nodes.insert (tmp.m_nodes.end(), lsp.Begin (), lsp.End ());
+  return tmp;
+}
+  
+Lsp::Iterator
+Lsp::Begin (void) const
+{
+  return m_nodes.begin ();
+}
+
+Lsp::Iterator
+Lsp::End (void) const
+{
+  return m_nodes.end ();
+}
+
 MplsTunnelHelper::MplsTunnelHelper(void)
   : m_tunnels (Create<TunnelMap> ())
 {
