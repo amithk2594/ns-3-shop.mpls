@@ -60,7 +60,8 @@ MplsIlmHelper::ClearIlmTable ()
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe, const NhlfeSelectionPolicyHelper &policy)
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe, 
+  const NhlfeSelectionPolicyHelper &policy)
 {
   Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe, policy.Create ());
   return GetIlmTable ()->AddIlm (ilm);
@@ -98,7 +99,8 @@ MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe 
 
 uint32_t
 MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const NhlfeSelectionPolicyHelper &policy)
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const NhlfeSelectionPolicyHelper &policy)
 {
   Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.Create ());
   ilm->AddNhlfe (nhlfe2);
@@ -123,6 +125,119 @@ MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe 
 }
 
 uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.Create ());
+  ilm->AddNhlfe (nhlfe2);
+  ilm->AddNhlfe (nhlfe3);
+  ilm->AddNhlfe (nhlfe4);
+  ilm->AddNhlfe (nhlfe5);
+  ilm->AddNhlfe (nhlfe6);
+  ilm->AddNhlfe (nhlfe7);
+  return GetIlmTable ()->AddIlm (ilm);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.Create ());
+  ilm->AddNhlfe (nhlfe2);
+  ilm->AddNhlfe (nhlfe3);
+  ilm->AddNhlfe (nhlfe4);
+  ilm->AddNhlfe (nhlfe5);
+  ilm->AddNhlfe (nhlfe6);
+  ilm->AddNhlfe (nhlfe7);
+  ilm->AddNhlfe (nhlfe8);
+  return GetIlmTable ()->AddIlm (ilm);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.Create ());
+  ilm->AddNhlfe (nhlfe2);
+  ilm->AddNhlfe (nhlfe3);
+  ilm->AddNhlfe (nhlfe4);
+  ilm->AddNhlfe (nhlfe5);
+  ilm->AddNhlfe (nhlfe6);
+  ilm->AddNhlfe (nhlfe7);
+  ilm->AddNhlfe (nhlfe8);
+  ilm->AddNhlfe (nhlfe9);
+  return GetIlmTable ()->AddIlm (ilm);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.Create ());
+  ilm->AddNhlfe (nhlfe2);
+  ilm->AddNhlfe (nhlfe3);
+  ilm->AddNhlfe (nhlfe4);
+  ilm->AddNhlfe (nhlfe5);
+  ilm->AddNhlfe (nhlfe6);
+  ilm->AddNhlfe (nhlfe7);
+  ilm->AddNhlfe (nhlfe8);
+  ilm->AddNhlfe (nhlfe9);
+  ilm->AddNhlfe (nhlfe10);
+  return GetIlmTable ()->AddIlm (ilm);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const mpls::Nhlfe &nhlfe11,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.Create ());
+  ilm->AddNhlfe (nhlfe2);
+  ilm->AddNhlfe (nhlfe3);
+  ilm->AddNhlfe (nhlfe4);
+  ilm->AddNhlfe (nhlfe5);
+  ilm->AddNhlfe (nhlfe6);
+  ilm->AddNhlfe (nhlfe7);
+  ilm->AddNhlfe (nhlfe8);
+  ilm->AddNhlfe (nhlfe9);
+  ilm->AddNhlfe (nhlfe10);
+  ilm->AddNhlfe (nhlfe11);
+  return GetIlmTable ()->AddIlm (ilm);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const mpls::Nhlfe &nhlfe11, const mpls::Nhlfe &nhlfe12,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  Ptr<mpls::IncomingLabelMap> ilm = Create<mpls::IncomingLabelMap> (interface, label, nhlfe1, policy.Create ());
+  ilm->AddNhlfe (nhlfe2);
+  ilm->AddNhlfe (nhlfe3);
+  ilm->AddNhlfe (nhlfe4);
+  ilm->AddNhlfe (nhlfe5);
+  ilm->AddNhlfe (nhlfe6);
+  ilm->AddNhlfe (nhlfe7);
+  ilm->AddNhlfe (nhlfe8);
+  ilm->AddNhlfe (nhlfe9);
+  ilm->AddNhlfe (nhlfe10);
+  ilm->AddNhlfe (nhlfe11);
+  ilm->AddNhlfe (nhlfe12);
+  return GetIlmTable ()->AddIlm (ilm);
+}
+
+uint32_t
 MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe)
 {
   return AddIlm (interface, label, nhlfe, GetSelectionPolicy ());
@@ -142,24 +257,79 @@ MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe 
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4)
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4)
 {
   return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, GetSelectionPolicy ());
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5)
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5)
 {
   return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, GetSelectionPolicy ());
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
 {
   return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, 
+    const mpls::Nhlfe &nhlfe7)
+{
+  return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, 
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8)
+{
+  return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, 
+                  GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, 
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9)
+{
+  return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9,
+                  GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, 
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10)
+{
+  return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9,
+                  nhlfe10, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, 
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const mpls::Nhlfe &nhlfe11)
+{
+  return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9,
+                  nhlfe10, nhlfe11, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, 
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const mpls::Nhlfe &nhlfe11, const mpls::Nhlfe &nhlfe12)
+{
+  return AddIlm (interface, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9,
+                  nhlfe10, nhlfe11, nhlfe12, GetSelectionPolicy ());
 }
 
 uint32_t
@@ -175,30 +345,86 @@ MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls:
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3)
 {
   return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, GetSelectionPolicy ());
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4)
 {
   return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, GetSelectionPolicy ());
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5)
 {
   return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, GetSelectionPolicy ());
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6)
 {
   return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7)
+{
+  return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8)
+{
+  return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, 
+                  GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9)
+{
+  return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9, 
+                  GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10)
+{
+  return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9, 
+                  nhlfe10, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const mpls::Nhlfe &nhlfe11)
+{
+  return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9, 
+                  nhlfe10, nhlfe11, GetSelectionPolicy ());
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6,
+    const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const mpls::Nhlfe &nhlfe11, const mpls::Nhlfe &nhlfe12)
+{
+  return AddIlm (label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9, 
+                  nhlfe10, nhlfe11, nhlfe12, GetSelectionPolicy ());
 }
 
 uint32_t
@@ -215,31 +441,97 @@ MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls:
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3,
-    const NhlfeSelectionPolicyHelper &policy)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const NhlfeSelectionPolicyHelper &policy)
 {
   return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, policy);
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4, const NhlfeSelectionPolicyHelper &policy)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const NhlfeSelectionPolicyHelper &policy)
 {
   return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, policy);
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const NhlfeSelectionPolicyHelper &policy)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const NhlfeSelectionPolicyHelper &policy)
 {
   return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, policy);
 }
 
 uint32_t
-MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
-    const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, const NhlfeSelectionPolicyHelper &policy)
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const mpls::Nhlfe &nhlfe6, const NhlfeSelectionPolicyHelper &policy)
 {
   return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, policy);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, 
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, 
+                  policy);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, 
+                  policy);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
+    const mpls::Nhlfe &nhlfe9,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9,
+                  policy);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
+    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9, nhlfe10, 
+                  policy);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
+    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
+    const NhlfeSelectionPolicyHelper &policy)
+{
+  return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9, nhlfe10, nhlfe11, 
+                  policy);
+}
+
+uint32_t
+MplsIlmHelper::AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
+    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
+    const mpls::Nhlfe &nhlfe12, const NhlfeSelectionPolicyHelper &policy)
+{
+  return AddIlm (-1, label, nhlfe1, nhlfe2, nhlfe3, nhlfe4, nhlfe5, nhlfe6, nhlfe7, nhlfe8, nhlfe9, nhlfe10, nhlfe11, 
+                  nhlfe12, policy);
 }
 
 } // namespace ns3
