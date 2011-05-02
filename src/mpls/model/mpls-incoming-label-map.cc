@@ -78,7 +78,7 @@ IncomingLabelMap::Print (std::ostream &os) const
       os << "if" << m_interface << " ";
     }
 
-  os << "label " << m_label << " ";
+  os << "label " << m_label << ", ";
 
   ForwardingInformation::Print (os);
 }

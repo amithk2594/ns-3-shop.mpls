@@ -57,7 +57,7 @@ FecToNhlfe::Print (std::ostream &os) const
 {
   os << "ftn" << GetIndex () << " ";
   m_fec->Print (os);
-  os << " ";
+  os << ", ";
   ForwardingInformation::Print (os);
 }
 

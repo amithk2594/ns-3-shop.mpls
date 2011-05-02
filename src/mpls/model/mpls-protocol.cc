@@ -196,8 +196,8 @@ MplsProtocol::ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, 
       return false;
     }
 
-  NS_LOG_DEBUG ("Found suitable entry -- " << Ptr<ForwardingInformation> (ftn) << 
-                " with " << ftn->GetNNhlfe () << " available nhlfe");
+  NS_LOG_DEBUG ("Found suitable entry -- " << Ptr<ForwardingInformation> (ftn)); // << 
+                //" with " << ftn->GetNNhlfe () << " available nhlfe");
 
   packet->AddHeader (header);
 
@@ -338,8 +338,8 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
       return;
     }
 
-  NS_LOG_DEBUG ("Found suitable entry -- " << Ptr<ForwardingInformation> (ilm) << 
-                " with " << ilm->GetNNhlfe () << " available nhlfe");
+  NS_LOG_DEBUG ("Found suitable entry -- " << Ptr<ForwardingInformation> (ilm));// << 
+                //" with " << ilm->GetNNhlfe () << " available nhlfe");
 
   MplsForward (packet, ilm, stack, ttl);
 }

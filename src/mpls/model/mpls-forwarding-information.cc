@@ -88,13 +88,14 @@ ForwardingInformation::SetIndex (uint32_t index)
 void
 ForwardingInformation::Print (std::ostream &os) const
 {
-  os << "Nhlfe(s):  [";
+  os << "nhlfe(s): [";
   m_policy->Print (os);
-  os << "]" << std::endl;
+  os << "] ";
   for (NhlfeVector::const_iterator n = m_nhlfe.begin (); n != m_nhlfe.end (); ++n)
   {
+    os << "(";
     n->Print (os);
-    os << std::endl;
+    os << ") ";
   }
 }
 
