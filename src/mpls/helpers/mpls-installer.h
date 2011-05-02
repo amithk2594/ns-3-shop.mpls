@@ -28,7 +28,7 @@
 #include "ns3/callback.h"
 #include "ns3/mpls.h"
 #include "ns3/mpls-ipv4-protocol.h"
-
+#include "ns3/mpls-node.h"
 #include "mpls-enum-helper.h"
 #include "mpls-network-helper-base.h"
 
@@ -70,6 +70,8 @@ public:
    */
   void SetTcp(std::string tid);
 
+  NodeContainer CreateAndInstall (uint32_t count);
+
   /**
    * @brief Aggregate implementations of MPLS, IPv4, TCP, UDP and ARP onto the provided node.
    * 
@@ -110,11 +112,11 @@ public:
 
 private:
   void Initialize (void);
-  void InstallInternal (Ptr<Node> node);
-  void EnableInterfaceAutoInstallInternal (Ptr<Node> node) const;
-  void DisableInterfaceAutoInstallInternal (Ptr<Node> node) const;
+  void InstallInternal (Ptr<MplsNode> node);
+  void EnableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const;
+  void DisableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const;
 
-  static void CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId);
+  static void CreateAndAggregateObjectFromTypeId (Ptr<MplsNode> node, const std::string typeId);
   
   ObjectFactory m_tcpFactory;
   const Ipv4RoutingHelper *m_routing;

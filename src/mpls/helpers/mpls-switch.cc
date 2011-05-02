@@ -32,10 +32,10 @@ NS_LOG_COMPONENT_DEFINE ("MplsSwitch");
 namespace ns3 {
 
 MplsSwitch::MplsSwitch (const Ptr<Node> &node)
-  : m_node (node),
-    m_nhlfeSelectionPolicy ()
+  : m_nhlfeSelectionPolicy ()
 {
-  NS_ASSERT (node != 0);
+  m_node = DynamicCast<MplsNode> (node);
+  NS_ASSERT (m_node != 0);
   
   m_mpls = node->GetObject<Mpls> ();
   
@@ -44,7 +44,7 @@ MplsSwitch::MplsSwitch (const Ptr<Node> &node)
 
 MplsSwitch::MplsSwitch (const std::string &node)
 {
-  MplsSwitch (Names::Find<Node> (node));
+  MplsSwitch (Names::Find<MplsNode> (node));
 }
 
 MplsSwitch::~MplsSwitch ()
@@ -118,7 +118,7 @@ MplsSwitch::GetMpls (void) const
   return m_mpls;
 }
 
-const Ptr<Node>&
+const Ptr<MplsNode>&
 MplsSwitch::GetNode (void) const
 {
   return m_node;

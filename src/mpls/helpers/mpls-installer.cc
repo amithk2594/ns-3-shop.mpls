@@ -29,6 +29,7 @@
 #include "ns3/simulator.h"
 #include "ns3/string.h"
 #include "ns3/node.h"
+#include "ns3/mpls-node.h"
 #include "ns3/node-list.h"
 #include "ns3/core-config.h"
 #include "ns3/arp-l3-protocol.h"
@@ -101,7 +102,7 @@ MplsInstaller::SetTcp (const std::string tid)
 }
 
 void
-MplsInstaller::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::string typeId)
+MplsInstaller::CreateAndAggregateObjectFromTypeId (Ptr<MplsNode> node, const std::string typeId)
 {
   ObjectFactory factory;
   factory.SetTypeId (typeId);
@@ -109,9 +110,25 @@ MplsInstaller::CreateAndAggregateObjectFromTypeId (Ptr<Node> node, const std::st
   node->AggregateObject (protocol);
 }
 
-void
-MplsInstaller::InstallInternal (Ptr<Node> node)
+NodeContainer
+MplsInstaller::CreateAndInstall (uint32_t count)
 {
+  NS_ASSERT_MSG (count > 0, "Invalid nodes count");
+  NodeContainer c;
+  for (uint32_t i = 0; i < count; ++i)
+    {
+      Ptr<MplsNode> node = CreateObject<MplsNode> ();
+      InstallInternal (node);
+      c.Add (node);
+    }
+  return c;
+}
+
+void
+MplsInstaller::InstallInternal (Ptr<MplsNode> node)
+{
+  NS_ASSERT (node != 0);
+
   if (node->GetObject<MplsProtocol> () != 0)
     {
       NS_FATAL_ERROR ("MplsInstaller::Install (): Aggregating "
@@ -137,16 +154,18 @@ MplsInstaller::InstallInternal (Ptr<Node> node)
 }
 
 void
-MplsInstaller::EnableInterfaceAutoInstallInternal (Ptr<Node> node) const
+MplsInstaller::EnableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const
 {
+  NS_ASSERT (node != 0);
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   mpls->EnableNewInterfaceNotification (true);
 }
 
 void
-MplsInstaller::DisableInterfaceAutoInstallInternal (Ptr<Node> node) const
+MplsInstaller::DisableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const
 {
+  NS_ASSERT (node != 0);
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   mpls->EnableNewInterfaceNotification (false);
