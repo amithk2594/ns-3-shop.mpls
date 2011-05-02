@@ -23,7 +23,7 @@
 #define MPLS_SWITCH_H
 
 #include "ns3/ptr.h"
-#include "ns3/node.h"
+#include "ns3/mpls-node.h"
 #include "ns3/mpls.h"
 #include "mpls-ftn-helper.h"
 #include "mpls-ilm-helper.h"
@@ -79,11 +79,11 @@ public:
   void SetSelectionPolicy(const NhlfeSelectionPolicyHelper& policy);
 
   virtual const Ptr<Mpls>& GetMpls (void) const;
-  virtual const Ptr<Node>& GetNode (void) const;
+  virtual const Ptr<MplsNode>& GetNode (void) const;
   virtual const NhlfeSelectionPolicyHelper& GetSelectionPolicy (void) const;
   
 private:
-  Ptr<Node> m_node;
+  Ptr<MplsNode> m_node;
   Ptr<Mpls> m_mpls;  
   NhlfeSelectionPolicyHelper m_nhlfeSelectionPolicy;
 };

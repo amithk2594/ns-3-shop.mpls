@@ -34,6 +34,8 @@
 
 namespace ns3 {
 
+using namespace mpls;
+
 /**
  * \brief Mpls ilm table helper
  */
@@ -45,217 +47,202 @@ public:
    */
   virtual ~MplsIlmHelper();  
   /**
-   * @brief Return ILM table
+   * @brief Remove ILM 
    */
-  Ptr<mpls::IlmTable> GetIlmTable (void) const;
-  /**
-   * @brief Set new ILM table
-   */
-  void SetIlmTable (const Ptr<mpls::IlmTable> &table);
-  /**
-   * @brief Get the ILM by Index
-   * @param index
-   * @return ILM identified by index
-   */
-  Ptr<mpls::IncomingLabelMap> GetIlm (const uint32_t index) const;
-  /**
-   * @brief Remove ILM by index
-   * @param index
-   */
-  void RemoveIlm (const uint32_t index);
+  void RemoveIlm (const Ptr<IncomingLabelMap> &ilm);
   /**
    * @brief Clear ILM table
    */
   void ClearIlmTable ();
   /**
-   * @brief Add a new ILM
+   * @brief Add ILM
    * @param interface Incoming mpls interface
    * @param label Incoming label
    * @param nhlfe NHLFE
-   * @return ILM index
+   * @return ILM
    */
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10);                    
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
-                    const mpls::Nhlfe &nhlfe12);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10);                    
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11);
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11,
+                    const Nhlfe &nhlfe12);
 
   /**
-   * @brief Add a new ILM
+   * @brief Add ILM
    * @param interface Incoming mpls interface
    * @param label Incoming label
    * @param nhlfe NHLFE
    * @param policy NhlfeSelectionPolicyHelper
-   * @return ILM index
+   * @return ILM 
    */
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe, 
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe, 
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, 
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, 
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, 
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, 
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, 
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, 
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10,
                     const NhlfeSelectionPolicyHelper& policy);                    
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (uint32_t interface, mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
-                    const mpls::Nhlfe &nhlfe12,
+  Ptr<IncomingLabelMap> AddIlm (uint32_t interface, Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11,
+                    const Nhlfe &nhlfe12,
                     const NhlfeSelectionPolicyHelper& policy);
 
   /**
-   * @brief Add ILM with a single NHLFE (per-system label space)
+   * @brief Add ILM 
    * @param label
    * @param nhlfe
-   * @return index of the ILM
+   * @return ILM
    */
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10);                    
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
-                    const mpls::Nhlfe &nhlfe12);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10);                    
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11);
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11,
+                    const Nhlfe &nhlfe12);
   /**
-   * @brief Add ILM with a single NHLFE (per-system label space)
+   * @brief Add ILM
    * @param label
    * @param nhlfe
    * @param NhlfeSelectionPolicyHelper
-   * @return index of the ILM
+   * @return ILM
    */
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe, 
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe, 
                     const NhlfeSelectionPolicyHelper &policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2,
                     const NhlfeSelectionPolicyHelper &policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3,
                     const NhlfeSelectionPolicyHelper &policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, 
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, 
                     const NhlfeSelectionPolicyHelper &policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
                     const NhlfeSelectionPolicyHelper &policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, 
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, 
                     const NhlfeSelectionPolicyHelper &policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7,
                     const NhlfeSelectionPolicyHelper &policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10,
                     const NhlfeSelectionPolicyHelper& policy);                    
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11,
                     const NhlfeSelectionPolicyHelper& policy);
-  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
-                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
-                    const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7, const mpls::Nhlfe &nhlfe8, 
-                    const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10, const mpls::Nhlfe &nhlfe11,
-                    const mpls::Nhlfe &nhlfe12,
+  Ptr<IncomingLabelMap> AddIlm (Label label, const Nhlfe &nhlfe1, const Nhlfe &nhlfe2, 
+                    const Nhlfe &nhlfe3, const Nhlfe &nhlfe4, const Nhlfe &nhlfe5, 
+                    const Nhlfe &nhlfe6, const Nhlfe &nhlfe7, const Nhlfe &nhlfe8, 
+                    const Nhlfe &nhlfe9, const Nhlfe &nhlfe10, const Nhlfe &nhlfe11,
+                    const Nhlfe &nhlfe12,
                     const NhlfeSelectionPolicyHelper& policy);
 };
 
