@@ -278,6 +278,7 @@ WeightedPolicy::DoStart (uint32_t size)
 	  i->m_currentRatio = 0.0;
 	  i->m_requiredRatio = (idx < m_weights.size () ? m_weights[idx] : 0.0);
         }
+      m_mapping.sort (std::mem_fun_ref (&NhlfeInfo::DecreasingDiffOrder));
     }
   m_iter = m_mapping.begin ();    
 }
@@ -296,7 +297,7 @@ WeightedPolicy::DoSelect(const std::vector< Nhlfe >& nhlfe, uint32_t index,
   for (std::list<NhlfeInfo>::iterator i = m_mapping.begin (); i != m_mapping.end (); ++i)
   {
     if (i != m_iter)
-      i->m_currentRatio *= m_Btot / (m_Btot + packet->GetSize ());
+      i->m_currentRatio = (i->m_currentRatio * m_Btot) / (m_Btot + packet->GetSize ());
     else
       i->m_currentRatio = (i->m_currentRatio * m_Btot + packet->GetSize ()) / (m_Btot + packet->GetSize ());
   }
@@ -315,7 +316,10 @@ WeightedPolicy::DoSelect(const std::vector< Nhlfe >& nhlfe, uint32_t index,
 void
 WeightedPolicy::Print (std::ostream& os) const
 {
-  os << "weighted policy";
+  os << "weighted policy { ";
+  for (std::list<NhlfeInfo>::const_iterator i = m_mapping.begin (); i != m_mapping.end (); ++i)
+    os << "(" << i->m_index << ";" << i->m_requiredRatio << ";" << i->m_currentRatio << ") ";
+  os << "}";
 }
 
 void 
