@@ -25,17 +25,17 @@
 #include "ns3/string.h"
 #include "ns3/callback.h"
 #include "ns3/node-container.h"
-#include "ns3/node.h"
+#include "ns3/mpls-node.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
 
-class Node;
+class MplsNode;
 
-typedef Callback<void, Ptr<Node> > ForEachNodeCallback;
+typedef Callback<void, Ptr<MplsNode> > ForEachNodeCallback;
 
 void ForEachNode (std::string nodeName, const ForEachNodeCallback& cb);
-void ForEachNode (Ptr<Node> node, const ForEachNodeCallback& cb);
+void ForEachNode (Ptr<MplsNode> node, const ForEachNodeCallback& cb);
 void ForEachNode (const NodeContainer& c, const ForEachNodeCallback& cb);
 
 } // namespace ns3

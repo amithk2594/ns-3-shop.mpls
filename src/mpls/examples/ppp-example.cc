@@ -43,7 +43,6 @@ main (int argc, char *argv[])
   LogComponentEnable ("mpls::Interface", LOG_LEVEL_ALL);
 
   NodeContainer hosts;
-  NodeContainer routers;
   PointToPointHelper pointToPoint;
   Ipv4AddressHelper address;
   NetDeviceContainer devices;
@@ -54,10 +53,9 @@ main (int argc, char *argv[])
   pointToPoint.SetChannelAttribute ("Delay", StringValue ("50ms"));
   
   hosts.Create (2);
-  routers.Create (3);
 
   internet.Install (hosts);
-  network.Install (routers);
+  NodeContainer routers = network.CreateAndInstall (3);
 
   // Hosts applications
   uint16_t port = 9;
