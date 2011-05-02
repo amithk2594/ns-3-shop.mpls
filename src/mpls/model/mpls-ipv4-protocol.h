@@ -50,7 +50,6 @@ public:
   // methods defined in parent class
   void SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol);
   Ptr<Ipv4RoutingProtocol> GetRoutingProtocol (void) const;
-  uint32_t AddInterface (Ptr<NetDevice> device);
 
 protected:
   void NotifyNewAggregate ();

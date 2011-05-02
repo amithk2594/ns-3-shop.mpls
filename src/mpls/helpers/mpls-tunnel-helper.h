@@ -25,7 +25,6 @@
 #include "ns3/ptr.h"
 #include "ns3/mpls-interface.h"
 
-#include "mpls-tunnel-node.h"
 #include "mpls-network-helper-base.h"
 
 namespace ns3 {
@@ -115,11 +114,11 @@ public:
   MplsTunnelHelper (const MplsTunnelHelper &o);
   MplsTunnelHelper& operator= (const MplsTunnelHelper &o);
   
-  TunnelId CreateTunnel (const TunnelNodeList &nodes);
+  TunnelId CreateTunnel (const Lsp &lsp);
   void DestroyTunnel (const TunnelId &tunnel);
     
 private:
-  class TunnelMap : public SimpleRefCount<TunnelMap>
+/*  class TunnelMap : public SimpleRefCount<TunnelMap>
   {
   public:
     typedef sgi::hash_map<TunnelId, TunnelId::Hash> HashMap;
@@ -128,7 +127,7 @@ private:
   };
   
   Ptr<Interface> FindInterfaceForAddress (const Ipv4Address &addr);
-  Ptr<TunnelMap> m_tunnels;
+  Ptr<TunnelMap> m_tunnels;*/
 };
 
 } // namespace ns3

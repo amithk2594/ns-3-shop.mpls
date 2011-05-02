@@ -37,24 +37,11 @@ Mpls::GetTypeId (void)
 }
 
 Mpls::Mpls ()
-  : m_newInterfaceNotification (false)
 {
 }
 
 Mpls::~Mpls ()
 {
-}
-
-void
-Mpls::EnableNewInterfaceNotification (bool enabled)
-{
-  m_newInterfaceNotification = enabled;
-}
-
-bool
-Mpls::IsNewInterfaceNotificationEnabled (void) const
-{
-  return m_newInterfaceNotification;
 }
 
 } // namespace ns3

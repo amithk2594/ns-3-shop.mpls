@@ -41,20 +41,22 @@ main (int argc, char *argv[])
   LogComponentEnable ("MplsNetworkDiscoverer", LOG_LEVEL_DEBUG);  
 
   NodeContainer hosts;
+  NodeContainer routers;
+  NodeContainer routers2;
+
   PointToPointHelper pointToPoint;
   Ipv4AddressHelper address;
   NetDeviceContainer devices;
   InternetStackHelper internet;
   MplsNetworkConfigurator network;
-  
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("50ms"));
-  
+ 
   hosts.Create (2);
-
   internet.Install (hosts);
-  NodeContainer routers = network.CreateAndInstall (3);
+  routers = network.CreateAndInstall (3);
 
+  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+  pointToPoint.SetChannelAttribute ("Delay", StringValue ("1ms"));
+  
   // Hosts applications
   uint16_t port = 9;
   UdpEchoServerHelper server (port);
@@ -62,32 +64,24 @@ main (int argc, char *argv[])
   apps.Start (Seconds (0.01));
   apps.Stop (Seconds (10.0));
 
-  uint32_t packetSize = 1024;
-  uint32_t maxPacketCount = 4;
-  Time interPacketInterval = MilliSeconds (0.01);
   UdpEchoClientHelper client ("192.168.4.2", port);
-  client.SetAttribute ("MaxPackets", UintegerValue (maxPacketCount));
-  client.SetAttribute ("Interval", TimeValue (interPacketInterval));
-  client.SetAttribute ("PacketSize", UintegerValue (packetSize));
+  client.SetAttribute ("MaxPackets", UintegerValue (5));
+  client.SetAttribute ("Interval", TimeValue (MilliSeconds (0.01)));
+  client.SetAttribute ("PacketSize", UintegerValue (1024));
   apps = client.Install (hosts.Get (0));
   apps.Start (Seconds (0.01));
   apps.Stop (Seconds (2.0));
-  
+
   // Hosts configuration
   devices = pointToPoint.Install (hosts.Get(0), routers.Get(0));
   address.SetBase ("192.168.1.0", "255.255.255.0");
   address.Assign (devices);
-
-  pointToPoint.SetDeviceAttribute ("DataRate", StringValue ("1Mbps"));
-  pointToPoint.SetChannelAttribute ("Delay", StringValue ("1000ms"));
 
   devices = pointToPoint.Install (routers.Get(2), hosts.Get(1));
   address.SetBase ("192.168.4.0", "255.255.255.0");
   address.Assign(devices);
 
   // Routers configuration
-  network.EnableInterfaceAutoInstall (routers);
-
   devices = pointToPoint.Install (routers.Get(0), routers.Get(1));
   address.SetBase ("10.1.1.0", "255.255.255.0");
   address.Assign (devices);
@@ -96,31 +90,35 @@ main (int argc, char *argv[])
   address.SetBase ("10.1.3.0", "255.255.255.0");
   address.Assign (devices);
 
+  // Address is not specified. Mpls interfaces will be disabled.
+  devices = pointToPoint.Install (routers.Get(2), routers.Get(0));
+
   NhlfeSelectionPolicyHelper policy;
   policy.SetAttribute ("MaxPacketsInTxQueue", IntegerValue (0));
   
   MplsSwitch sw1 (routers.Get (0));
+  MplsSwitch sw2 (routers.Get (1));
+  MplsSwitch sw3 (routers.Get (2));
+
   sw1.SetSelectionPolicy (policy);
 
-  sw1.AddFtn (
-      Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
-          Nhlfe (Swap (200), Ipv4Address ("10.1.2.1")), // invalid nhlfe
-          Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe
+  sw1.AddFtn (Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
+      Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))
   );
 
-  MplsSwitch sw2 (routers.Get (1));
-  sw2.AddIlm (100, Nhlfe(Swap (200), Ipv4Address ("10.1.3.2")));
+  sw2.AddIlm (100, 
+      Nhlfe(Swap (200), Ipv4Address ("10.1.3.2"))
+  );
 
-  MplsSwitch sw3 (routers.Get (2));
-  sw3.AddIlm (200, Nhlfe(Pop ()));
+  sw3.AddIlm (200, 
+      Nhlfe(Pop ())
+  );
+
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   
-  network.ShowConfig ();
   network.DiscoverNetwork ();
-
-  //TunnelId tunnel = network.CreateTunnel (TunnelNode("10.1.1.2") >> TunnelNode("10.1.2.2"));
-  
+  network.ShowConfig ();
 
   Simulator::Run ();
   Simulator::Destroy ();

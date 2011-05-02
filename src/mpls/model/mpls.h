@@ -24,17 +24,22 @@
 
 #include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "ns3/node.h"
 #include "ns3/net-device.h"
+#include "ns3/node.h"
 #include "ns3/packet.h"
-#include "ns3/ipv4-interface.h"
-#include "ns3/ipv6-interface.h"
+#include "ns3/ipv4.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv6-header.h"
 
 #include "mpls-interface.h"
 
 namespace ns3 {
+
+class MplsNode;
+
+namespace mpls {
+class Interface;
+}
 
 using namespace mpls;
 
@@ -56,15 +61,8 @@ public:
   Mpls ();
   virtual ~Mpls ();
 
-  /**
-   * @brief Enable/disable new interface notify (default disabled)
-   */
-  void EnableNewInterfaceNotification (bool enabled);
-  bool IsNewInterfaceNotificationEnabled (void) const;
-  
-  virtual void NotifyNewInterface (const Ptr<Ipv4Interface> &iface) = 0;
-  virtual void NotifyNewInterface (const Ptr<Ipv6Interface> &iface) = 0;
-
+  virtual Ptr<Ipv4> GetIpv4 (void) const = 0;
+  virtual Ptr<MplsNode> GetNode (void) const = 0;
   /**
    * @param device device to add to the list of Mpls interfaces
    * @return the Mpls interface
@@ -94,9 +92,6 @@ public:
    */
   virtual bool ReceiveIpv6 (const Ptr<Packet> &packet, const Ipv6Header &header, 
                               const Ptr<const NetDevice> &device) = 0;  
-
-private:
-  bool m_newInterfaceNotification;
 };
 
 } // namespace ns3

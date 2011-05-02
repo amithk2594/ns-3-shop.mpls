@@ -33,6 +33,7 @@ namespace ns3 {
 namespace mpls {
 
 class Nhlfe;
+class Interface;
 
 /**
  * \ingroup mpls

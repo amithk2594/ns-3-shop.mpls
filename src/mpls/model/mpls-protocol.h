@@ -101,15 +101,10 @@ public:
    * @brief Unlabeled ipv4 packet entry point
    */
   bool ReceiveIpv6 (const Ptr<Packet> &packet, const Ipv6Header &header, const Ptr<const NetDevice> &device);
-  /**
-   * @brief New interface for the specified ipv4 interface is available
-   */
-  void NotifyNewInterface (const Ptr<Ipv4Interface> &ipv4if);
-  /**
-   * @brief New interface for the specified ipv6 interface is available
-   */
-  void NotifyNewInterface (const Ptr<Ipv6Interface> &ipv6if);
-  
+
+  Ptr<MplsNode> GetNode (void) const;
+  Ptr<Ipv4> GetIpv4 (void) const;
+
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();

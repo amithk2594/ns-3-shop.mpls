@@ -27,7 +27,6 @@
 
 #include "ns3/mpls-label.h"
 #include "ns3/mpls-incoming-label-map.h"
-#include "ns3/mpls-ilm-table.h"
 #include "ns3/mpls-nhlfe.h"
 
 #include "mpls-node-helper-base.h"

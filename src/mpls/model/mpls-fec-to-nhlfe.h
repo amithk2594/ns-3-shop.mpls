@@ -31,6 +31,11 @@
 namespace ns3 {
 namespace mpls {
 
+class Fec;
+class ForwardingInformation;
+class Nhlfe;
+class NhlfeSelectionPolicy;
+
 /**
  * \ingroup mpls
  * \brief

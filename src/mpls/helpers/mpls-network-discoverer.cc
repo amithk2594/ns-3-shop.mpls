@@ -25,6 +25,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/ipv4-interface.h"
 #include "ns3/mpls-protocol.h"
+#include "ns3/loopback-net-device.h"
 
 #include "mpls-network-discoverer.h"
 
@@ -41,6 +42,7 @@ MplsNetworkDiscoverer::MplsNetworkDiscoverer ()
 
 MplsNetworkDiscoverer::~MplsNetworkDiscoverer ()
 {
+  NS_LOG_FUNCTION_NOARGS ();
 }
 
 MplsNetworkDiscoverer::MplsNetworkDiscoverer (const MplsNetworkDiscoverer &o)
@@ -89,7 +91,11 @@ MplsNetworkDiscoverer::Vertexes::Clear ()
 {
   for (Iterator i = m_vertexes.begin (); i != m_vertexes.end (); ++i)
     {
-      (*i).second->Clear ();
+      if ((*i).second != 0) 
+        {
+          (*i).second->Clear ();
+          (*i).second = 0;
+        }
     }
     
   m_vertexes.clear ();
@@ -112,7 +118,7 @@ MplsNetworkDiscoverer::Vertex::Vertex (const Mac48Address& hwaddr, const Ptr<Int
     m_interface (interface),
     m_vertexes (Create<MplsNetworkDiscoverer::Vertexes> ())
 {
-  NS_LOG_FUNCTION (this);
+  NS_LOG_FUNCTION (this << hwaddr << interface);
 }
 
 MplsNetworkDiscoverer::Vertex::~Vertex ()
@@ -163,16 +169,28 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
   for (NodeContainer::Iterator i = nodes.Begin (), k = nodes.End (); i != k; ++i)
     {
       Ptr<Mpls> mpls = (*i)->GetObject<Mpls> ();
-      int32_t nInterfaces = mpls->GetNInterfaces ();
+      uint32_t nDevices = (*i)->GetNDevices ();
   
-      for (int32_t j = 0; j < nInterfaces; ++j)
+      for (uint32_t j = 0; j < nDevices; ++j)
         {
-          Ptr<Interface> mplsIf = mpls->GetInterface (j);
-          Address addr = mplsIf->GetDevice ()->GetAddress ();
+          Ptr<NetDevice> dev = (*i)->GetDevice (j);
+          if (DynamicCast<LoopbackNetDevice> (dev) != 0)
+            {
+              continue;
+            }
+
+          Address addr = dev->GetAddress ();
           if (Mac48Address::IsMatchingType (addr))
             {
+              Ptr<Interface> mplsIf = mpls->GetInterfaceForDevice (dev);
+              if (mplsIf == 0)
+                {
+                  mplsIf = mpls->AddInterface (dev);
+                }
+
               Ptr<MplsNetworkDiscoverer::Vertex> vertex = 
                   Create<MplsNetworkDiscoverer::Vertex> (Mac48Address::ConvertFrom (addr), mplsIf);
+              
               if (AddVertexes (mplsIf, vertex))
                 {
                   cache.push_back (vertex);
@@ -183,7 +201,8 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
     
   for (std::list<Ptr<Vertex> >::iterator i = cache.begin (), k = cache.end (); i != k; ++i)
     {
-      Ptr<NetDevice> dev1 = (*i)->GetInterface ()->GetDevice ();
+      Ptr<Interface> mplsIf = (*i)->GetInterface ();
+      Ptr<NetDevice> dev1 = mplsIf->GetDevice ();
       Ptr<Channel> channel = dev1->GetChannel ();
       uint32_t nDevices = channel->GetNDevices ();
       
@@ -193,7 +212,14 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
 
           if (dev1 == dev2) continue;
 
-          UpdateVertexes (dev1, dev2, *i);
+          if (UpdateVertexes (dev1, dev2, *i)) 
+            {
+              mplsIf->SetUp ();
+            }
+          else 
+            {
+              mplsIf->SetDown ();
+            }
         }
     }
 
@@ -212,57 +238,73 @@ MplsNetworkDiscoverer::DiscoverNetwork (void)
 }
 
 bool
-MplsNetworkDiscoverer::AddVertexes (const Ptr<Interface> &mplsIf, const Ptr<MplsNetworkDiscoverer::Vertex>& vertex)
+MplsNetworkDiscoverer::AddVertexes (const Ptr<Interface> &mplsIf, 
+    const Ptr<MplsNetworkDiscoverer::Vertex>& vertex)
 {
-  Ptr<Ipv4Interface> ipv4If = mplsIf->GetObject<Ipv4Interface> ();
-  if (ipv4If == 0) 
+  int32_t ipv4if = mplsIf->LookupIpv4Interface ();
+  if (ipv4if < 0) 
     {
       return 0;
     }
+
+  Ptr<Ipv4> ipv4 = mplsIf->GetMpls ()->GetIpv4 ();
   
-  int32_t nAddresses = ipv4If->GetNAddresses ();
+  int32_t nAddresses = ipv4->GetNAddresses (ipv4if);
   for (int32_t i = 0; i < nAddresses; ++i)
     {
-      Ipv4Address addr = ipv4If->GetAddress (i).GetLocal ();
+      Ipv4Address addr = ipv4->GetAddress (ipv4if, i).GetLocal ();
       if (m_vertexes->Get (addr) != 0)
         {
           NS_FATAL_ERROR ("Network discovery failed -- address " << addr << " already in use");
         }
+
       m_vertexes->Add (addr, vertex);
     }
     
   return nAddresses > 0;
 }
 
-void
+bool
 MplsNetworkDiscoverer::UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<NetDevice> &dev2, 
   const Ptr<Vertex> &vertex)
 {
   Ptr<Node> node = dev2->GetNode ();
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
 
-  if (mpls == 0) return;
+  // disable interface, there is no mpls installed 
+  if (mpls == 0) return 0;
   
   Ptr<Interface> mplsIf = mpls->GetInterfaceForDevice (dev2);
 
-  if (mplsIf == 0) return;
+  // disable interface, looks like another network
+  if (mplsIf == 0) return 0;
 
-  Ptr<Ipv4Interface> ipv4If = mplsIf->GetObject<Ipv4Interface> ();
+  int32_t ipv4if = mplsIf->LookupIpv4Interface ();
 
-  if (ipv4If == 0) return;
+  // disable interface, there is no ipv4 interface (ldp uses UDP and TCP)
+  if (ipv4if < 0) return 0;
 
-  int32_t nAddresses = ipv4If->GetNAddresses ();
+  Ptr<Ipv4> ipv4 = mpls->GetIpv4 ();
 
-  if (nAddresses <= 0) return;
+  int32_t nAddresses = ipv4->GetNAddresses (ipv4if);
+
+  // disable interface, at least one address should be specified
+  if (nAddresses <= 0) return 0;
   
   Ptr<Vertexes> vertexes = vertex->GetVertexes ();  
   
   for (int32_t i = 0; i < nAddresses; ++i)
     {
-      Ipv4Address addr = ipv4If->GetAddress (i).GetLocal ();
+      Ipv4Address addr = ipv4->GetAddress (ipv4if, i).GetLocal ();
       Ptr<Vertex> target = m_vertexes->Get(addr);
       
-      NS_ASSERT_MSG (target != 0 && target != vertex, "Should never happen");
+      // TODO: disable interface, another network
+      if (target == 0) 
+        {
+          return 0;
+        }
+
+      NS_ASSERT_MSG (target != vertex, "Should never happen");
       
       vertexes->Add (addr, target);
 
@@ -271,6 +313,8 @@ MplsNetworkDiscoverer::UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<Net
                     " to node" << dev2->GetNode()->GetId() << ":dev" << dev2->GetIfIndex () << " " << target->GetHwAddr () << 
                     ", next-hop: " << addr);
     }
+
+  return 1;
 }
 
 }// namespace ns3

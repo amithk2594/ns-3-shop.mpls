@@ -60,14 +60,14 @@ MplsInterfaceHelper::PrintInterfacesInternal (const Ptr<Node> &node) const
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
 
   os << "Node " << node->GetId () << " interfaces:" << std::endl;
-  os << std::setiosflags(std::ios::left);
 
   for (uint32_t i = 0, c = node->GetNDevices (); i < c; ++i)
     {
       Ptr<NetDevice> dev = node->GetDevice (i);
       Address hwaddr = dev->GetAddress ();
 
-      os << "dev" << std::setw (5) << i << " "
+      os << std::setiosflags(std::ios::left) << "dev"  << std::setw (5) << i << " ";
+      os << std::resetiosflags(std::ios::left)
          << "Type " << dev->GetInstanceTypeId ().GetName () << "  "
          << "HWaddr ";
 

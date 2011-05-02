@@ -74,23 +74,6 @@ Ipv4Protocol::NotifyNewAggregate ()
   Ipv4L3Protocol::NotifyNewAggregate ();
 }
 
-uint32_t
-Ipv4Protocol::AddInterface (Ptr<NetDevice> device)
-{
-  NS_LOG_FUNCTION (this << &device);
-
-  NS_ASSERT_MSG (m_mpls != 0, "Mpls protocol should be installed first");
-
-  uint32_t index = Ipv4L3Protocol::AddInterface (device);
-
-  if (m_mpls->IsNewInterfaceNotificationEnabled ())
-    {
-      m_mpls->NotifyNewInterface (GetInterface(index));
-    }
-
-  return index;
-}
-
 void
 Ipv4Protocol::SetRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol)
 {

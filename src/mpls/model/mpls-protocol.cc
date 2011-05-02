@@ -95,29 +95,16 @@ MplsProtocol::NotifyNewAggregate ()
   Object::NotifyNewAggregate ();
 }
 
-void
-MplsProtocol::NotifyNewInterface (const Ptr<Ipv4Interface> &ipv4if)
+Ptr<Ipv4> 
+MplsProtocol::GetIpv4 (void) const
 {
-  NS_LOG_FUNCTION (this << &ipv4if);
-  
-  Ptr<NetDevice> device = ipv4if->GetDevice ();
-  
-  NS_ASSERT (device != 0);
-  
-  Ptr<Interface> mplsIf = GetInterfaceForDevice (device);
-  
-  if (mplsIf == 0)
-    {
-      mplsIf = AddInterface (device);
-    }
-
-  mplsIf->AggregateObject (ipv4if);
+  return m_ipv4;
 }
 
-void
-MplsProtocol::NotifyNewInterface (const Ptr<Ipv6Interface> &ipv6if)
+Ptr<MplsNode>
+MplsProtocol::GetNode (void) const
 {
-  NS_ASSERT_MSG (false, "Ipv6 is not supported");
+  return m_node;
 }
 
 void
@@ -144,11 +131,10 @@ MplsProtocol::AddInterface (const Ptr<NetDevice> &device)
 
   m_node->RegisterProtocolHandler (MakeCallback (&MplsProtocol::ReceiveMpls, this), Mpls::PROT_NUMBER, device);
 
-  int32_t index = m_interfaces.size ();
-  Ptr<Interface> interface = CreateObject<Interface> (index);
-  interface->SetNode (m_node);
+  Ptr<Interface> interface = CreateObject<Interface> ();
+  interface->SetIfIndex (m_interfaces.size ());
   interface->SetDevice (device);
-
+  interface->SetMpls (this);
   m_interfaces.push_back (interface);
 
   return interface;

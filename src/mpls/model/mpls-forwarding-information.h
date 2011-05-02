@@ -32,9 +32,6 @@
 namespace ns3 {
 namespace mpls {
 
-class Nhlfe;
-class NhlfeSelectionPolicy;
-
 /**
  * \ingroup mpls
  * \brief A MPLS forwarding information

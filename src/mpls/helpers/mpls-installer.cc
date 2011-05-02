@@ -153,22 +153,4 @@ MplsInstaller::InstallInternal (Ptr<MplsNode> node)
   m_networkNodes.Add (node);
 }
 
-void
-MplsInstaller::EnableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const
-{
-  NS_ASSERT_MSG (node != 0, "Possible you use Node instead of MplsNode");
-  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->EnableNewInterfaceNotification (true);
-}
-
-void
-MplsInstaller::DisableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const
-{
-  NS_ASSERT_MSG (node != 0, "Possible you use Node instead of MplsNode");
-  Ptr<Mpls> mpls = node->GetObject<Mpls> ();
-  NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
-  mpls->EnableNewInterfaceNotification (false);
-}
-
 }// namespace ns3

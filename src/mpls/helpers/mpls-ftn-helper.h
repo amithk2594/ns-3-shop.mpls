@@ -25,7 +25,6 @@
 #include "ns3/ptr.h"
 #include "ns3/mpls.h"
 #include "ns3/mpls-label.h"
-#include "ns3/mpls-ftn-table.h"
 #include "ns3/mpls-fec-to-nhlfe.h"
 #include "ns3/mpls-fec.h"
 #include "ns3/mpls-nhlfe.h"

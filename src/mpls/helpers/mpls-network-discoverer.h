@@ -90,8 +90,9 @@ private:
     Ptr<Vertexes> m_vertexes;
   };
   
-  bool AddVertexes (const Ptr<mpls::Interface> &mplsIf, const Ptr<MplsNetworkDiscoverer::Vertex>& vertex);
-  void UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<NetDevice> &dev2,
+  bool AddVertexes (const Ptr<mpls::Interface> &mplsIf, 
+                      const Ptr<MplsNetworkDiscoverer::Vertex>& vertex);
+  bool UpdateVertexes (const Ptr<NetDevice> &dev1, const Ptr<NetDevice> &dev2,
                          const Ptr<Vertex> &vertex);
 
   Ptr<Vertexes> m_vertexes;

@@ -26,10 +26,15 @@
 
 #include "mpls-label.h"
 #include "mpls-nhlfe.h"
+#include "mpls-nhlfe-selection-policy.h"
 #include "mpls-forwarding-information.h"
 
 namespace ns3 {
 namespace mpls {
+
+class NhlfeSelectionPolicy;
+class ForwardingInformation;
+class Nhlfe;
 
 /**
  * \ingroup mpls

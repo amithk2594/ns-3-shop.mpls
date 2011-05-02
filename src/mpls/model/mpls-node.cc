@@ -76,29 +76,6 @@ MplsNode::~MplsNode ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-void
-MplsNode::NotifyNewAggregate ()
-{
-  // if (m_ipv4 == 0)
-    // {
-      // Ptr<Ipv4> ipv4 = this->GetObject<Ipv4> ();
-      // if (ipv4 != 0)
-        // {
-          // m_ipv4 = DynamicCast<mpls::Ipv4Protocol> (ipv4);
-          // NS_ASSERT_MSG (m_ipv4 != 0, "Use mpls::Ipv4Protocol instead of default Ipv4");
-        // }
-    // }
-
-  Object::NotifyNewAggregate ();
-}
-
-void
-MplsNode::DoDispose (void)
-{
-  NS_LOG_FUNCTION_NOARGS ();
-  Object::DoDispose ();
-}
-
 LabelSpace*
 MplsNode::GetLabelSpace (uint32_t ifIndex)
 {

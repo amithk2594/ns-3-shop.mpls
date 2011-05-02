@@ -36,8 +36,12 @@
 #include "ns3/sgi-hashmap.h"
 
 #include "mpls-label-space.h"
+#include "mpls.h"
 
 namespace ns3 {
+
+class Mpls;
+
 namespace mpls {
 
 /**
@@ -61,11 +65,12 @@ public:
       STATIC
     };
   
-  Interface (int32_t ifIndex);
+  Interface ();
   virtual ~Interface ();
   
-  void SetNode (const Ptr<Node> &node); 
+  void SetMpls (const Ptr<Mpls> &mpls); 
   void SetDevice (const Ptr<NetDevice> &device);
+  void SetIfIndex (uint32_t index);
 
   /**
    * @brief Set link layer address resolving mode
@@ -79,6 +84,14 @@ public:
    * @return the underlying NetDevice.
    */
   Ptr<NetDevice> GetDevice () const;
+  /**
+   * @return Mpls 
+   */
+  Ptr<Mpls> GetMpls (void) const;
+  /**
+   * @return Interface index
+   */
+  uint32_t GetIfIndex (void) const;
   /**
    * @brief Returns true if this interface is enabled  
    */
@@ -100,9 +113,9 @@ public:
    */
   void Send (const Ptr<Packet>& packet, const Mac48Address &dest);
   /**
-   * @brief Returns interface index
+   * @brief Lookup Ipv4 interface
    */
-  int32_t GetIfIndex (void);  
+  int32_t LookupIpv4Interface (void);
   /**
    * @brief Do lookup in the address resolving table against an ip address
    * @param dest The destination address to lookup the MAC address
@@ -138,12 +151,11 @@ protected:
   virtual void DoDispose (void);
 
 private:
-  void DoSetup (void);
-
-  Ptr<Node> m_node;
+  Ptr<Mpls> m_mpls;
   Ptr<NetDevice> m_device;
+  int32_t m_ipv4if;
   bool m_ifup;
-  int32_t m_ifIndex;
+  uint32_t m_ifIndex;
   AddressResolvingMode m_addressResolvingMode;
   LabelSpace m_labelSpace;
   

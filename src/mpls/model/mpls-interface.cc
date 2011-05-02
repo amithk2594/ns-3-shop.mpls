@@ -29,8 +29,8 @@
 #include "ns3/simulator.h"
 #include "ns3/enum.h"
 #include "ns3/uinteger.h"
+#include "ns3/ipv4.h"
 
-#include "mpls.h"
 #include "mpls-interface.h"
 
 NS_LOG_COMPONENT_DEFINE ("mpls::Interface");
@@ -65,26 +65,24 @@ Interface::GetTypeId (void)
   return tid;
 }
 
-Interface::Interface (int32_t ifIndex)
-  : m_node (0),
+Interface::Interface ()
+  : m_mpls (0),
     m_device (0),
-    m_ifup (true),
-    m_ifIndex (ifIndex),
+    m_ipv4if (-1),
+    m_ifup (false),
+    m_ifIndex (0),
     m_addressResolvingMode (AUTO)
 {
-  NS_LOG_FUNCTION (this);
 }
 
 Interface::~Interface ()
 {
-  NS_LOG_FUNCTION (this);
 }
 
 void
 Interface::DoDispose (void)
 {
-  NS_LOG_FUNCTION (this);
-  m_node = 0;
+  m_mpls = 0;
   m_device = 0;
   Object::DoDispose ();
 }
@@ -122,26 +120,27 @@ Interface::GetAddressResolvingMode (void) const
 }
 
 void
-Interface::SetNode (const Ptr<Node> &node)
+Interface::SetMpls (const Ptr<Mpls> &mpls)
 {
-  m_node = node;
-  DoSetup ();
+  m_mpls = mpls;
+}
+
+Ptr<Mpls>
+Interface::GetMpls (void) const
+{
+  return m_mpls;
 }
 
 void
 Interface::SetDevice (const Ptr<NetDevice> &device)
 {
   m_device = device;
-  DoSetup ();  
 }
 
-void
-Interface::DoSetup ()
+void 
+Interface::SetIfIndex (uint32_t index)
 {
-  if (m_node == 0 || m_device == 0)
-    {
-      return;
-    }
+  m_ifIndex = index;
 }
 
 Ptr<NetDevice>
@@ -150,8 +149,8 @@ Interface::GetDevice (void) const
   return m_device;
 }
 
-int32_t
-Interface::GetIfIndex (void)
+uint32_t
+Interface::GetIfIndex (void) const
 {
   return m_ifIndex;
 }
@@ -171,21 +170,36 @@ Interface::IsDown () const
 void
 Interface::SetUp ()
 {
-  NS_LOG_FUNCTION (this);
   m_ifup = true;
 }
 
 void
 Interface::SetDown ()
 {
-  NS_LOG_FUNCTION (this);
   m_ifup = false;
 }
 
 void
 Interface::Send (const Ptr<Packet>& packet, const Mac48Address &nextHop)
 {
-   m_device->Send (packet, nextHop, Mpls::PROT_NUMBER);
+  m_device->Send (packet, nextHop, Mpls::PROT_NUMBER);
+}
+
+int32_t
+Interface::LookupIpv4Interface (void)
+{
+  if (m_ipv4if >= 0) 
+    {
+      return m_ipv4if;
+    }
+
+  Ptr<Ipv4> ipv4 = m_mpls->GetIpv4 ();
+  if (ipv4 != 0)
+    {
+      m_ipv4if = ipv4->GetInterfaceForDevice (m_device);
+    }
+
+  return m_ipv4if;
 }
 
 bool

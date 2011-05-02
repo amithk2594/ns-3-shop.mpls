@@ -84,28 +84,6 @@ public:
   }
   
   /**
-   * @brief Enable MPLS interfaces auto install onto the provided node.
-   *
-   * @param node node name, node or container
-   */
-  template <class T>
-  void EnableInterfaceAutoInstall (T node) const
-  {
-    ForEachNode (node, MakeCallback (&MplsInstaller::EnableInterfaceAutoInstallInternal, this));
-  }
-
-  /**
-   * @brief Disable MPLS interfaces auto install onto the provided node.
-   *
-   * @param node node name, node or container
-   */
-  template <class T>
-  void DisableInterfaceAutoInstall (T node) const
-  {
-    ForEachNode (node, MakeCallback (&MplsInstaller::DisableInterfaceAutoInstallInternal, this));
-  }
-
-  /**
    * @brief Returns all nodes with MPLS installed
    */
   virtual const NodeContainer& GetNetworkNodes (void) const;
@@ -113,8 +91,6 @@ public:
 private:
   void Initialize (void);
   void InstallInternal (Ptr<MplsNode> node);
-  void EnableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const;
-  void DisableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const;
 
   static void CreateAndAggregateObjectFromTypeId (Ptr<MplsNode> node, const std::string typeId);
   

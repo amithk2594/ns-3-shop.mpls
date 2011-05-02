@@ -34,6 +34,11 @@
 
 namespace ns3 {
 
+namespace mpls {
+class IncomingLabelMap;
+class FecToNhlfe;
+}
+
 using namespace mpls;
 
 /**
@@ -88,11 +93,8 @@ public:
    */
   void SetMaxLabelValue (uint32_t value);
   
-protected:
-  virtual void DoDispose (void);
-  virtual void NotifyNewAggregate ();
-
 private:
+  
   IlmTable m_ilmTable;
   FtnTable m_ftnTable;
   LabelSpaceType m_labelSpaceType;
