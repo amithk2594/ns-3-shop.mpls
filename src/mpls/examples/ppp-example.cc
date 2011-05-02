@@ -40,8 +40,6 @@ main (int argc, char *argv[])
   LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
   LogComponentEnable ("MplsNetworkDiscoverer", LOG_LEVEL_DEBUG);  
 
-  LogComponentEnable ("mpls::Interface", LOG_LEVEL_ALL);
-
   NodeContainer hosts;
   PointToPointHelper pointToPoint;
   Ipv4AddressHelper address;
@@ -75,11 +73,6 @@ main (int argc, char *argv[])
   apps.Start (Seconds (0.01));
   apps.Stop (Seconds (2.0));
   
-  client.SetAttribute ("RemoteAddress", Ipv4AddressValue ("192.168.3.2"));
-  apps = client.Install (hosts.Get (0));
-  apps.Start (Seconds (0.01));
-  apps.Stop (Seconds (2.0));
-
   // Hosts configuration
   devices = pointToPoint.Install (hosts.Get(0), routers.Get(0));
   address.SetBase ("192.168.1.0", "255.255.255.0");
