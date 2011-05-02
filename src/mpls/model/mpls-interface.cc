@@ -28,6 +28,7 @@
 #include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/enum.h"
+#include "ns3/uinteger.h"
 
 #include "mpls.h"
 #include "mpls-interface.h"
@@ -49,7 +50,17 @@ Interface::GetTypeId (void)
                                      &Interface::GetAddressResolvingMode),
                    MakeEnumChecker (AUTO, "Auto",
                                     STATIC, "Static",
-                                    DYNAMIC, "Dynamic"))    
+                                    DYNAMIC, "Dynamic"))
+    .AddAttribute ("MinLabelValue", 
+                   "The minimum label value.",
+                   UintegerValue (0x1000),
+                   MakeUintegerAccessor (&Interface::SetMinLabelValue),
+                   MakeUintegerChecker<uint32_t> (0x10, 0xfffff))
+    .AddAttribute ("MaxLabelValue", 
+                   "The maximum label value.",
+                   UintegerValue (0xfffff),
+                   MakeUintegerAccessor (&Interface::SetMaxLabelValue),
+                   MakeUintegerChecker<uint32_t> (0x10, 0xfffff))
     ;
   return tid;
 }
@@ -78,6 +89,26 @@ Interface::DoDispose (void)
   Object::DoDispose ();
 }
 
+LabelSpace*
+Interface::GetLabelSpace (void)
+{
+  return &m_labelSpace;
+}
+
+void
+Interface::SetMinLabelValue (uint32_t value)
+{
+  NS_ASSERT_MSG (!m_labelSpace.IsUsed (), "Clear interface label space before set new range");
+  m_labelSpace.SetMinValue (value);
+}
+
+void
+Interface::SetMaxLabelValue (uint32_t value)
+{
+  NS_ASSERT_MSG (!m_labelSpace.IsUsed (), "Clear interface label space before set new range");
+  m_labelSpace.SetMaxValue (value);
+}
+  
 void
 Interface::SetAddressResolvingMode (Interface::AddressResolvingMode mode)
 {

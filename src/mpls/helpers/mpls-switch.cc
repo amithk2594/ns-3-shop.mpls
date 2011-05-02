@@ -72,14 +72,20 @@ MplsSwitch::operator= (const MplsSwitch &o)
   return *this;
 }
 
-void
+Ptr<mpls::Interface>
 MplsSwitch::AddInterface (uint32_t devIfIndex)
 {
   Ptr<NetDevice> dev = m_node->GetDevice (devIfIndex);
   NS_ASSERT_MSG (dev != 0, "MplsSwitch::AddInterface (): Bad device");
   NS_ASSERT_MSG (m_mpls->GetInterfaceForDevice (dev) == 0, 
                   "MplsSwitch::AddInterface (): Interface for device already added");
-  m_mpls->AddInterface (dev);
+  return m_mpls->AddInterface (dev);
+}
+
+Ptr<mpls::Interface>
+MplsSwitch::GetInterface (uint32_t i)
+{
+  return m_mpls->GetInterface (i);
 }
 
 bool

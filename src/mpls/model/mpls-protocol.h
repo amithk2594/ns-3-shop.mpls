@@ -66,6 +66,11 @@ class Ipv4Protocol;
 class MplsProtocol : public Mpls
 {
 public:
+  enum LabelSpaceType {
+    PLATFORM = 0,
+    INTERFACE
+  };
+  
   static TypeId GetTypeId (void);
 
   MplsProtocol ();
@@ -127,7 +132,23 @@ public:
    * @brief New interface for the specified ipv6 interface is available
    */
   void NotifyNewInterface (const Ptr<Ipv6Interface> &ipv6if);
-
+  /**
+   * @brief Returns label space for the specified interface
+   */
+  LabelSpace* GetLabelSpace (uint32_t ifIndex);
+  /**
+   * @brief Set label space type
+   */
+  void SetLabelSpaceType (LabelSpaceType type);
+  /**
+   * @brief Set minimum label value
+   */
+  void SetMinLabelValue (uint32_t value);
+  /**
+   * @brief Set maximum label value
+   */
+  void SetMaxLabelValue (uint32_t value);
+  
 protected:
   virtual void DoDispose (void);
   virtual void NotifyNewAggregate ();
@@ -147,6 +168,8 @@ private:
   Ptr<IlmTable> m_ilmTable;
   Ptr<FtnTable> m_ftnTable;
   InterfaceList m_interfaces;
+  LabelSpaceType m_labelSpaceType;
+  LabelSpace m_labelSpace;
   bool m_interfaceAutoInstall;
 
   PacketDemux m_demux;

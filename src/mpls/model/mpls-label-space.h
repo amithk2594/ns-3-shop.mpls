@@ -37,13 +37,13 @@ namespace mpls {
  * \ingroup mpls
  * \brief LabelSpace represents an mpls label space
  */
-class LabelSpace: public SimpleRefCount<LabelSpace>
+class LabelSpace
 {
 public:
   /**
    * @brief Create label space
    */
-  LabelSpace (uint32_t min, uint32_t max);
+  LabelSpace ();
   /**
    * @brief Destructor
    */
@@ -57,10 +57,21 @@ public:
    */
   void Deallocate (const Label &label);
   /**
-   * @brief Clear table
+   * @brief Clear space
    */
   void Clear (void);
-  
+  /**
+   * @brief Clear space and set new min value
+   */
+  void SetMinValue (uint32_t min);
+  /**
+   * @brief Clear space and set new min value
+   */
+  void SetMaxValue (uint32_t max);
+  /**
+   * @brief Clear space and set new min and max values
+   */
+  bool IsEmpty (void) const;
 private:
   typedef std::pair<uint32_t, uint32_t> LabelRange;
   typedef std::list<LabelRange> LabelRangeList;  

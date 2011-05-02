@@ -35,6 +35,8 @@
 #include "ns3/ptr.h"
 #include "ns3/sgi-hashmap.h"
 
+#include "mpls-label-space.h"
+
 namespace ns3 {
 namespace mpls {
 
@@ -120,7 +122,18 @@ public:
    * @brief Remove all addresses
    */
   void RemoveAllAddresses (void); 
-
+  /**
+   * @brief Returns pointer to label space
+   */
+  LabelSpace* GetLabelSpace (void);
+  /**
+   * @brief Set minimum label value
+   */
+  void SetMinLabelValue (uint32_t value);
+  /**
+   * @brief Set maximum label value
+   */
+  void SetMaxLabelValue (uint32_t value);
 protected:
   virtual void DoDispose (void);
 
@@ -132,7 +145,8 @@ private:
   bool m_ifup;
   int32_t m_ifIndex;
   AddressResolvingMode m_addressResolvingMode;
-
+  LabelSpace m_labelSpace;
+  
   typedef sgi::hash_map<Ipv4Address, Mac48Address, Ipv4AddressHash> Ipv4Table;
   typedef sgi::hash_map<Ipv4Address, Mac48Address, Ipv4AddressHash>::iterator Ipv4TableIterator;
 

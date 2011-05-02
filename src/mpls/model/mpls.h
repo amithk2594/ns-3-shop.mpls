@@ -74,22 +74,6 @@ public:
   virtual void NotifyNewInterface (const Ptr<Ipv6Interface> &iface) = 0;
 
   /**
-   * @brief Set new ILM table
-   */
-  virtual void SetIlmTable (const Ptr<IlmTable> &ilmTable) = 0;
-  /**
-   * @brief Get ILM table
-   */
-  virtual Ptr<IlmTable> GetIlmTable (void) const = 0;
-  /**
-   * @brief Set new FTN table
-   */
-  virtual void SetFtnTable (const Ptr<FtnTable> &ftnTable) = 0;
-  /**
-   * @brief Get Ftn table
-   */
-  virtual Ptr<FtnTable> GetFtnTable (void) const = 0;
-  /**
    * @param device device to add to the list of Mpls interfaces
    * @return the Mpls interface
    */

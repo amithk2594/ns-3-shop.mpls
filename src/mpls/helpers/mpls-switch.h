@@ -56,7 +56,11 @@ public:
    * @brief Add mpls interface for specified device
    * @param devIfIndex Device index
    */
-  void AddInterface (uint32_t devIfIndex);
+  Ptr<mpls::Interface> AddInterface (uint32_t devIfIndex);
+  /**
+   * @brief Returns interface 
+   */
+  Ptr<mpls::Interface> GetInterface (uint32_t i);
   /**
    * @brief Return true if interface is enabled
    */
