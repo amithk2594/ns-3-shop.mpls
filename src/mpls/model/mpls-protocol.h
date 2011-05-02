@@ -27,7 +27,6 @@
 
 #include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/packet.h"
 #include "ns3/address.h"
@@ -38,6 +37,7 @@
 #include "ns3/traced-callback.h"
 
 #include "mpls.h"
+#include "mpls-node.h"
 #include "mpls-label.h"
 #include "mpls-interface.h"
 #include "mpls-label-stack.h"
@@ -45,8 +45,6 @@
 #include "mpls-incoming-label-map.h"
 #include "mpls-fec-to-nhlfe.h"
 #include "mpls-nhlfe.h"
-#include "mpls-ilm-table.h"
-#include "mpls-ftn-table.h"
 #include "mpls-ipv4-protocol.h"
 #include "mpls-packet-demux.h"
 #include "mpls-traces.h"
@@ -66,32 +64,11 @@ class Ipv4Protocol;
 class MplsProtocol : public Mpls
 {
 public:
-  enum LabelSpaceType {
-    PLATFORM = 0,
-    INTERFACE
-  };
-  
   static TypeId GetTypeId (void);
 
   MplsProtocol ();
   virtual ~MplsProtocol ();
 
-  /**
-   * @brief Set new ILM table
-   */
-  void SetIlmTable (const Ptr<IlmTable> &ilmTable);
-  /**
-   * @brief Get ILM table
-   */
-  Ptr<IlmTable> GetIlmTable (void) const;
-  /**
-   * @brief Set new FTN table
-   */
-  void SetFtnTable (const Ptr<FtnTable> &ftnTable);
-  /**
-   * @brief Get Ftn table
-   */
-  Ptr<FtnTable> GetFtnTable (void) const;
   /**
    * @param device device to add to the list of Mpls interfaces
    * @return the Mpls interface
@@ -132,22 +109,6 @@ public:
    * @brief New interface for the specified ipv6 interface is available
    */
   void NotifyNewInterface (const Ptr<Ipv6Interface> &ipv6if);
-  /**
-   * @brief Returns label space for the specified interface
-   */
-  LabelSpace* GetLabelSpace (uint32_t ifIndex);
-  /**
-   * @brief Set label space type
-   */
-  void SetLabelSpaceType (LabelSpaceType type);
-  /**
-   * @brief Set minimum label value
-   */
-  void SetMinLabelValue (uint32_t value);
-  /**
-   * @brief Set maximum label value
-   */
-  void SetMaxLabelValue (uint32_t value);
   
 protected:
   virtual void DoDispose (void);
@@ -157,19 +118,13 @@ private:
   typedef std::vector<Ptr<Interface> > InterfaceList;
 
   void MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInformation> &fwd, LabelStack &stack, int8_t ttl);
-  Ptr<IncomingLabelMap> LookupIlm (Label label, int32_t interface);
-  Ptr<FecToNhlfe> LookupFtn (PacketDemux& demux);
   bool RealMplsForward (const Ptr<Packet> &packet, const Nhlfe &nhlfe, LabelStack &stack, int8_t ttl,
                           const Ptr<Interface> &outInterface, const Mac48Address &hwaddr);
   void IpForward (const Ptr<Packet> &packet, uint8_t ttl, Ptr<NetDevice> outDev);
 
-  Ptr<Node> m_node;
+  Ptr<MplsNode> m_node;
   Ptr<mpls::Ipv4Protocol> m_ipv4;
-  Ptr<IlmTable> m_ilmTable;
-  Ptr<FtnTable> m_ftnTable;
   InterfaceList m_interfaces;
-  LabelSpaceType m_labelSpaceType;
-  LabelSpace m_labelSpace;
   bool m_interfaceAutoInstall;
 
   PacketDemux m_demux;

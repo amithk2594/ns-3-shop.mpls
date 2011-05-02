@@ -32,15 +32,7 @@
 #include "ns3/ipv4-header.h"
 #include "ns3/ipv6-header.h"
 
-#include "mpls-label.h"
 #include "mpls-interface.h"
-#include "mpls-label-stack.h"
-#include "mpls-forwarding-information.h"
-#include "mpls-incoming-label-map.h"
-#include "mpls-fec-to-nhlfe.h"
-#include "mpls-nhlfe.h"
-#include "mpls-ilm-table.h"
-#include "mpls-ftn-table.h"
 
 namespace ns3 {
 

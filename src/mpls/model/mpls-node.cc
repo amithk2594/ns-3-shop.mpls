@@ -25,9 +25,11 @@
 #include "ns3/log.h"
 #include "ns3/assert.h"
 #include "ns3/callback.h"
-#include "ns3/trace-source-accessor.h"
 #include "ns3/simulator.h"
-#include "mpls-protocol.h"
+#include "ns3/uinteger.h"
+#include "ns3/enum.h"
+
+#include "mpls-node.h"
 
 NS_LOG_COMPONENT_DEFINE ("MplsNode");
 
@@ -36,7 +38,6 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (MplsNode);
 
 using namespace mpls;
-using namespace traces;
 
 TypeId
 MplsNode::GetTypeId (void)
@@ -60,12 +61,6 @@ MplsNode::GetTypeId (void)
                    UintegerValue (0xfffff),
                    MakeUintegerAccessor (&MplsNode::SetMaxLabelValue),
                    MakeUintegerChecker<uint32_t> (0x10, 0xfffff))
-    .AddTraceSource ("Tx", "Send packet to outgoing interface.",
-                        MakeTraceSourceAccessor (&MplsNode::m_txTrace))
-    .AddTraceSource ("Rx", "Receive packet from incoming interface.",
-                        MakeTraceSourceAccessor (&MplsNode::m_rxTrace))
-    .AddTraceSource ("Drop", "Drop packet",
-                        MakeTraceSourceAccessor (&MplsNode::m_dropTrace))
   ;
   return tid;
 }
@@ -110,13 +105,14 @@ MplsNode::GetLabelSpace (uint32_t ifIndex)
   if (m_labelSpaceType == PLATFORM) {
     return &m_labelSpace;
   }
-  return GetInterface (ifIndex)->GetLabelSpace ();
+  return 0;
+  //return GetInterface (ifIndex)->GetLabelSpace ();
 }
 
 void
 MplsNode::SetLabelSpaceType (LabelSpaceType type)
 {
-  if (type == PLATFORM)
+/*  if (type == PLATFORM)
     {
       for (InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
         {
@@ -128,30 +124,31 @@ MplsNode::SetLabelSpaceType (LabelSpaceType type)
       NS_ASSERT_MSG (!i->GetLabelSpace ()->IsUsed (), "Clear platform label space before set type");
     }
   m_labelSpaceType = type;
+*/
 }
 
 void
 MplsNode::SetMinLabelValue (uint32_t value)
 {
-  NS_ASSERT_MSG (!m_labelSpace.IsUsed (), "Clear platform label space before set new range");
+  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set new range");
   m_labelSpace.SetMinValue (value);
 }
 
 void
 MplsNode::SetMaxLabelValue (uint32_t value)
 {
-  NS_ASSERT_MSG (!m_labelSpace.IsUsed (), "Clear platform label space before set new range");
+  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set new range");
   m_labelSpace.SetMaxValue (value);
 }
 
 MplsNode::IlmTable*
-MplsNode::GetIlmTable (void) const
+MplsNode::GetIlmTable (void)
 {
   return &m_ilmTable;
 }
 
 MplsNode::FtnTable*
-MplsNode::GetFtnTable (void) const
+MplsNode::GetFtnTable (void)
 {
   return &m_ftnTable;
 }
@@ -196,5 +193,4 @@ MplsNode::LookupFtn (PacketDemux &demux)
   return 0;
 }
 
-} // namespace mpls
 } // namespace ns3

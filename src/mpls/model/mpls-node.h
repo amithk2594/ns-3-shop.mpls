@@ -27,11 +27,10 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/node.h"
-#include "ns3/traced-callback.h"
-
-#include "mpls.h"
-#include "mpls-ilm-table.h"
-#include "mpls-ftn-table.h"
+#include "mpls-incoming-label-map.h"
+#include "mpls-fec-to-nhlfe.h"
+#include "mpls-label-space.h"
+#include "mpls-label.h"
 
 namespace ns3 {
 
@@ -59,11 +58,11 @@ public:
   /**
    * @brief Get ILM table
    */
-  IlmTable* GetIlmTable (void) const;
+  IlmTable* GetIlmTable (void);
   /**
    * @brief Get Ftn table
    */
-  FtnTable* GetFtnTable (void) const;
+  FtnTable* GetFtnTable (void);
   /**
    * @brief Lookup ilm
    */
@@ -99,10 +98,6 @@ private:
   LabelSpaceType m_labelSpaceType;
   LabelSpace m_labelSpace;
   bool m_interfaceAutoInstall;
-  
-  traces::TxTracedCallback m_txTrace;
-  traces::RxTracedCallback m_rxTrace;
-  traces::DropTracedCallback m_dropTrace;
 };
 
 } // namespace ns3

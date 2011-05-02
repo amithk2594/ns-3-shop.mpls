@@ -78,7 +78,7 @@ MplsProtocol::NotifyNewAggregate ()
       if (node != 0)
         {
           m_node = DynamicCast<MplsNode> (node);
-          NS_ASSERT_MSG (m_mode != 0, "Use MplsNode instead of Node");
+          NS_ASSERT_MSG (m_node != 0, "Use MplsNode instead of Node");
         }
     }
 

@@ -30,35 +30,16 @@ MplsFtnHelper::~MplsFtnHelper()
 {
 }
 
-Ptr<mpls::FtnTable>
-MplsFtnHelper::GetFtnTable (void) const
-{
-  return GetMpls ()->GetFtnTable ();
-}
-
-void 
-MplsFtnHelper::SetFtnTable (const Ptr<mpls::FtnTable> &table)
-{
-  NS_ASSERT (table != 0);
-  GetMpls ()->SetFtnTable (table);  
-}
-
-Ptr<mpls::FecToNhlfe> 
-MplsFtnHelper::GetFtn (const uint32_t index) const
-{
-  return GetFtnTable ()->GetFtn (index);
-}
-
 void
-MplsFtnHelper::RemoveFtn (const uint32_t index)
+MplsFtnHelper::RemoveFtn (const Ptr<FecToNhlfe> &ftn)
 {
-  GetFtnTable ()->RemoveFtn (index);
+  GetNode ()->GetFtnTable ()->remove (ftn);
 }
 
 void 
 MplsFtnHelper::ClearFtnTable ()
 {
-  GetFtnTable ()->Clear ();
+  GetNode ()->GetFtnTable ()->clear ();
 }
 
 } // namespace mpls

@@ -23,8 +23,9 @@
 #define MPLS_NODE_HELPER_BASE_H
 
 #include "ns3/ptr.h"
-#include "ns3/node.h"
 #include "ns3/mpls.h"
+#include "ns3/mpls-node.h"
+
 #include "mpls-nhlfe-selection-policy-helper.h"
 
 namespace ns3 {
@@ -38,7 +39,7 @@ public:
   virtual ~MplsNodeHelperBase();
 
   virtual const Ptr<Mpls>& GetMpls (void) const = 0;
-  virtual const Ptr<Node>& GetNode (void) const = 0;
+  virtual const Ptr<MplsNode>& GetNode (void) const = 0;
   virtual const NhlfeSelectionPolicyHelper& GetSelectionPolicy (void) const = 0;
 };
 
