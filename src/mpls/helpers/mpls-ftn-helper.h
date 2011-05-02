@@ -383,7 +383,7 @@ template<class T>
 uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
   const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7,
-  const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9
+  const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9,
   const NhlfeSelectionPolicyHelper& policy)
 {
   Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, policy.Create ());
@@ -402,7 +402,7 @@ template<class T>
 uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, const mpls::Nhlfe &nhlfe3, 
   const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7,
-  const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10
+  const mpls::Nhlfe &nhlfe8, const mpls::Nhlfe &nhlfe9, const mpls::Nhlfe &nhlfe10,
   const NhlfeSelectionPolicyHelper& policy)
 {
   Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe1, policy.Create ());
