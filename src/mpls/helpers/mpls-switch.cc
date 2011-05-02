@@ -35,7 +35,7 @@ MplsSwitch::MplsSwitch (const Ptr<Node> &node)
   : m_nhlfeSelectionPolicy ()
 {
   m_node = DynamicCast<MplsNode> (node);
-  NS_ASSERT (m_node != 0);
+  NS_ASSERT_MSG (m_node != 0, "Possible you use Node instead of MplsNode");
   
   m_mpls = node->GetObject<Mpls> ();
   

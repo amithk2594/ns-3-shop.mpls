@@ -41,10 +41,7 @@ main (int argc, char *argv[])
   LogComponentEnable ("mpls::Ipv4Routing", LOG_LEVEL_DEBUG);
   LogComponentEnable ("MplsNetworkDiscoverer", LOG_LEVEL_DEBUG);  
 
-  LogComponentEnable ("mpls::Interface", LOG_LEVEL_ALL);
-
   NodeContainer hosts;
-  NodeContainer routers;
   PointToPointHelper pointToPoint;
   CsmaHelper csma;  
   Ipv4AddressHelper address;
@@ -59,10 +56,9 @@ main (int argc, char *argv[])
   csma.SetChannelAttribute ("Delay", TimeValue (NanoSeconds (6560)));
   
   hosts.Create (2);
-  routers.Create (3);
+  NodeContainer routers = network.CreateAndInstall (3);
 
   internet.Install (hosts);
-  network.Install (routers);
 
   // Hosts applications
   uint16_t port = 9;

@@ -127,7 +127,7 @@ MplsInstaller::CreateAndInstall (uint32_t count)
 void
 MplsInstaller::InstallInternal (Ptr<MplsNode> node)
 {
-  NS_ASSERT (node != 0);
+  NS_ASSERT_MSG (node != 0, "Possible you use Node instead of MplsNode");
 
   if (node->GetObject<MplsProtocol> () != 0)
     {
@@ -156,7 +156,7 @@ MplsInstaller::InstallInternal (Ptr<MplsNode> node)
 void
 MplsInstaller::EnableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const
 {
-  NS_ASSERT (node != 0);
+  NS_ASSERT_MSG (node != 0, "Possible you use Node instead of MplsNode");
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   mpls->EnableNewInterfaceNotification (true);
@@ -165,7 +165,7 @@ MplsInstaller::EnableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const
 void
 MplsInstaller::DisableInterfaceAutoInstallInternal (Ptr<MplsNode> node) const
 {
-  NS_ASSERT (node != 0);
+  NS_ASSERT_MSG (node != 0, "Possible you use Node instead of MplsNode");
   Ptr<Mpls> mpls = node->GetObject<Mpls> ();
   NS_ASSERT_MSG (mpls != 0, "MplsInterfaceHelper::DisableInterfaceAutoInstall (): Install MPLS first");
   mpls->EnableNewInterfaceNotification (false);
