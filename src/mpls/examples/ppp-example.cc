@@ -76,6 +76,11 @@ main (int argc, char *argv[])
   apps = client.Install (hosts.Get (0));
   apps.Start (Seconds (0.01));
   apps.Stop (Seconds (2.0));
+  
+  client.SetAttribute ("RemoteAddress", Ipv4AddressValue ("192.168.3.2"));
+  apps = client.Install (hosts.Get (0));
+  apps.Start (Seconds (0.01));
+  apps.Stop (Seconds (2.0));
 
   // Hosts configuration
   devices = pointToPoint.Install (hosts.Get(0), routers.Get(0));

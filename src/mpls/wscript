@@ -3,6 +3,7 @@
 def build(bld):
     module = bld.create_ns3_module('mpls', ['network', 'internet'])
     module.source = [
+        'model/mpls-node.cc',
         'model/mpls.cc',
         'model/mpls-protocol.cc',    
         'model/mpls-packet-demux.cc',
@@ -15,8 +16,6 @@ def build(bld):
         'model/mpls-forwarding-information.cc',
         'model/mpls-incoming-label-map.cc',
         'model/mpls-fec-to-nhlfe.cc',
-        'model/mpls-ftn-table.cc',
-        'model/mpls-ilm-table.cc',
         'model/mpls-ipv4-protocol.cc',
         'model/mpls-ipv4-routing.cc',
         'model/mpls-nhlfe-selection-policy.cc',
@@ -39,6 +38,7 @@ def build(bld):
     headers = bld.new_task_gen('ns3header')
     headers.module = 'mpls'
     headers.source = [
+        'model/mpls-node.h',
         'model/mpls.h',
         'model/mpls-traces.h',
         'model/mpls-protocol.h',    
@@ -52,8 +52,6 @@ def build(bld):
         'model/mpls-forwarding-information.h',
         'model/mpls-incoming-label-map.h',
         'model/mpls-fec-to-nhlfe.h',
-        'model/mpls-ftn-table.h',
-        'model/mpls-ilm-table.h',
         'model/mpls-ipv4-protocol.h',
         'model/mpls-ipv4-routing.h',
         'model/mpls-nhlfe-selection-policy.h',

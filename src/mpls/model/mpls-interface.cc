@@ -98,14 +98,14 @@ Interface::GetLabelSpace (void)
 void
 Interface::SetMinLabelValue (uint32_t value)
 {
-  NS_ASSERT_MSG (!m_labelSpace.IsUsed (), "Clear interface label space before set new range");
+  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear interface label space before set new range");
   m_labelSpace.SetMinValue (value);
 }
 
 void
 Interface::SetMaxLabelValue (uint32_t value)
 {
-  NS_ASSERT_MSG (!m_labelSpace.IsUsed (), "Clear interface label space before set new range");
+  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear interface label space before set new range");
   m_labelSpace.SetMaxValue (value);
 }
   

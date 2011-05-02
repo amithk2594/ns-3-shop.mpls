@@ -43,24 +43,10 @@ class MplsFtnHelper : public MplsNodeHelperBase
 public:
   virtual ~MplsFtnHelper();
   /**
-   * @brief Return FTN table
-   */
-  Ptr<mpls::FtnTable> GetFtnTable (void) const;
-  /**
-   * @brief Set new FTN table
-   */
-  void SetFtnTable (const Ptr<mpls::FtnTable> &table);
-  /**
-   * @brief Get the FTN by Index
-   * @param index
-   * @return FTN identified by index
-   */
-  Ptr<mpls::FecToNhlfe> GetFtn (const uint32_t index) const;
-  /**
    * @brief Remove FTN by index
    * @param index
    */
-  void RemoveFtn (const uint32_t index);
+  void RemoveFtn (const Ptr<FecToNhlfe> &ftn);
   /**
    * @brief Clear FTN table
    */
@@ -281,7 +267,9 @@ uint32_t
 MplsFtnHelper::AddFtn (const T &fec, const mpls::Nhlfe &nhlfe, const NhlfeSelectionPolicyHelper& policy)
 {
   Ptr<FecToNhlfe> ftn = Create<FecToNhlfe> (mpls::Fec::Build (fec), nhlfe, policy.Create ());
-  return GetFtnTable ()->AddFtn (ftn);
+  MplsNode::FtnTable* table = GetNode ()->GetFtnTable ();
+  table->push_back (ftn);
+  return ftn;
 }
 
 template<class T>  
