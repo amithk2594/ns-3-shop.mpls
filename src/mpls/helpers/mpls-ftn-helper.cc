@@ -26,6 +26,8 @@
 
 namespace ns3 {
 
+using namespace mpls;
+
 MplsFtnHelper::~MplsFtnHelper()
 {
 }
