@@ -1,0 +1,310 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2010 Andrey Churin
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Andrey Churin <aachurin@gmail.com>
+ */
+
+#include "ns3/assert.h"
+//#include "ns3/address-utils.h"
+
+#include "explicit-route-tlv.h"
+
+namespace ns3 {
+namespace ldp {
+
+
+
+/*
+ * ER-Hop 2: The IPv6 address
+ *
+ */
+
+//Ipv6ExplicitRouteHopTLV::Ipv6ExplicitRouteHopTLV ()
+//  : m_prefix (0),
+//    m_address (Ipv6Address::GetZero ())
+//{
+//}
+
+//Ipv6ExplicitRouteHopTLV::~Ipv6ExplicitRouteHopTLV ()
+//{
+//}
+
+//void
+//Ipv6ExplicitRouteHopTLV::SetAddress (const Ipv6Address &address)
+//{
+//  m_address = address;
+//}
+
+//Ipv6Address
+//Ipv6ExplicitRouteHopTLV::GetAddress (void) const
+//{
+//  return m_address;
+//}
+
+//void
+//Ipv6ExplicitRouteHopTLV::SetPrefix (uint8_t prefix)
+//{
+//  NS_ASSERT_MSG (prefix <= 128, "Ipv6ExplicitRouteHopTLV:SetPrefix (): invalid prefix length");
+//  m_prefix = prefix;
+//}
+
+//uint8_t
+//Ipv6ExplicitRouteHopTLV::GetPrefix (void) const
+//{
+//  return m_prefix;
+//}
+
+//uint16_t
+//Ipv6ExplicitRouteHopTLV::GetType (void) const
+//{
+//  return TLV_TYPE;
+//}
+
+//uint32_t
+//Ipv6ExplicitRouteHopTLV::GetLength (void) const
+//{
+//  return 20;
+//}
+
+//void
+//Ipv6ExplicitRouteHopTLV::SerializeValue (Buffer::Iterator &start) const
+//{
+//  if (m_loose)
+//    {
+//      start.WriteU8 (1 << 7);
+//    }
+//  else
+//    {
+//      start.WriteU8 (0);
+//    }
+
+//  start.WriteU16 (0);
+//  start.WriteU8 (m_prefix);
+//  uint8_t buff[16];
+//  m_address.Serialize (buff);
+//  start.Write (buff, 16);
+//}
+
+//bool
+//Ipv6ExplicitRouteHopTLV::DeserializeValue (Buffer::Iterator start, uint32_t size)
+//{
+//  if (size != 20)
+//    {
+//      return false;
+//    }
+
+//  if ((start.ReadU8 () >> 7) == 1)
+//    {
+//      m_loose = true;
+//    }
+
+//  start.ReadU16 ();
+//  m_prefix = start.ReadU8 ();
+
+//  if (m_prefix > 128)
+//    {
+//      return false;
+//    }
+//  uint8_t buff[16];
+//  start.Read (buff, 16);
+//  m_address = Ipv6Address::Deserialize (buff);
+
+//  return true;
+//}
+
+//void
+//Ipv6ExplicitRouteHopTLV::Print (std::ostream &os) const
+//{
+//  PrintTlv (os, "Ipv6 Explicit Route Hop TLV");
+//  os << "address=" << m_address;
+//}
+
+///**
+// * ER-Hop 3:  The autonomous system number
+// */
+
+//AsNumberExplicitRouteHopTLV::AsNumberExplicitRouteHopTLV ()
+//  : m_number (0)
+//{
+//}
+
+//AsNumberExplicitRouteHopTLV::~AsNumberExplicitRouteHopTLV ()
+//{
+//}
+
+//void
+//AsNumberExplicitRouteHopTLV::SetNumber (uint16_t number)
+//{
+//  m_number = number;
+//}
+
+//uint16_t
+//AsNumberExplicitRouteHopTLV::GetNumber (void) const
+//{
+//  return m_number;
+//}
+
+//uint16_t
+//AsNumberExplicitRouteHopTLV::GetType (void) const
+//{
+//  return TLV_TYPE;
+//}
+
+//uint32_t
+//AsNumberExplicitRouteHopTLV::GetLength (void) const
+//{
+//  return 4;
+//}
+
+//void
+//AsNumberExplicitRouteHopTLV::SerializeValue (Buffer::Iterator &start) const
+//{
+//  if (m_loose)
+//    {
+//      start.WriteHtonU16 (1 << 15);
+//    }
+//  else
+//    {
+//      start.WriteU16 (0);
+//    }
+
+//  start.WriteHtonU16 (m_number);
+//}
+
+//bool
+//AsNumberExplicitRouteHopTLV::DeserializeValue (Buffer::Iterator start, uint32_t size)
+//{
+//  if (size != 4)
+//    {
+//      return false;
+//    }
+
+//  if ((start.ReadU8 () >> 7) == 1)
+//    {
+//      m_loose = true;
+//    }
+
+//  start.ReadU8 ();
+//  m_number = start.ReadNtohU16 ();
+
+//  return true;
+//}
+
+//void
+//AsNumberExplicitRouteHopTLV::Print (std::ostream &os) const
+//{
+//  PrintTlv (os, "AS Explicit Route Hop TLV");
+//  os << "number=" << m_number;
+//}
+
+///**
+// * ER-Hop 4: LSPID
+// */
+
+//LspidExplicitRouteHopTLV::LspidExplicitRouteHopTLV ()
+//  : m_lspId (0),
+//    m_routerId (0)
+//{
+//}
+
+//LspidExplicitRouteHopTLV::~LspidExplicitRouteHopTLV ()
+//{
+//}
+
+//void
+//LspidExplicitRouteHopTLV::SetLocalLspId (uint16_t id)
+//{
+//  m_lspId = id;
+//}
+
+//uint16_t
+//LspidExplicitRouteHopTLV::GetLocalLspId (void) const
+//{
+//  return m_lspId;
+//}
+
+//void
+//LspidExplicitRouteHopTLV::SetIngressRouterId (uint32_t id)
+//{
+//  m_routerId = id;
+//}
+
+//uint32_t
+//LspidExplicitRouteHopTLV::GetIngressRouterId (void) const
+//{
+//  return m_routerId;
+//}
+
+//uint16_t
+//LspidExplicitRouteHopTLV::GetType (void) const
+//{
+//  return TLV_TYPE;
+//}
+
+//uint32_t
+//LspidExplicitRouteHopTLV::GetLength (void) const
+//{
+//  return 8;
+//}
+
+//void
+//LspidExplicitRouteHopTLV::SerializeValue (Buffer::Iterator &start) const
+//{
+//  if (m_loose)
+//    {
+//      start.WriteHtonU16 (1 << 15);
+//    }
+//  else
+//    {
+//      start.WriteU16 (0);
+//    }
+
+//  start.WriteHtonU16 (m_lspId);
+//  start.WriteHtonU32 (m_routerId);
+
+//}
+
+//bool
+//LspidExplicitRouteHopTLV::DeserializeValue (Buffer::Iterator start, uint32_t size)
+//{
+//  if (size != 8)
+//    {
+//      return false;
+//    }
+
+//  if ((start.ReadU8 () >> 7) == 1)
+//    {
+//      m_loose = true;
+//    }
+
+//  start.ReadU8 ();
+
+//  m_lspId = start.ReadNtohU16 ();
+//  m_routerId = start.ReadNtohU32 ();
+
+//  return true;
+//}
+
+//void
+//LspidExplicitRouteHopTLV::Print (std::ostream &os) const
+//{
+//  PrintTlv (os, "LSPID Explicit Route Hop TLV");
+//  os << "lspid=" << std::hex << m_lspId << std::dec << " routerid=" << m_routerId;
+//}
+
+} // namespace ldp
+} // namespace ns3

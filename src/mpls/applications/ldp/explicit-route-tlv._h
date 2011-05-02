@@ -1,0 +1,191 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2010 Andrey Churin
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Andrey Churin <aachurin@gmail.com>
+ */
+
+#ifndef EXPLICIT_ROUTE_TLV_H
+#define EXPLICIT_ROUTE_TLV_H
+
+#include <ostream>
+#include <vector>
+
+#include "ns3/ipv4-address.h"
+
+#include "protocol-data-unit.h"
+
+namespace ns3 {
+namespace ldp {
+
+
+
+///**
+// * \ingroup Ldp
+// * ER-Hop 2: The IPv6 address
+// *
+// *  0                   1                   2                   3
+// *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |0|0|          0x0802           |      Length = 20              |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |L|             Reserved                        |    PreLen     |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |                  IPV6 address                                 |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |                  IPV6 address (continued)                     |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |                  IPV6 address (continued)                     |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |                  IPV6 address (continued)                     |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// */
+//class Ipv6ExplicitRouteHopTLV : public ExplicitRouteHopTLV
+//{
+//public:
+//  static const uint16_t TLV_TYPE = 0x0802;
+
+//  Ipv6ExplicitRouteHopTLV ();
+//  virtual ~Ipv6ExplicitRouteHopTLV ();
+
+//  /**
+//   * \param address Ipv4Address
+//   * Assign IpvAddress
+//   */
+//  void SetAddress (const Ipv6Address &address);
+//  /**
+//   * \returns assigned Ipv4 address
+//   */
+//  Ipv6Address GetAddress (void) const;
+//  /**
+//   * \param prefix
+//   * Prefix length
+//   */
+//  void SetPrefix (uint8_t prefix);
+//  /**
+//   * \returns Prefix length
+//   */
+//  uint8_t GetPrefix (void) const;
+
+//  // Functions defined in base class TypeLengthValue
+//  virtual uint16_t GetType (void) const;
+//  virtual uint32_t GetLength (void) const;
+//  virtual void SerializeValue (Buffer::Iterator &start) const;
+//  virtual bool DeserializeValue (Buffer::Iterator start, uint32_t size);
+//  virtual void Print (std::ostream &os) const;
+
+//private:
+//  uint8_t m_prefix;
+//  Ipv6Address m_address;
+//};
+
+///**
+// * \ingroup Ldp
+// * ER-Hop 3:  The autonomous system number
+// *
+// *  The abstract node represented by this ER-Hop is the set of nodes
+// *  belonging to the autonomous system.
+// *
+// *  0                   1                   2                   3
+// *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |0|0|          0x0803           |      Length = 4               |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |L|          Reserved           |                AS Number      |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// */
+//class AsNumberExplicitRouteHopTLV : public ExplicitRouteHopTLV
+//{
+//public:
+//  static const uint16_t TLV_TYPE = 0x0803;
+
+//  AsNumberExplicitRouteHopTLV ();
+//  virtual ~AsNumberExplicitRouteHopTLV ();
+
+//  /**
+//   * \param number autonomous system number
+//   */
+//  void SetNumber (uint16_t number);
+//  /**
+//   * \returns autonomous system number
+//   */
+//  uint16_t GetNumber (void) const;
+
+//  // Functions defined in base class TypeLengthValue
+//  virtual uint16_t GetType (void) const;
+//  virtual uint32_t GetLength (void) const;
+//  virtual void SerializeValue (Buffer::Iterator &start) const;
+//  virtual bool DeserializeValue (Buffer::Iterator start, uint32_t size);
+//  virtual void Print (std::ostream &os) const;
+
+//private:
+//  uint16_t m_number;
+//};
+
+///**
+// * \ingroup Ldp
+// * ER-Hop 4: LSPID
+// *  0                   1                   2                   3
+// *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |0|0|          0x0804           |      Length = 8               |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |L|          Reserved           |               Local LSPID     |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// *  |                       Ingress LSR Router ID                   |
+// *  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+// */
+//class LspidExplicitRouteHopTLV : public ExplicitRouteHopTLV
+//{
+//public:
+//  static const uint16_t TLV_TYPE = 0x0804;
+
+//  LspidExplicitRouteHopTLV ();
+//  virtual ~LspidExplicitRouteHopTLV ();
+
+//  /**
+//   * \param lspid local lspid
+//   */
+//  void SetLocalLspId (uint16_t id);
+//  /**
+//   * \returns local lspid
+//   */
+//  uint16_t GetLocalLspId (void) const;
+//  /**
+//   * \param id ingress lsr router id (An LSR may use any of its own IPv4 addresses)
+//   */
+//  void SetIngressRouterId (uint32_t id);
+//  /**
+//   * \returns ingress lsr router id
+//   */
+//  uint32_t GetIngressRouterId (void) const;
+
+//  // Functions defined in base class TypeLengthValue
+//  virtual uint16_t GetType (void) const;
+//  virtual uint32_t GetLength (void) const;
+//  virtual void SerializeValue (Buffer::Iterator &start) const;
+//  virtual bool DeserializeValue (Buffer::Iterator start, uint32_t size);
+//  virtual void Print (std::ostream &os) const;
+
+//private:
+//  uint16_t m_lspId;
+//  uint32_t m_routerId;
+//};
+
+} // namespace ldp
+} // namespace ns3
+
+#endif /* EXPLICIT_ROUTE_TLV_H */
