@@ -25,11 +25,10 @@
 namespace ns3 {
 namespace mpls {
 
-LabelSpace::LabelSpace (uint32_t min, uint32_t max)
-  : m_min (min),
-    m_max (max)
+LabelSpace::LabelSpace ()
+  : m_min (0x1000),
+    m_max (0xfffff)
 {
-  NS_ASSERT (min < max && min >= 0x10 && max < 0x10000);
 }
 
 LabelSpace::~LabelSpace ()
@@ -149,6 +148,28 @@ void
 LabelSpace::Clear (void)
 {
   m_ranges.clear ();
+}
+
+void
+LabelSpace::SetMinValue (uint32_t min)
+{
+  NS_ASSERT (min < m_max && min >= 0x10);
+  Clear ();
+  m_min = min;
+}
+
+void
+LabelSpace::SetMaxValue (uint32_t max)
+{
+  NS_ASSERT (m_min < max && max < 0x100000);
+  Clear ();
+  m_max = max;
+}
+
+bool 
+LabelSpace::IsEmpty (void) const
+{
+  return m_ranges.size () == 0;
 }
 
 } // namespace mpls

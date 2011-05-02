@@ -58,9 +58,7 @@ MplsProtocol::GetTypeId (void)
 
 MplsProtocol::MplsProtocol ()
   : m_node (0),
-    m_ipv4 (0),
-    m_ilmTable (Create<IlmTable> ()),
-    m_ftnTable (Create<FtnTable> ())
+    m_ipv4 (0)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -79,7 +77,8 @@ MplsProtocol::NotifyNewAggregate ()
 
       if (node != 0)
         {
-          m_node = node;
+          m_node = DynamicCast<MplsNode> (node);
+          NS_ASSERT_MSG (m_mode != 0, "Use MplsNode instead of Node");
         }
     }
 
@@ -130,36 +129,12 @@ MplsProtocol::DoDispose (void)
     {
       *i = 0;
     }
+
   m_interfaces.clear ();
   m_node = 0;
   m_ipv4 = 0;
-  m_ilmTable = 0;
 
   Object::DoDispose ();
-}
-
-void
-MplsProtocol::SetIlmTable (const Ptr<IlmTable> &ilmTable)
-{
-  m_ilmTable = ilmTable;
-}
-
-Ptr<IlmTable>
-MplsProtocol::GetIlmTable (void) const
-{
-  return m_ilmTable;
-}
-
-void
-MplsProtocol::SetFtnTable (const Ptr<FtnTable> &ftnTable)
-{
-  m_ftnTable = ftnTable;
-}
-
-Ptr<FtnTable>
-MplsProtocol::GetFtnTable (void) const
-{
-  return m_ftnTable;
 }
 
 Ptr<Interface>
@@ -225,21 +200,19 @@ MplsProtocol::ReceiveIpv4 (const Ptr<Packet> &packet, const Ipv4Header &header, 
 
   m_demux.Assign (packet, header);
       
-  Ptr<FecToNhlfe> ftn = LookupFtn (m_demux);
+  Ptr<FecToNhlfe> ftn = m_node->LookupFtn (m_demux);
   
   m_demux.Release ();
 
   if (ftn == 0)
     {
       NS_LOG_DEBUG ("Dropping received packet -- ftn not found");
-      //m_dropTrace (packet, DROP_FTN_NOT_FOUND);
       return false;
     }
 
   NS_LOG_DEBUG ("Found suitable entry -- " << Ptr<ForwardingInformation> (ftn) << 
                 " with " << ftn->GetNNhlfe () << " available nhlfe");
 
-  // push back ipv4 header
   packet->AddHeader (header);
 
   LabelStack stack;
@@ -370,7 +343,7 @@ MplsProtocol::ReceiveMpls (Ptr<NetDevice> device, Ptr<const Packet> p, uint16_t 
   NS_LOG_DEBUG ("Searching of label mapping for label " << (Label)label << 
                 " if" << ifIndex << " dev" << device->GetIfIndex ());
   
-  Ptr<IncomingLabelMap> ilm = LookupIlm (label, ifIndex);
+  Ptr<IncomingLabelMap> ilm = m_node->LookupIlm (label, ifIndex);
 
   if (ilm == 0)
     {
@@ -497,62 +470,6 @@ MplsProtocol::MplsForward (const Ptr<Packet> &packet, const Ptr<ForwardingInform
   NS_LOG_DEBUG ("Dropping received packet -- there is no suitable nhlfe");
 
   m_dropTrace (packet, DROP_NO_SUITABLE_NHLFE, -1); 
-}
-
-Ptr<IncomingLabelMap>
-MplsProtocol::LookupIlm (Label label, int32_t interface)
-{
-  NS_LOG_FUNCTION (this << label << interface);
-
-  NS_ASSERT_MSG (m_ilmTable != 0, "IlmTable is not installed");
-
-  IlmTable::Iterator begin = m_ilmTable->Begin ();
-  IlmTable::Iterator end = m_ilmTable->End ();
-  Ptr<IncomingLabelMap> ilm;
-
-  // TODO: Different search for both label spaces
-
-  for (IlmTable::Iterator i = begin; i != end; ++i)
-    {
-      ilm = (*i).second;
-      if (ilm->GetLabel () == label && ilm->GetInterface () == interface)
-        {
-          return ilm;
-        }
-    }
-
-  for (IlmTable::Iterator i = begin; i != end; ++i)
-    {
-      ilm = (*i).second;
-      if (ilm->GetLabel () == label && ilm->GetInterface () < 0)
-        {
-          return ilm;
-        }
-    }
-
-  return 0;
-}
-
-Ptr<FecToNhlfe>
-MplsProtocol::LookupFtn (PacketDemux &demux)
-{
-  NS_LOG_FUNCTION (this);
-
-  NS_ASSERT_MSG (m_ftnTable != 0, "FtnTable is not installed");
-
-  FtnTable::Iterator begin = m_ftnTable->Begin ();
-  FtnTable::Iterator end = m_ftnTable->End ();
-
-  for (FtnTable::Iterator i = begin; i != end; ++i)
-    {
-      const Ptr<FecToNhlfe> &ftn = (*i).second;
-      if ((ftn->GetFec ()) (demux))
-        {
-          return ftn;
-        }
-    }
-
-  return 0;
 }
 
 bool
