@@ -226,6 +226,10 @@ public:
                     const NhlfeSelectionPolicyHelper &policy);
   uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
                     const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
+                    const mpls::Nhlfe &nhlfe6, 
+                    const NhlfeSelectionPolicyHelper &policy);
+  uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
+                    const mpls::Nhlfe &nhlfe3, const mpls::Nhlfe &nhlfe4, const mpls::Nhlfe &nhlfe5, 
                     const mpls::Nhlfe &nhlfe6, const mpls::Nhlfe &nhlfe7,
                     const NhlfeSelectionPolicyHelper &policy);
   uint32_t AddIlm (mpls::Label label, const mpls::Nhlfe &nhlfe1, const mpls::Nhlfe &nhlfe2, 
