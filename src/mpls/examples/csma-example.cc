@@ -25,7 +25,6 @@
 #include "ns3/csma-module.h"
 #include "ns3/applications-module.h"
 #include "ns3/mpls-module.h"
-//#include "ns3/ipv4-global-routing-helper.h"
 
 #include <iostream>
 
@@ -88,8 +87,6 @@ main (int argc, char *argv[])
   address.Assign(devices);
 
   // Routers configuration
-  network.EnableInterfaceAutoInstall (routers);
-
   NetDeviceContainer csmaDevices;
   devices = csma.Install (routers);
   
@@ -102,10 +99,8 @@ main (int argc, char *argv[])
   MplsSwitch sw1 (routers.Get (0));
   sw1.SetSelectionPolicy (policy);
 
-  sw1.AddFtn (
-      Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
-          Nhlfe (Swap (200), Ipv4Address ("10.1.2.1")), // invalid nhlfe
-          Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))  // good nhlfe
+  sw1.AddFtn (Ipv4Source ("192.168.1.1") && Ipv4Destination ("192.168.4.2"),
+      Nhlfe (Swap (100), Ipv4Address ("10.1.1.2"))
   );
 
   MplsSwitch sw2 (routers.Get (1));
@@ -116,9 +111,9 @@ main (int argc, char *argv[])
 
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
+  network.DiscoverNetwork ();  
   network.ShowConfig ();
-  network.DiscoverNetwork ();
-  
+
   Simulator::Run ();
   Simulator::Destroy ();
 
