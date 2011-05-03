@@ -31,8 +31,11 @@
 #include "mpls-fec-to-nhlfe.h"
 #include "mpls-label-space.h"
 #include "mpls-label.h"
+#include "mpls.h"
 
 namespace ns3 {
+
+class Mpls;
 
 namespace mpls {
 class IncomingLabelMap;
@@ -92,9 +95,13 @@ public:
    * @brief Set maximum label value
    */
   void SetMaxLabelValue (uint32_t value);
-  
+
+protected:
+  void NotifyNewAggregate (void);
+  void DoDispose (void);
+
 private:
-  
+  Ptr<Mpls> m_mpls;
   IlmTable m_ilmTable;
   FtnTable m_ftnTable;
   LabelSpaceType m_labelSpaceType;
