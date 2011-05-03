@@ -66,7 +66,8 @@ MplsNode::GetTypeId (void)
 }
 
 MplsNode::MplsNode ()
-  : m_labelSpaceType (PLATFORM)
+  : m_mpls (0),
+    m_labelSpaceType (PLATFORM)
 {
   NS_LOG_FUNCTION (this);
 }
@@ -76,45 +77,67 @@ MplsNode::~MplsNode ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
+void
+MplsNode::NotifyNewAggregate (void)
+{
+  if (m_mpls == 0)
+    {
+      m_mpls = GetObject<Mpls> ();
+    }
+
+  Object::NotifyNewAggregate ();
+}
+
+void
+MplsNode::DoDispose (void)
+{
+  m_mpls = 0;
+  Object::DoDispose ();
+}
+
 LabelSpace*
 MplsNode::GetLabelSpace (uint32_t ifIndex)
 {
+  NS_ASSERT (m_mpls != 0);
+
   if (m_labelSpaceType == PLATFORM) {
     return &m_labelSpace;
   }
-  return 0;
-  //return GetInterface (ifIndex)->GetLabelSpace ();
+  
+  return m_mpls->GetInterface (ifIndex)->GetLabelSpace ();
 }
 
 void
 MplsNode::SetLabelSpaceType (LabelSpaceType type)
 {
-/*  if (type == PLATFORM)
+  if (type == PLATFORM)
     {
-      for (InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); ++i)
+      uint32_t nInterfaces = m_mpls->GetNInterfaces ();
+      for (uint32_t i = 0; i < nInterfaces; i++)
         {
-          NS_ASSERT_MSG (!i->GetLabelSpace ()->IsUsed (), "Clear interface label space before set type");
+          NS_ASSERT_MSG (!m_mpls->GetInterface (i)->GetLabelSpace ()->IsEmpty (), 
+                            "Clear interface label space before change type");
         }
     }
   else
     {
-      NS_ASSERT_MSG (!i->GetLabelSpace ()->IsUsed (), "Clear platform label space before set type");
+      NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set type");
     }
+
   m_labelSpaceType = type;
-*/
 }
 
 void
 MplsNode::SetMinLabelValue (uint32_t value)
 {
-  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set new range");
+  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set label range");
   m_labelSpace.SetMinValue (value);
 }
 
 void
 MplsNode::SetMaxLabelValue (uint32_t value)
 {
-  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set new range");
+  NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set label range");
   m_labelSpace.SetMaxValue (value);
 }
 
