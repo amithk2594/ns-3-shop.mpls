@@ -23,6 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/uinteger.h"
 #include "ns3/integer.h"
+#include "ns3/boolean.h"
 #include <functional>
 
 #include "mpls-nhlfe-selection-policy.h"
@@ -238,24 +239,30 @@ WeightedPolicy::GetTypeId (void)
   static TypeId tid = TypeId ("ns3::mpls::WeightedPolicy")
     .SetParent<NhlfeSelectionPolicy> ()
     .AddConstructor<WeightedPolicy> () 
-    .AddAttribute ("Bmin", 
-                   "The minimum number of bytes of the byte counter.",
-                   UintegerValue (1000),
-                   MakeUintegerAccessor (&WeightedPolicy::m_Bmin),
-                   MakeUintegerChecker<uint32_t> ())
-    .AddAttribute ("Bmax", 
-                   "The maximum number of bytes of the byte counter.",
+    .AddAttribute ("Cmax", 
+                   "The maximum value of the counter.",
                    UintegerValue (1000000),
-                   MakeUintegerAccessor (&WeightedPolicy::m_Bmax),
+                   MakeUintegerAccessor (&WeightedPolicy::m_Cmax),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Cmin", 
+                   "The value which the counter is reset to after exceeding its maximum value.",
+                   UintegerValue (1000),
+                   MakeUintegerAccessor (&WeightedPolicy::m_Cmin),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("byteCounter", 
+                   "The counter counts bytes (packets) if true (false).",
+                   BooleanValue (true),
+                   MakeBooleanAccessor (&WeightedPolicy::m_byteCounter),
+                   MakeBooleanChecker ())
   ;
   return tid;
 }
 
 WeightedPolicy::WeightedPolicy ()
-  : m_Btot (0),
-    m_Bmin (1000),
-    m_Bmax (1000000),
+  : m_Ctot (0),
+    m_Cmin (1000),
+    m_Cmax (1000000),
+    m_byteCounter (true),
     m_weights (),
     m_mapping ()
 {
@@ -294,18 +301,20 @@ WeightedPolicy::DoSelect(const std::vector< Nhlfe >& nhlfe, uint32_t index,
   const Ptr< const Interface >& interface, const Ptr< const Packet >& packet)
 {
   --m_iter;
+  uint32_t incr = (m_byteCounter ? packet->GetSize () : 1);
+  
   for (std::list<NhlfeInfo>::iterator i = m_mapping.begin (); i != m_mapping.end (); ++i)
   {
     if (i != m_iter)
-      i->m_currentRatio = (i->m_currentRatio * m_Btot) / (m_Btot + packet->GetSize ());
+      i->m_currentRatio = (i->m_currentRatio * m_Ctot) / (m_Ctot + incr);
     else
-      i->m_currentRatio = (i->m_currentRatio * m_Btot + packet->GetSize ()) / (m_Btot + packet->GetSize ());
+      i->m_currentRatio = (i->m_currentRatio * m_Ctot + incr) / (m_Ctot + incr);
   }
   
-  m_Btot += packet->GetSize ();
+  m_Ctot += incr;
 
-  if (m_Btot > m_Bmax)
-    m_Btot = m_Bmin;
+  if (m_Ctot > m_Cmax)
+    m_Ctot = m_Cmin;
   
   m_mapping.sort (std::mem_fun_ref (&NhlfeInfo::DecreasingDiffOrder));
   
