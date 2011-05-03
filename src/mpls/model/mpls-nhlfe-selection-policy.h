@@ -153,9 +153,10 @@ protected:
      const Ptr<const Interface> &interface, const Ptr<const Packet> &packet);   
   
 private:
-  uint32_t m_Btot;
-  uint32_t m_Bmin;
-  uint32_t m_Bmax;
+  uint32_t m_Ctot;
+  uint32_t m_Cmin;
+  uint32_t m_Cmax;
+  bool m_byteCounter;
   std::vector<double> m_weights;
     
   std::list<NhlfeInfo> m_mapping;
