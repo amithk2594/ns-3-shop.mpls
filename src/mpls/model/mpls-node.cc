@@ -110,18 +110,21 @@ MplsNode::GetLabelSpace (uint32_t ifIndex)
 void
 MplsNode::SetLabelSpaceType (LabelSpaceType type)
 {
-  if (type == PLATFORM)
+  if (m_mpls != 0)
     {
-      uint32_t nInterfaces = m_mpls->GetNInterfaces ();
-      for (uint32_t i = 0; i < nInterfaces; i++)
+      if (type == PLATFORM)
         {
-          NS_ASSERT_MSG (!m_mpls->GetInterface (i)->GetLabelSpace ()->IsEmpty (), 
+          uint32_t nInterfaces = m_mpls->GetNInterfaces ();
+          for (uint32_t i = 0; i < nInterfaces; i++)
+            {
+              NS_ASSERT_MSG (!m_mpls->GetInterface (i)->GetLabelSpace ()->IsEmpty (), 
                             "Clear interface label space before change type");
+            }
         }
-    }
-  else
-    {
-      NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set type");
+      else
+        {
+          NS_ASSERT_MSG (m_labelSpace.IsEmpty (), "Clear platform label space before set type");
+        }
     }
 
   m_labelSpaceType = type;
