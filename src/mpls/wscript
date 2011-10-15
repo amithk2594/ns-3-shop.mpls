@@ -34,7 +34,7 @@ def build(bld):
         'helpers/mpls-tunnel-helper.cc',
         'test/mpls-test.cc',
     ]
-    headers = bld.new_task_gen('ns3header')
+    headers = bld.new_task_gen(features=['ns3header'])
     headers.module = 'mpls'
     headers.source = [
         'model/mpls-node.h',
